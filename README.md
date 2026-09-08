@@ -4,6 +4,10 @@ Connect an MCP-compatible AI client to Hidden Jobs over Streamable HTTP.
 
 The server lets an agent search remote technology jobs, read complete job descriptions, and retrieve the original application URL when the API key owner has the required Hidden Jobs Access subscription.
 
+<p align="center">
+  <img src="docs/hidden-jobs-mcp-flow.svg" alt="Hidden Jobs MCP architecture: an MCP client connects to the Hidden Jobs MCP, which forwards scoped requests to the Hidden Jobs API" width="100%">
+</p>
+
 ## Hosted server
 
 The production MCP endpoint is already available:
@@ -75,6 +79,10 @@ flowchart LR
 ```
 
 The MCP adapter is deliberately thin. It handles MCP JSON-RPC messages, validates tool arguments, forwards the incoming bearer token to the REST API, and maps API errors into MCP tool results. Supabase is used by the deployed Edge Function as the runtime and by the underlying Hidden Jobs API. MCP clients never need a Supabase key.
+
+### Public boundary
+
+This repository contains the MCP protocol adapter and its deployment documentation. It does not contain job data, database schemas, billing logic, customer data, service-role credentials, or the internal implementation of the Hidden Jobs API.
 
 ## Request flow
 
@@ -186,6 +194,7 @@ See [`SECURITY.md`](SECURITY.md) for reporting and operational guidance.
 ├── docs/
 │   ├── client-configuration.md
 │   ├── deployment.md
+│   ├── hidden-jobs-mcp-flow.svg
 │   ├── protocol.md
 │   └── tool-reference.md
 ├── examples/
