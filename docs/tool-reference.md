@@ -1,10 +1,10 @@
-# Tool reference
+# Remote job search tool reference
 
 The MCP server exposes three tools through `tools/call`.
 
 ## `search_jobs`
 
-Searches public Hidden Jobs offers.
+Searches public remote job offers.
 
 ### Arguments
 
@@ -123,7 +123,7 @@ Example call:
 This tool requires:
 
 - The `application-links:read` scope
-- An active Hidden Jobs Access subscription for the API key owner
+- An active access subscription for the API key owner
 
 On success, the tool result contains:
 

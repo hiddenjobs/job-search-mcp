@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve Hidden Jobs MCP.
+Thanks for helping improve Remote Jobs MCP.
 
 ## Before opening a pull request
 

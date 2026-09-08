@@ -32,7 +32,7 @@ const toolDefinitions = [
   {
     name: 'search_jobs',
     description:
-      'Search Hidden Jobs offers. Returns public job details but never the original application URL.',
+      'Search remote technology job offers. Returns public job details but never the original application URL.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -52,7 +52,7 @@ const toolDefinitions = [
   },
   {
     name: 'get_job',
-    description: 'Get the public details and description of one Hidden Jobs offer.',
+    description: 'Get the public details and description of one remote job offer.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -65,7 +65,7 @@ const toolDefinitions = [
   {
     name: 'open_application_link',
     description:
-      'Get the original application link. The API key owner must have an active Hidden Jobs Access subscription.',
+      'Get the original application link. The API key owner must have an active access subscription.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -94,7 +94,7 @@ const callApi = async (
   body?: unknown,
 ) => {
   if (!apiBaseUrl) {
-    return { ok: false, status: 503, payload: { error: 'Hidden Jobs API is not configured.' } };
+    return { ok: false, status: 503, payload: { error: 'Job search API is not configured.' } };
   }
 
   const headers = new Headers({ Accept: 'application/json' });
@@ -145,7 +145,7 @@ const callTool = async (req: Request, name: string, rawArguments: unknown) => {
     const result = await callApi(req, `/jobs?${params.toString()}`);
     if (!result.ok) {
       return toolError(
-        String(result.payload?.error || 'Unable to search Hidden Jobs.'),
+        String(result.payload?.error || 'Unable to search remote jobs.'),
         String(result.payload?.code || 'api_error'),
         result.status,
       );
@@ -173,7 +173,7 @@ const callTool = async (req: Request, name: string, rawArguments: unknown) => {
     const result = await callApi(req, `/jobs/${encodedId}/application-link`, 'POST');
     if (!result.ok) {
       const message = result.status === 402
-        ? 'An active Hidden Jobs Access subscription is required to access the original application link.'
+        ? 'An active access subscription is required to access the original application link.'
         : String(result.payload?.error || 'Unable to open the application link.');
       return toolError(message, String(result.payload?.code || 'api_error'), result.status);
     }
@@ -203,9 +203,9 @@ const handleMessage = async (req: Request, message: unknown) => {
     return jsonRpcResponse(id, {
       protocolVersion,
       capabilities: { tools: { listChanged: false } },
-      serverInfo: { name: 'hidden-jobs-mcp', version: '1.0.0' },
+      serverInfo: { name: 'remote-jobs-mcp', version: '1.0.0' },
       instructions:
-        'Use search_jobs and get_job for public data. Use open_application_link only when the user has an active subscription.',
+        'Use search_jobs and get_job for public data. Use open_application_link only when the user has an active access subscription.',
     });
   }
 

@@ -1,32 +1,41 @@
-# Hidden Jobs MCP
+# Remote Jobs MCP
 
-Connect an MCP-compatible AI client to Hidden Jobs over Streamable HTTP.
+Find and explore remote technology jobs from any MCP-compatible AI client over Streamable HTTP.
 
-The server lets an agent search remote technology jobs, read complete job descriptions, and retrieve the original application URL when the API key owner has the required Hidden Jobs Access subscription.
+The server lets an agent discover relevant roles, read complete job descriptions, compare opportunities, and retrieve the original application URL when the account has the required access subscription.
 
 <p align="center">
-  <img src="docs/hidden-jobs-mcp-flow.svg" alt="Hidden Jobs MCP architecture: an MCP client connects to the Hidden Jobs MCP, which forwards scoped requests to the Hidden Jobs API" width="100%">
+  <img src="docs/hidden-jobs-mcp-flow.svg" alt="Remote Jobs MCP architecture: an MCP client connects to a job search MCP, which forwards scoped requests to a job search API" width="100%">
 </p>
 
-[Visit Hidden Jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
+[Find remote tech jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
+
+## Your job-search copilot
+
+Use natural language to discover roles that match your skills and preferences, then go deeper only when a listing is worth your time:
+
+- Search by role, technology, company, location, schedule, or employment type
+- Read full descriptions and structured job metadata
+- Compare shortlisted roles with an AI assistant
+- Request the original application link when your access allows it
 
 ## Hosted server
 
-The production MCP endpoint is already available:
+Use the hosted MCP endpoint:
 
 ```text
 https://api.hiddenjobs.dev/mcp
 ```
 
-Create a key from the [Hidden Jobs dashboard](https://hiddenjobs.dev/dashboard), then add the endpoint and the key to your MCP client. The bearer token is forwarded to the Hidden Jobs API and is never replaced with a Supabase credential.
+Create an access key from the [developer dashboard](https://hiddenjobs.dev/dashboard), then add the endpoint and the key to your MCP client. The bearer token is forwarded to the job search API and is never replaced with a Supabase credential.
 
 ## Capabilities
 
 | Tool | Required scope | Purpose |
 | --- | --- | --- |
-| `search_jobs` | `jobs:read` | Search the Hidden Jobs board with keywords and filters |
-| `get_job` | `jobs:read` | Read public details and the full description for one offer |
-| `open_application_link` | `application-links:read` plus an active subscription | Retrieve the original application URL for one offer |
+| `search_jobs` | `jobs:read` | Search the remote job board with keywords and filters |
+| `get_job` | `jobs:read` | Read public details and the full description for one role |
+| `open_application_link` | `application-links:read` plus an active subscription | Retrieve the original application URL for one role |
 
 Search and job-detail responses intentionally omit `url`, `application_url`, and `source_url`. They expose `hasApplicationLink` instead. The original URL is returned only by `open_application_link` after the API checks the key scope and the account subscription.
 
@@ -34,9 +43,9 @@ There is no auto-apply tool.
 
 ## Quick start
 
-### 1. Create an API key
+### 1. Create an access key
 
-Create a Hidden Jobs API key with the `jobs:read` and `application-links:read` scopes. The dashboard shows the full key only once. Store it in your client's secret configuration.
+Create an access key with the `jobs:read` and `application-links:read` scopes. The dashboard shows the full key only once. Store it in your client's secret configuration.
 
 ### 2. Configure your MCP client
 
@@ -45,7 +54,7 @@ The configuration is the same for the hosted server and a self-hosted deployment
 ```json
 {
   "mcpServers": {
-    "hidden-jobs": {
+    "remote-jobs": {
       "url": "https://api.hiddenjobs.dev/mcp",
       "headers": {
         "Authorization": "Bearer hj_live_..."
@@ -71,8 +80,8 @@ The client should call `search_jobs`, then call `get_job` for the offers it want
 
 ```mermaid
 flowchart LR
-    Client[MCP client] -->|JSON-RPC over HTTPS\nBearer API key| MCP[Hidden Jobs MCP]
-    MCP -->|Forward bearer token| API[Hidden Jobs REST API]
+    Client[MCP client] -->|JSON-RPC over HTTPS\nBearer access key| MCP[Remote Jobs MCP]
+    MCP -->|Forward bearer token| API[Job Search REST API]
     API --> Auth{API key and scope}
     Auth -->|jobs:read| Jobs[(Public job data)]
     Auth -->|application-links:read| Subscription{Active subscription?}
@@ -80,20 +89,20 @@ flowchart LR
     Subscription -->|No| Denied[402 subscription_required]
 ```
 
-The MCP adapter is deliberately thin. It handles MCP JSON-RPC messages, validates tool arguments, forwards the incoming bearer token to the REST API, and maps API errors into MCP tool results. Supabase is used by the deployed Edge Function as the runtime and by the underlying Hidden Jobs API. MCP clients never need a Supabase key.
+The MCP adapter is deliberately thin. It handles MCP JSON-RPC messages, validates tool arguments, forwards the incoming bearer token to the REST API, and maps API errors into MCP tool results. Supabase is used by the deployed Edge Function as the runtime and by the underlying job search API. MCP clients never need a Supabase key.
 
 ### Public boundary
 
-This repository contains the MCP protocol adapter and its deployment documentation. It does not contain job data, database schemas, billing logic, customer data, service-role credentials, or the internal implementation of the Hidden Jobs API.
+This repository contains the MCP protocol adapter and its deployment documentation. It does not contain job data, database schemas, billing logic, customer data, service-role credentials, or the internal implementation of the underlying job search platform.
 
 ## Request flow
 
 ```mermaid
 sequenceDiagram
     participant C as MCP client
-    participant M as Hidden Jobs MCP
-    participant A as Hidden Jobs API
-    participant D as Hidden Jobs data layer
+    participant M as Remote Jobs MCP
+    participant A as Job Search API
+    participant D as Job data layer
 
     C->>M: tools/call search_jobs
     M->>A: GET /v1/jobs + bearer token
@@ -133,7 +142,7 @@ The repository contains the deployable function at [`supabase/functions/hidden-j
 - A Supabase project
 - Supabase CLI
 - Deno 2 for local checks
-- A Hidden Jobs API key for client requests
+- An access key for client requests
 
 ### Deploy
 
@@ -144,7 +153,7 @@ supabase functions deploy hidden-jobs-mcp --no-verify-jwt
 supabase secrets set HIDDEN_JOBS_API_URL=https://api.hiddenjobs.dev/v1
 ```
 
-`--no-verify-jwt` is intentional. The function authenticates the Hidden Jobs API bearer token itself, so Supabase must pass the request through instead of requiring a Supabase Auth JWT. The deployed Supabase runtime provides `SUPABASE_URL`. Set `SUPABASE_ANON_KEY` as a function secret only when your API deployment requires the upstream `apikey` header.
+`--no-verify-jwt` is intentional. The function authenticates the job-search API bearer token itself, so Supabase must pass the request through instead of requiring a Supabase Auth JWT. The deployed Supabase runtime provides `SUPABASE_URL`. Set `SUPABASE_ANON_KEY` as a function secret only when your API deployment requires the upstream `apikey` header.
 
 Detailed deployment notes, environment variables, and a custom API origin are in [`docs/deployment.md`](docs/deployment.md).
 

@@ -1,6 +1,6 @@
 # Architecture
 
-Hidden Jobs MCP is a protocol adapter. It does not maintain a second job database and it does not implement a second authorization model.
+Remote Jobs MCP is a protocol adapter. It does not maintain a second job database and it does not implement a second authorization model.
 
 ```mermaid
 flowchart TB
@@ -9,14 +9,14 @@ flowchart TB
         Secret[Client secret store]
     end
 
-    subgraph Adapter[Hidden Jobs MCP]
+    subgraph Adapter[Remote Jobs MCP]
         HTTP[Streamable HTTP endpoint]
         JSONRPC[JSON-RPC dispatcher]
         Tools[Tool argument validation]
     end
 
-    subgraph Platform[Hidden Jobs platform]
-        REST[REST API]
+    subgraph Platform[Job search platform]
+        REST[Job Search API]
         Auth[API key scope and rate checks]
         Jobs[(Public job records)]
         Billing[(Subscription state)]
@@ -37,7 +37,7 @@ flowchart TB
 
 ### MCP client to MCP server
 
-The client sends a Hidden Jobs API bearer key. The server does not receive a Supabase Auth session and does not need one.
+The client sends a job-search API bearer key. The server does not receive a Supabase Auth session and does not need one.
 
 ### MCP server to REST API
 

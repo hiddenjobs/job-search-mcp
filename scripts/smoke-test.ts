@@ -40,7 +40,7 @@ const initialize = await call({
   params: {
     protocolVersion: '2025-06-18',
     capabilities: {},
-    clientInfo: { name: 'hidden-jobs-mcp-smoke-test', version: '1.0.0' },
+    clientInfo: { name: 'remote-jobs-mcp-smoke-test', version: '1.0.0' },
   },
 });
 assert(

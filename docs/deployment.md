@@ -1,6 +1,6 @@
 # Deployment
 
-There are two supported ways to use Hidden Jobs MCP.
+There are two supported ways to use Remote Jobs MCP.
 
 ## Use the hosted endpoint
 
@@ -10,9 +10,9 @@ This is the recommended path for client integrations:
 https://api.hiddenjobs.dev/mcp
 ```
 
-Create a key from the [Hidden Jobs dashboard](https://hiddenjobs.dev/dashboard), configure it in the MCP client, and no server deployment is required.
+Create an access key from the [developer dashboard](https://hiddenjobs.dev/dashboard), configure it in the MCP client, and no server deployment is required.
 
-The live [Hidden Jobs API reference](https://api.hiddenjobs.dev/openapi.json) documents the upstream REST resources used by this adapter.
+The live [API reference](https://api.hiddenjobs.dev/openapi.json) documents the upstream REST resources used by this adapter.
 
 ## Deploy your own Supabase Edge Function
 
@@ -22,8 +22,8 @@ This repository contains a self-contained Supabase Edge Function and the minimal
 
 - Supabase CLI installed and authenticated
 - A Supabase project
-- A Hidden Jobs API key for requests from the client
-- Access to the Hidden Jobs REST API
+- An access key for requests from the client
+- Access to the job-search REST API
 
 ### Configure the project
 
@@ -51,7 +51,7 @@ supabase functions deploy hidden-jobs-mcp --no-verify-jwt
 supabase secrets set HIDDEN_JOBS_API_URL=https://api.hiddenjobs.dev/v1
 ```
 
-The `--no-verify-jwt` flag is intentional. This function authenticates the Hidden Jobs API bearer token itself. Requiring a Supabase Auth JWT at the gateway would reject valid MCP clients before the function can forward their bearer token.
+The `--no-verify-jwt` flag is intentional. This function authenticates the job-search API bearer token itself. Requiring a Supabase Auth JWT at the gateway would reject valid MCP clients before the function can forward their bearer token.
 
 The resulting URL is:
 

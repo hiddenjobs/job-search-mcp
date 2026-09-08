@@ -1,4 +1,4 @@
-# Client configuration
+# Remote Jobs MCP client configuration
 
 The hosted server works with MCP clients that support a remote HTTP server. Use the same endpoint and bearer header in every client:
 
@@ -16,7 +16,7 @@ Add the following server entry to Claude Desktop's configuration file. The file 
 ```json
 {
   "mcpServers": {
-    "hidden-jobs": {
+    "remote-jobs": {
       "url": "https://api.hiddenjobs.dev/mcp",
       "headers": {
         "Authorization": "Bearer hj_live_..."
@@ -35,7 +35,7 @@ Add the server to the Cursor MCP configuration:
 ```json
 {
   "mcpServers": {
-    "hidden-jobs": {
+    "remote-jobs": {
       "url": "https://api.hiddenjobs.dev/mcp",
       "headers": {
         "Authorization": "Bearer hj_live_..."
@@ -52,7 +52,7 @@ See [`examples/cursor.json`](../examples/cursor.json).
 Configure a remote Streamable HTTP MCP server with:
 
 1. The URL `https://api.hiddenjobs.dev/mcp`
-2. An `Authorization` header containing the Hidden Jobs API bearer key
+2. An `Authorization` header containing the job-search API bearer key
 3. `Accept: application/json, text/event-stream` when the client allows custom headers
 4. JSON-RPC 2.0 requests sent with HTTP `POST`
 

@@ -1,6 +1,6 @@
 # Protocol reference
 
-Hidden Jobs MCP uses JSON-RPC 2.0 over HTTP `POST`.
+Remote Jobs MCP uses JSON-RPC 2.0 over HTTP `POST`.
 
 ## Endpoint and headers
 
@@ -54,7 +54,7 @@ Response:
       }
     },
     "serverInfo": {
-      "name": "hidden-jobs-mcp",
+      "name": "remote-jobs-mcp",
       "version": "1.0.0"
     }
   }
