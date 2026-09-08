@@ -5,7 +5,7 @@ Find and explore remote technology jobs from any MCP-compatible AI client over S
 The server lets an agent discover relevant roles, read complete job descriptions, compare opportunities, and retrieve the original application URL when the account has the required access subscription.
 
 <p align="center">
-  <img src="docs/hidden-jobs-mcp-flow.svg" alt="Remote Jobs MCP architecture: an MCP client connects to a job search MCP, which forwards scoped requests to a job search API" width="100%">
+  <img src="docs/remote-jobs-mcp-flow.png" alt="Remote Jobs MCP flow: search roles, connect your AI, and find your next role" width="100%">
 </p>
 
 [Find remote tech jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
@@ -205,7 +205,7 @@ See [`SECURITY.md`](SECURITY.md) for reporting and operational guidance.
 ├── docs/
 │   ├── client-configuration.md
 │   ├── deployment.md
-│   ├── hidden-jobs-mcp-flow.svg
+│   ├── remote-jobs-mcp-flow.png
 │   ├── protocol.md
 │   └── tool-reference.md
 ├── examples/
