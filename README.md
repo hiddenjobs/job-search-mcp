@@ -8,6 +8,8 @@ The server lets an agent search remote technology jobs, read complete job descri
   <img src="docs/hidden-jobs-mcp-flow.svg" alt="Hidden Jobs MCP architecture: an MCP client connects to the Hidden Jobs MCP, which forwards scoped requests to the Hidden Jobs API" width="100%">
 </p>
 
+[Visit Hidden Jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
+
 ## Hosted server
 
 The production MCP endpoint is already available:
@@ -16,7 +18,7 @@ The production MCP endpoint is already available:
 https://api.hiddenjobs.dev/mcp
 ```
 
-Create a key in the [Hidden Jobs developer dashboard](https://hiddenjobs.dev/dashboard/api-keys), then add the endpoint and the key to your MCP client. The bearer token is forwarded to the Hidden Jobs API and is never replaced with a Supabase credential.
+Create a key from the [Hidden Jobs dashboard](https://hiddenjobs.dev/dashboard), then add the endpoint and the key to your MCP client. The bearer token is forwarded to the Hidden Jobs API and is never replaced with a Supabase credential.
 
 ## Capabilities
 

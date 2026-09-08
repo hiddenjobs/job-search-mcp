@@ -10,7 +10,9 @@ This is the recommended path for client integrations:
 https://api.hiddenjobs.dev/mcp
 ```
 
-Create a key at [hiddenjobs.dev/dashboard/api-keys](https://hiddenjobs.dev/dashboard/api-keys), configure it in the MCP client, and no server deployment is required.
+Create a key from the [Hidden Jobs dashboard](https://hiddenjobs.dev/dashboard), configure it in the MCP client, and no server deployment is required.
+
+The live [Hidden Jobs API reference](https://api.hiddenjobs.dev/openapi.json) documents the upstream REST resources used by this adapter.
 
 ## Deploy your own Supabase Edge Function
 
