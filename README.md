@@ -1,4 +1,4 @@
-# Find Jobs MCP
+# Job Search MCP
 
 Find remote technology jobs with MCP. Connect Claude, Cursor, or any AI agent to search roles, filter opportunities, read full descriptions, compare jobs, and find where to apply over Streamable HTTP.
 
