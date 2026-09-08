@@ -1,6 +1,6 @@
-# Remote Jobs MCP
+# Find Jobs MCP
 
-Find and explore remote technology jobs from any MCP-compatible AI client over Streamable HTTP.
+Find remote technology jobs with MCP. Connect Claude, Cursor, or any AI agent to search roles, filter opportunities, read full descriptions, compare jobs, and find where to apply over Streamable HTTP.
 
 The server lets an agent discover relevant roles, read complete job descriptions, compare opportunities, and retrieve the original application URL when the account has the required access subscription.
 
