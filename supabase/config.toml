@@ -1,0 +1,4 @@
+# The MCP endpoint authenticates Hidden Jobs API bearer tokens itself.
+# Supabase JWT verification must therefore be disabled for this function.
+[functions.hidden-jobs-mcp]
+verify_jwt = false
