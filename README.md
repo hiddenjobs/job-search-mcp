@@ -10,6 +10,8 @@ The server lets an agent discover relevant roles, read complete job descriptions
 
 [Find remote tech jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
 
+Need direct REST access instead? Use the [Job Search API](https://github.com/hiddenjobs/job-search-api).
+
 ## Your job-search copilot
 
 Use natural language to discover roles that match your skills and preferences, then go deeper only when a listing is worth your time:
