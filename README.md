@@ -8,7 +8,7 @@ The server lets an agent discover relevant roles, read complete job descriptions
   <img src="docs/remote-jobs-mcp-flow.png" alt="Remote Jobs MCP flow: search roles, connect your AI, and find your next role" width="100%">
 </p>
 
-[Find remote tech jobs](https://hiddenjobs.dev/) · [Read the live API reference](https://api.hiddenjobs.dev/openapi.json) · [Browse the MCP documentation](docs/)
+[Find remote tech jobs](https://hiddenjobs.dev/) · [Read the live MCP documentation](https://hiddenjobs.dev/mcp/docs) · [Read the live REST API docs](https://hiddenjobs.dev/api/docs) · [Browse repository docs](docs/)
 
 Need direct REST access instead? Use the [Job Search API](https://github.com/hiddenjobs/job-search-api).
 
