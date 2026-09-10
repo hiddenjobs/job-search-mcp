@@ -1,0 +1,32 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.hiddenjobs/job-search-mcp",
+  "title": "HiddenJobs — Remote Tech Job Search MCP",
+  "description": "Search remote tech jobs, inspect descriptions, compare roles, and retrieve application links.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/hiddenjobs/job-search-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://hiddenjobs.dev/mcp/docs",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.hiddenjobs.dev/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {api_key}",
+          "variables": {
+            "api_key": {
+              "description": "HiddenJobs API key",
+              "isRequired": true,
+              "isSecret": true,
+              "placeholder": "hj_live_..."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
