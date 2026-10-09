@@ -41,7 +41,7 @@ Create an access key from the [developer dashboard](https://hiddenjobs.dev/dashb
 
 Search and job-detail responses intentionally omit `url`, `application_url`, and `source_url`. They expose `hasApplicationLink` instead. The original URL is returned only by `open_application_link` after the API checks the key scope and the account subscription.
 
-There is no auto-apply tool.
+Use the original application link to complete your application on the employer’s website.
 
 ## Quick start
 
