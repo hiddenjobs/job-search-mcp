@@ -20,32 +20,23 @@ Content-Type: application/json
 Authorization: Bearer <oauth-access-token>
 ```
 
-The OAuth client obtains the access token through authorization code + PKCE and
-handles refresh; do not paste website JWTs or API keys into this connection.
-Initialization and tool discovery are available without authentication. Tool
-calls require authorization. The API-key adapter instead accepts `hj_live_...`
-and forwards it to REST.
+For account connections, your MCP client manages sign-in and supplies the access
+token. For API-key connections, use the key's bearer header. Initialization and
+tool discovery are available without signing in; tool calls require access.
 
-## OAuth discovery
+## Connection discovery
 
-Resource metadata is served at
-`https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp`:
+OAuth-capable clients discover connection settings automatically. Custom clients
+can read the resource metadata at:
 
-```json
-{
-  "resource": "https://hiddenjobs.dev/mcp",
-  "resource_name": "Hidden Jobs",
-  "authorization_servers": ["https://tcjpspfdfachkzjgrtcg.supabase.co/auth/v1"],
-  "scopes_supported": ["email"],
-  "bearer_methods_supported": ["header"]
-}
+```text
+https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp
 ```
 
-The client follows Supabase authorization-server discovery to find the
-registration, authorization and token endpoints. Missing/invalid OAuth
-credentials on tool calls return HTTP 401 with a `WWW-Authenticate` challenge
-pointing to this metadata. The `email` scope is for identity; `jobs:read` and
-`application-links:read` apply only to API keys.
+Authentication failures return HTTP `401` with a `WWW-Authenticate` challenge
+pointing to these settings. Follow the advertised endpoints instead of hardcoding
+them. The account connection's identity scope is `email`; API-key scope names
+apply only to API-key connections.
 
 ## Initialize
 

@@ -138,7 +138,7 @@ On success, the tool result contains:
 }
 ```
 
-Without active Access, the tool result is marked `isError: true` with subscription-required status `402` in `structuredContent`. The API-key adapter receives this result from REST; the account MCP checks the connected account directly.
+Without active Access, the tool result is marked `isError: true` with subscription-required status `402` in `structuredContent`. Check the Access subscription for the connected account, or the key owner when using an API key.
 
 ## Access errors
 

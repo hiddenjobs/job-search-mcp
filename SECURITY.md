@@ -12,7 +12,8 @@ The API-key alternative still uses bearer access keys. Do not commit them, inclu
 
 If a key is exposed, revoke it from the [developer dashboard](https://hiddenjobs.dev/dashboard) and create a replacement immediately.
 
-Supabase anonymous keys belong in the server-side Edge Function configuration. A Supabase service-role key must never be sent to an MCP client or included in this repository.
+Keep server credentials on the server. Never include administrative credentials
+in client configuration or this repository.
 
 ## Reporting a vulnerability
 

@@ -1,45 +1,26 @@
-# Architecture
-
-The hosted service offers two separate authentication paths.
+# How the MCP works
 
 ```mermaid
-flowchart TB
-    AI[AI client] -->|Account OAuth| Account[https://hiddenjobs.dev/mcp]
-    Auth[Native Supabase OAuth] -->|Signed access token| AI
-    Account --> Verify[Signature, audience and expiry]
-    Verify --> Live[Live account, session and consent checks]
-    Live --> Jobs[Public job data]
-    Live --> Access[Current Access subscription]
-    Access --> Link[Original application URL]
-    AI -->|API key alternative| Adapter[https://api.hiddenjobs.dev/mcp]
-    Adapter -->|Forward API key| REST[REST key, scope, quota and subscription checks]
-    REST --> Jobs
-    REST --> Link
+flowchart LR
+    Client[AI client] --> MCP[Hidden Jobs MCP]
+    MCP --> Search[Search jobs]
+    MCP --> Details[Read job details]
+    MCP --> Access{Active Access subscription?}
+    Access -->|Yes| Link[Original application link]
+    Access -->|No| Upgrade[Subscription required]
 ```
 
-## Account OAuth
+Connect your Hidden Jobs account once, then use the tools from your AI client.
+The server checks access on every request. Search and job details never include
+the original application URL; retrieve it with `open_application_link` when you
+want to apply.
 
-Resource metadata identifies Supabase as the authorization server. The client
-uses discovery, DCR and authorization code + PKCE. Users sign in and consent on
-Hidden Jobs. Supabase issues tokens for the user's account; the client handles
-refresh. The website session token is never passed to the AI client.
+Example: search for remote TypeScript jobs, compare the descriptions and request
+the application link for your preferred role. An active Access subscription is
+required for that final step.
 
-The account MCP validates the signed token and checks live session, consent and
-account state. It checks current Access before returning an application link.
-Search and job details do not expose original application URLs. `email` is an
-identity scope, not a database or API-key permission. OAuth tokens do not grant
-direct database access. Account OAuth quota: 600 tool calls/minute across clients.
+For clients that use API keys, the separate endpoint applies the key's scopes and
+usage limits, together with the key owner's Access subscription.
 
-Example: an account whose Access subscription expires can still search jobs,
-but `open_application_link` returns a subscription-required error.
-
-## Public source boundary
-
-The function in this repository is the **API-key adapter**, not the hosted account
-OAuth runtime. It forwards the original API key to REST; REST enforces key scopes,
-usage limits and subscription access. It does not perform OAuth discovery or login.
-Deploying it unchanged will not enable account OAuth on a new server.
-
-The repository does not contain the hosted account database, native account MCP
-implementation, billing logic, customer data or service-role credentials.
-[Deployment](deployment.md) covers only the included adapter.
+See [client configuration](client-configuration.md), [tool reference](tool-reference.md)
+and [development](deployment.md).
