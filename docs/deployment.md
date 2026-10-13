@@ -1,22 +1,31 @@
 # Deployment
 
-There are two supported ways to use Remote Jobs MCP.
+The hosted account OAuth service and the deployable API-key adapter are distinct.
+For example, choosing OAuth with `https://hiddenjobs.dev/mcp` logs into the user's
+Hidden Jobs account; deploying the source below creates an API-key forwarding
+adapter and does not add OAuth discovery, consent or token issuance.
 
 ## Use the hosted endpoint
 
 This is the recommended path for client integrations:
 
 ```text
-https://api.hiddenjobs.dev/mcp
+https://hiddenjobs.dev/mcp
 ```
 
-Create an access key from the [developer dashboard](https://hiddenjobs.dev/dashboard), configure it in the MCP client, and no server deployment is required.
+Choose OAuth, sign in with your Hidden Jobs account and approve access. No user
+API key and no server deployment are required. Application links use that
+account's current Access subscription. See [client configuration](client-configuration.md).
+
+The separate API-key endpoint `https://api.hiddenjobs.dev/mcp` remains available
+for bearer-key clients. The source and deployment instructions below refer only
+to that adapter, not the hosted account OAuth service.
 
 The live [API reference](https://api.hiddenjobs.dev/openapi.json) documents the upstream REST resources used by this adapter.
 
-## Deploy your own Supabase Edge Function
+## Deploy the API-key adapter as a Supabase Edge Function
 
-This repository contains a self-contained Supabase Edge Function and the minimal project configuration required to deploy it.
+This repository contains a self-contained API-key adapter and the minimal project configuration required to deploy it. Enabling Supabase OAuth Server alone does not make this adapter OAuth-capable; a separate resource server, discovery, consent and validation implementation is needed.
 
 ### Prerequisites
 

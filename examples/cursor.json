@@ -1,10 +1,7 @@
 {
   "mcpServers": {
-    "remote-jobs": {
-      "url": "https://api.hiddenjobs.dev/mcp",
-      "headers": {
-        "Authorization": "Bearer hj_live_..."
-      }
+    "hidden-jobs": {
+      "url": "https://hiddenjobs.dev/mcp"
     }
   }
 }

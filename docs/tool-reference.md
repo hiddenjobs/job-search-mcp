@@ -1,6 +1,9 @@
 # Remote job search tool reference
 
-The MCP server exposes three tools through `tools/call`.
+Both endpoints expose three tools through `tools/call`. Account OAuth requires
+a valid connected account; the API-key alternative requires `jobs:read` for
+search/detail. Example: connect your Hidden Jobs account, search TypeScript jobs,
+then retrieve one application's link if your Access subscription is active.
 
 ## `search_jobs`
 
@@ -122,8 +125,8 @@ Example call:
 
 This tool requires:
 
-- The `application-links:read` scope
-- An active access subscription for the API key owner
+- OAuth: a valid connected account with an active Access subscription
+- API-key alternative: `application-links:read` and active Access for the key owner
 
 On success, the tool result contains:
 
@@ -135,15 +138,15 @@ On success, the tool result contains:
 }
 ```
 
-Without an active subscription, the REST API returns HTTP `402` with `subscription_required`. The MCP result is marked `isError: true` and includes the same status in `structuredContent`.
+Without active Access, the tool result is marked `isError: true` with subscription-required status `402` in `structuredContent`. The API-key adapter receives this result from REST; the account MCP checks the connected account directly.
 
 ## Access errors
 
 | Status | Code | Meaning |
 | --- | --- | --- |
 | `400` | `invalid_arguments` | A required tool argument is missing |
-| `401` | `missing`, `invalid`, `revoked`, or `expired` | The bearer key is not usable |
+| `401` | Authentication required | OAuth: reconnect the account. API-key endpoint: check the key |
 | `402` | `subscription_required` | An active subscription is needed for the original URL |
-| `403` | `insufficient_scope` or `paused` | The key cannot perform the operation |
-| `429` | `rate_limit` or `monthly_limit` | A configured usage limit was reached |
+| `403` | `insufficient_scope` or `paused` | API-key endpoint only: key scope or status |
+| `429` | Rate or usage limit | OAuth: 600 calls/minute/account. API keys: configured limits |
 | `503` | `backend_error` | The API authentication backend is temporarily unavailable |

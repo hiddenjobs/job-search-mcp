@@ -1,52 +1,45 @@
 # Architecture
 
-Remote Jobs MCP is a protocol adapter. It does not maintain a second job database and it does not implement a second authorization model.
+The hosted service offers two separate authentication paths.
 
 ```mermaid
 flowchart TB
-    subgraph Client[User environment]
-        Agent[MCP-compatible AI client]
-        Secret[Client secret store]
-    end
-
-    subgraph Adapter[Remote Jobs MCP]
-        HTTP[Streamable HTTP endpoint]
-        JSONRPC[JSON-RPC dispatcher]
-        Tools[Tool argument validation]
-    end
-
-    subgraph Platform[Job search platform]
-        REST[Job Search API]
-        Auth[API key scope and rate checks]
-        Jobs[(Public job records)]
-        Billing[(Subscription state)]
-        Source[Original application URL]
-    end
-
-    Secret -->|Bearer token| Agent
-    Agent -->|HTTP POST| HTTP
-    HTTP --> JSONRPC --> Tools
-    Tools -->|Forward bearer token| REST
-    REST --> Auth
-    Auth --> Jobs
-    Auth --> Billing
-    Billing -->|Active subscription| Source
+    AI[AI client] -->|Account OAuth| Account[https://hiddenjobs.dev/mcp]
+    Auth[Native Supabase OAuth] -->|Signed access token| AI
+    Account --> Verify[Signature, audience and expiry]
+    Verify --> Live[Live account, session and consent checks]
+    Live --> Jobs[Public job data]
+    Live --> Access[Current Access subscription]
+    Access --> Link[Original application URL]
+    AI -->|API key alternative| Adapter[https://api.hiddenjobs.dev/mcp]
+    Adapter -->|Forward API key| REST[REST key, scope, quota and subscription checks]
+    REST --> Jobs
+    REST --> Link
 ```
 
-## Trust boundaries
+## Account OAuth
 
-### MCP client to MCP server
+Resource metadata identifies Supabase as the authorization server. The client
+uses discovery, DCR and authorization code + PKCE. Users sign in and consent on
+Hidden Jobs. Supabase issues tokens for the user's account; the client handles
+refresh. The website session token is never passed to the AI client.
 
-The client sends a job-search API bearer key. The server does not receive a Supabase Auth session and does not need one.
+The account MCP validates the signed token and checks live session, consent and
+account state. It checks current Access before returning an application link.
+Search and job details do not expose original application URLs. `email` is an
+identity scope, not a database or API-key permission. OAuth tokens do not grant
+direct database access. Account OAuth quota: 600 tool calls/minute across clients.
 
-### MCP server to REST API
+Example: an account whose Access subscription expires can still search jobs,
+but `open_application_link` returns a subscription-required error.
 
-The MCP adapter forwards the original `Authorization` header. The REST API remains the authority for key validity, scopes, rate limits, monthly usage, subscription checks, and URL release.
+## Public source boundary
 
-### Public job data to original URLs
+The function in this repository is the **API-key adapter**, not the hosted account
+OAuth runtime. It forwards the original API key to REST; REST enforces key scopes,
+usage limits and subscription access. It does not perform OAuth discovery or login.
+Deploying it unchanged will not enable account OAuth on a new server.
 
-`search_jobs` and `get_job` return descriptions and metadata but not the source URL. `open_application_link` is a separate operation with a separate scope and subscription check.
-
-## Failure propagation
-
-REST errors are converted into MCP tool errors. This preserves a readable message while retaining the original HTTP status and API code in `structuredContent` when available.
+The repository does not contain the hosted account database, native account MCP
+implementation, billing logic, customer data or service-role credentials.
+[Deployment](deployment.md) covers only the included adapter.

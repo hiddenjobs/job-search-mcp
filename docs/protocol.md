@@ -7,18 +7,45 @@ Remote Jobs MCP uses JSON-RPC 2.0 over HTTP `POST`.
 Hosted endpoint:
 
 ```text
-https://api.hiddenjobs.dev/mcp
+https://hiddenjobs.dev/mcp
 ```
+
+API-key alternative: `https://api.hiddenjobs.dev/mcp`. The JSON-RPC tool names and arguments are shared; authentication and quotas are separate.
 
 Required request headers:
 
 ```http
 Accept: application/json, text/event-stream
 Content-Type: application/json
-Authorization: Bearer hj_live_...
+Authorization: Bearer <oauth-access-token>
 ```
 
-The authorization header is required for tool calls. The handshake methods are available without authentication so clients can discover the server, but data tools still enforce API key access through the underlying REST API.
+The OAuth client obtains the access token through authorization code + PKCE and
+handles refresh; do not paste website JWTs or API keys into this connection.
+Initialization and tool discovery are available without authentication. Tool
+calls require authorization. The API-key adapter instead accepts `hj_live_...`
+and forwards it to REST.
+
+## OAuth discovery
+
+Resource metadata is served at
+`https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp`:
+
+```json
+{
+  "resource": "https://hiddenjobs.dev/mcp",
+  "resource_name": "Hidden Jobs",
+  "authorization_servers": ["https://tcjpspfdfachkzjgrtcg.supabase.co/auth/v1"],
+  "scopes_supported": ["email"],
+  "bearer_methods_supported": ["header"]
+}
+```
+
+The client follows Supabase authorization-server discovery to find the
+registration, authorization and token endpoints. Missing/invalid OAuth
+credentials on tool calls return HTTP 401 with a `WWW-Authenticate` challenge
+pointing to this metadata. The `email` scope is for identity; `jobs:read` and
+`application-links:read` apply only to API keys.
 
 ## Initialize
 
@@ -54,8 +81,8 @@ Response:
       }
     },
     "serverInfo": {
-      "name": "remote-jobs-mcp",
-      "version": "1.0.0"
+      "name": "hidden-jobs-mcp-oauth",
+      "version": "2.0.0"
     }
   }
 }
@@ -101,12 +128,11 @@ Messages whose method starts with `notifications/` receive HTTP `202` with no re
 
 ## Direct cURL check
 
-The following uses an environment variable so the key does not appear in shell history or source code:
+The following checks tool discovery on the OAuth endpoint without credentials. For authenticated tool calls, use an OAuth-capable client to complete login; this command does not perform OAuth:
 
 ```bash
-curl -X POST https://api.hiddenjobs.dev/mcp \
+curl -X POST https://hiddenjobs.dev/mcp \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ${HIDDEN_JOBS_API_KEY}" \
   --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
