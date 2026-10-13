@@ -13,24 +13,6 @@
     {
       "type": "streamable-http",
       "url": "https://hiddenjobs.dev/mcp"
-    },
-    {
-      "type": "streamable-http",
-      "url": "https://api.hiddenjobs.dev/mcp",
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {api_key}",
-          "variables": {
-            "api_key": {
-              "description": "HiddenJobs API key",
-              "isRequired": true,
-              "isSecret": true,
-              "placeholder": "hj_live_..."
-            }
-          }
-        }
-      ]
     }
   ]
 }

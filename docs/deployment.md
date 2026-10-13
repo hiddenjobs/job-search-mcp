@@ -1,45 +1,33 @@
-# Development
+# Connection verification
 
-## Use the hosted server
+Add `https://hiddenjobs.dev/mcp` to your MCP client and complete account sign-in.
+No server deployment is required to use the hosted service.
 
-For normal use, no server deployment is required. Add
-`https://hiddenjobs.dev/mcp` to your AI client, choose OAuth and connect your
-Hidden Jobs account. For example: “Find remote backend jobs in Europe.”
-See [client configuration](client-configuration.md).
-
-## Run the included server locally
-
-The source in this repository provides the API-key connection. Account sign-in
-is available through the hosted endpoint; the included server uses a Hidden Jobs
-API key and the [REST API](https://hiddenjobs.dev/api/docs).
-
-Install Deno 2 and set the API base URL:
+## Check your terminal client
 
 ```bash
-HIDDEN_JOBS_API_URL=https://api.hiddenjobs.dev/v1 deno task start
+claude mcp get hidden-jobs
 ```
 
-The server listens on Deno's default HTTP port. Configure your client with the
-local URL and store its API key in the client's secret configuration.
-
-Run the repository checks:
+Or, with Codex:
 
 ```bash
-deno task fmt
-deno task check
+codex mcp list
 ```
 
-## Smoke test the API-key connection
+Start your client and ask: “Search Hidden Jobs for remote backend roles in Europe.”
+Then inspect a result with `get_job`. To test an application link, use an account
+with active Hidden Jobs Access and request `open_application_link` for that role.
 
-Set `HIDDEN_JOBS_API_KEY` through your environment or secret manager, then run:
+## Check tool discovery
 
 ```bash
-HIDDEN_JOBS_MCP_URL=http://localhost:8000 deno task smoke
+curl --fail-with-body --silent --show-error \
+  --request POST https://hiddenjobs.dev/mcp \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json, text/event-stream' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
-The test covers initialization, tool discovery, search and job details. It does
-not test account sign-in. Application-link requests are excluded unless
-`CHECK_APPLICATION_LINK=true` is set.
-
-Never commit credentials. Keep the upstream API URL trusted and use HTTPS for
-remote connections. See [security guidance](../SECURITY.md).
+This checks discovery. Complete account sign-in in your client before calling
+tools. See [client configuration](client-configuration.md) for connection help.

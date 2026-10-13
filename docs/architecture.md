@@ -19,8 +19,5 @@ Example: search for remote TypeScript jobs, compare the descriptions and request
 the application link for your preferred role. An active Access subscription is
 required for that final step.
 
-For clients that use API keys, the separate endpoint applies the key's scopes and
-usage limits, together with the key owner's Access subscription.
-
 See [client configuration](client-configuration.md), [tool reference](tool-reference.md)
-and [development](deployment.md).
+and [connection verification](deployment.md).

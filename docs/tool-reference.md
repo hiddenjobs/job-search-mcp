@@ -1,8 +1,7 @@
 # Remote job search tool reference
 
-Both endpoints expose three tools through `tools/call`. Account OAuth requires
-a valid connected account; the API-key alternative requires `jobs:read` for
-search/detail. Example: connect your Hidden Jobs account, search TypeScript jobs,
+The MCP exposes three tools through `tools/call`. Connect your Hidden Jobs
+account, search TypeScript jobs,
 then retrieve one application's link if your Access subscription is active.
 
 ## `search_jobs`
@@ -125,8 +124,8 @@ Example call:
 
 This tool requires:
 
-- OAuth: a valid connected account with an active Access subscription
-- API-key alternative: `application-links:read` and active Access for the key owner
+- A connected Hidden Jobs account
+- An active Access subscription
 
 On success, the tool result contains:
 
@@ -138,15 +137,14 @@ On success, the tool result contains:
 }
 ```
 
-Without active Access, the tool result is marked `isError: true` with subscription-required status `402` in `structuredContent`. Check the Access subscription for the connected account, or the key owner when using an API key.
+Without active Access, the tool result is marked `isError: true` with subscription-required status `402` in `structuredContent`. Check the connected account’s Access subscription.
 
 ## Access errors
 
 | Status | Code | Meaning |
 | --- | --- | --- |
 | `400` | `invalid_arguments` | A required tool argument is missing |
-| `401` | Authentication required | OAuth: reconnect the account. API-key endpoint: check the key |
+| `401` | Authentication required | Reconnect your account |
 | `402` | `subscription_required` | An active subscription is needed for the original URL |
-| `403` | `insufficient_scope` or `paused` | API-key endpoint only: key scope or status |
-| `429` | Rate or usage limit | OAuth: 600 calls/minute/account. API keys: configured limits |
+| `429` | Rate limit | 600 tool calls/minute/account; wait before retrying |
 | `503` | `backend_error` | The API authentication backend is temporarily unavailable |

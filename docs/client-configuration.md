@@ -1,6 +1,4 @@
-# Client configuration
-
-## Account OAuth (recommended)
+# Connect Hidden Jobs
 
 ```text
 Name: Hidden Jobs
@@ -8,26 +6,16 @@ URL: https://hiddenjobs.dev/mcp
 Authentication: OAuth
 ```
 
-Add a custom remote MCP server in your client, enter this URL, then sign in to
-Hidden Jobs and approve the connection. No API key is needed for account sign-in.
+Use a client that supports remote HTTP MCP and OAuth. Add the server, sign in with
+your Hidden Jobs account and approve the connection.
 
-Example prompt: “Find remote backend jobs in Europe, compare three offers and
-show the application link for the best match.” Links require active Access for
-the connected account.
+## ChatGPT and graphical clients
 
-### ChatGPT
+Add a custom remote MCP server, enter the URL above and select OAuth. Complete
+sign-in in your browser. Custom-server availability depends on your client and
+workspace settings. Follow your client's current setup instructions.
 
-In ChatGPT's custom MCP connection interface, enter the account URL and choose
-OAuth. Complete the Hidden Jobs sign-in and connection approval. Labels and custom-server availability depend on
-your account and workspace. See [official connection guidance](https://developers.openai.com/api/docs/mcp).
-
-### Other AI clients
-
-Use the same URL with a client that supports remote HTTP MCP and OAuth. Follow
-its current remote-server setup instructions; a remote connector may use a
-different configuration from local servers.
-
-For clients supporting JSON URL entries, the starting configuration is:
+For clients supporting JSON URL entries:
 
 ```json
 {
@@ -37,41 +25,50 @@ For clients supporting JSON URL entries, the starting configuration is:
 }
 ```
 
-See [generic OAuth example](../examples/oauth-connection.md) and [official Cursor URL configuration](https://prod.cursor.com/help/customization/mcp).
+See [Cursor configuration](https://prod.cursor.com/help/customization/mcp) and
+[ChatGPT connection guidance](https://developers.openai.com/api/docs/mcp).
 
-## API-key alternative
+## Claude Code
 
-For clients supporting URL entries and custom headers, use the separate endpoint
-`https://api.hiddenjobs.dev/mcp` and an API key from the
-[dashboard](https://hiddenjobs.dev/dashboard/api-keys). Example:
-
-```json
-{
-  "mcpServers": {
-    "hidden-jobs-api-key": {
-      "url": "https://api.hiddenjobs.dev/mcp",
-      "headers": { "Authorization": "Bearer hj_live_..." }
-    }
-  }
-}
+```bash
+claude mcp add --transport http hidden-jobs https://hiddenjobs.dev/mcp
+claude mcp login hidden-jobs
 ```
 
-See [API-key example](../examples/api-key-client.json). Use a client secret store
-or a local untracked configuration for actual keys. `jobs:read` covers search
-and detail; `application-links:read` plus the key owner's Access covers links.
-These are API-key scopes, not OAuth scopes.
+Complete sign-in and approve access in your browser. If your Claude Code version
+does not provide `mcp login`, start `claude`, enter `/mcp` and authenticate
+Hidden Jobs there. Check the server with `claude mcp get hidden-jobs`.
+See [Claude Code documentation](https://code.claude.com/docs/en/mcp).
+
+## Codex CLI
+
+```bash
+codex mcp add hidden-jobs --url https://hiddenjobs.dev/mcp
+codex mcp login hidden-jobs
+```
+
+Complete sign-in and approve access in your browser. Start `codex` and use `/mcp`
+to view available servers. See [Codex documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+
+## Try a search
+
+“Find remote TypeScript jobs in Europe, compare three offers and show the
+application link for the best match.”
+
+Your client can search and read job details after connecting. Retrieving an
+application link requires active Hidden Jobs Access for your account. Client
+registration and sign-in support vary by version; use a current client with
+HTTPS or HTTP loopback callbacks.
 
 ## Troubleshooting
 
 | Symptom | Action |
 | --- | --- |
-| OAuth discovery fails | Use `https://hiddenjobs.dev/mcp`, not the API-key endpoint |
-| Consent or authorization expired | Restart linking from the AI client |
-| OAuth `401` | Reconnect your account; do not paste an API key into OAuth |
-| Application-link `402` | Check Access for the connected account |
-| API-key `403` | Check key scopes and whether the key is paused |
-| `429` | Wait; OAuth account limits and API-key quotas are separate |
+| Connection discovery fails | Check the server URL and your client's remote MCP support |
+| Sign-in or approval expired | Restart the connection from your client |
+| `401` | Reconnect your Hidden Jobs account |
+| Application-link `402` | Check your account's Access subscription |
+| `429` | Wait before retrying; limit is 600 tool calls/minute/account |
 
-Reconnect a connection that has expired or stopped working. Agents should
-search, inspect details and request the application link when asked to apply.
-Never reveal credentials in responses, logs or generated files.
+Keep credentials out of prompts, logs and source control. Account access from
+a terminal and a graphical client follows the same connection process.

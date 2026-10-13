@@ -10,8 +10,6 @@ Hosted endpoint:
 https://hiddenjobs.dev/mcp
 ```
 
-API-key alternative: `https://api.hiddenjobs.dev/mcp`. The JSON-RPC tool names and arguments are shared; authentication and quotas are separate.
-
 Required request headers:
 
 ```http
@@ -21,7 +19,7 @@ Authorization: Bearer <oauth-access-token>
 ```
 
 For account connections, your MCP client manages sign-in and supplies the access
-token. For API-key connections, use the key's bearer header. Initialization and
+token. Initialization and
 tool discovery are available without signing in; tool calls require access.
 
 ## Connection discovery
@@ -35,8 +33,7 @@ https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp
 
 Authentication failures return HTTP `401` with a `WWW-Authenticate` challenge
 pointing to these settings. Follow the advertised endpoints instead of hardcoding
-them. The account connection's identity scope is `email`; API-key scope names
-apply only to API-key connections.
+them. The connection's identity scope is `email`.
 
 ## Initialize
 

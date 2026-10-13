@@ -1,104 +1,73 @@
 # Job Search MCP
 
-Connect your AI client to Hidden Jobs to search remote technology jobs, inspect
-full descriptions, compare roles and retrieve application links when your
-account's Access subscription permits.
+Search remote technology jobs, read full descriptions, compare roles and retrieve
+application links from your AI client.
 
-## Connect with your account
+## Connect Hidden Jobs
 
 | Setting | Value |
 | --- | --- |
 | Remote MCP URL | `https://hiddenjobs.dev/mcp` |
 | Authentication | OAuth |
-| Sign-in | Your existing Hidden Jobs account |
-| API key | Not needed |
+| Account | Your existing Hidden Jobs account |
 
-1. Add a custom remote MCP server in your OAuth-capable AI client.
-2. Enter the URL above and choose OAuth.
-3. Sign in to Hidden Jobs and approve access.
-4. Try: **“Find remote TypeScript jobs in Europe and summarize three matches.”**
+Add the remote server to your AI client, sign in to Hidden Jobs and approve the
+connection. For example: **“Find remote TypeScript jobs in Europe and summarize
+three matches.”** See [client configuration](docs/client-configuration.md) for
+ChatGPT, graphical clients and terminal setup.
 
-Connect using your existing Hidden Jobs account. No API key is needed for this
-connection. Use a client that supports remote HTTP MCP and OAuth, such as
-ChatGPT or another compatible AI client. Availability depends on your client's
-account and workspace settings. See [client configuration](docs/client-configuration.md).
+[Browse jobs](https://hiddenjobs.dev/) · [Live MCP documentation](https://hiddenjobs.dev/mcp/docs)
 
-[Browse jobs](https://hiddenjobs.dev/) · [Live MCP docs](https://hiddenjobs.dev/mcp/docs) · [REST API docs](https://hiddenjobs.dev/api/docs)
+## Terminal setup
 
-## Tools and access
+**Claude Code**
 
-| Tool | Account OAuth | API-key alternative |
+```bash
+claude mcp add --transport http hidden-jobs https://hiddenjobs.dev/mcp
+claude mcp login hidden-jobs
+```
+
+**Codex CLI**
+
+```bash
+codex mcp add hidden-jobs --url https://hiddenjobs.dev/mcp
+codex mcp login hidden-jobs
+```
+
+Complete sign-in and approval in your browser, then return to the terminal.
+See [client configuration](docs/client-configuration.md) for version support
+and verification commands.
+
+## Tools
+
+| Tool | Purpose | Access |
 | --- | --- | --- |
-| `search_jobs` | Valid connected account | `jobs:read` |
-| `get_job` | Valid connected account | `jobs:read` |
-| `open_application_link` | Valid connected account + active Access subscription | `application-links:read` + active Access for the key owner |
+| `search_jobs` | Search by keywords and filters | Connected account |
+| `get_job` | Read a role's details and full description | Connected account |
+| `open_application_link` | Retrieve the original application URL | Connected account with active Access |
 
-Search and detail results omit original application URLs. Ask for
-`open_application_link` when you want to apply; complete the application on the
-employer's website. Subscription state is checked at request time.
-
-Account connections allow up to 600 tool calls per minute, shared across your
-connected clients. API-key connections use their configured limits.
-See [tool reference](docs/tool-reference.md).
-
-## How it works
+Search and detail results do not include original application URLs. Use
+`open_application_link` when you want to apply, then complete your application
+on the employer's website. Access is checked at request time. The limit is
+600 tool calls per minute per account across connected clients.
 
 ```mermaid
 flowchart LR
-    Client[AI client] --> Connect[Connect your Hidden Jobs account]
+    Client[AI client] --> Connect[Connect Hidden Jobs]
     Connect --> Search[Search jobs]
     Search --> Details[Read and compare roles]
     Details --> Link[Get application link with active Access]
 ```
 
-## API-key alternative
+## Documentation
 
-Clients that use bearer keys can continue to use `https://api.hiddenjobs.dev/mcp`.
-Create a key in the [API keys dashboard](https://hiddenjobs.dev/dashboard/api-keys)
-and configure it in the client's secret store. REST authentication is unchanged.
-See [API-key configuration](docs/client-configuration.md#api-key-alternative).
-
-The included server source provides the API-key connection. To use account
-sign-in, connect to the hosted endpoint above. See [development](docs/deployment.md)
-for running the included server locally.
-
-```json
-{
-  "mcpServers": {
-    "hidden-jobs-api-key": {
-      "url": "https://api.hiddenjobs.dev/mcp",
-      "headers": { "Authorization": "Bearer hj_live_..." }
-    }
-  }
-}
-```
-
-This fallback example is for clients supporting URL entries and custom headers.
-Never commit a real credential or include it in a prompt.
-
-## Development checks (API-key adapter)
-
-```bash
-deno task fmt
-deno task check
-```
-
-The included `deno task smoke` checks the API-key adapter and requires
-`HIDDEN_JOBS_API_KEY`. It does not implement an OAuth login or validate the full
-hosted account flow. See [deployment](docs/deployment.md) for local setup.
-The sample shell request in [examples/generic-jsonrpc.sh](examples/generic-jsonrpc.sh)
-also targets the API-key alternative.
-
-## Help and security
-
-- [Client configuration and reconnection](docs/client-configuration.md)
+- [Client configuration](docs/client-configuration.md)
+- [Tool reference](docs/tool-reference.md)
 - [Protocol reference](docs/protocol.md)
-- [Tool reference and errors](docs/tool-reference.md)
-- [Security policy](SECURITY.md)
-- [Direct REST API](https://github.com/hiddenjobs/job-search-api)
-
-If a connection stops working, reconnect it from your AI client. Keep credentials
-out of prompts, logs and source control.
+- [How it works](docs/architecture.md)
+- [Connection verification](docs/deployment.md)
+- [Security](SECURITY.md)
+- [Contributing](CONTRIBUTING.md)
 
 ## License
 
