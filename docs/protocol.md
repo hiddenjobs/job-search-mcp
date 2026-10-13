@@ -10,7 +10,7 @@ Hosted endpoint:
 https://hiddenjobs.dev/mcp
 ```
 
-Required request headers:
+Headers for authenticated tool calls:
 
 ```http
 Accept: application/json, text/event-stream
@@ -115,6 +115,8 @@ Tool failures return `isError: true`. The readable message is in `content[0].tex
 Messages whose method starts with `notifications/` receive HTTP `202` with no response body. Invalid JSON-RPC requests receive a JSON-RPC error object with the standard `-32600` code. Unknown methods receive `-32601`. Missing tool names receive `-32602`.
 
 ## Direct cURL check
+
+Requires cURL installed in your terminal.
 
 The following checks tool discovery on the OAuth endpoint without credentials. For authenticated tool calls, use an OAuth-capable client to complete login; this command does not perform OAuth:
 

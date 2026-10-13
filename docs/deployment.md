@@ -21,6 +21,8 @@ with active Hidden Jobs Access and request `open_application_link` for that role
 
 ## Check tool discovery
 
+Requires cURL 7.76 or later.
+
 ```bash
 curl --fail-with-body --silent --show-error \
   --request POST https://hiddenjobs.dev/mcp \

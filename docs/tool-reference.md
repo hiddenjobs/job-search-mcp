@@ -16,7 +16,7 @@ Searches public remote job offers.
 | `category` | string | No | Job category |
 | `employmentType` | string | No | Employment type |
 | `jobType` | string | No | Job type |
-| `remoteLocation` | string | No | For example `Worldwide`, `US`, `Europe`, `Spain`, or `Germany` |
+| `remoteLocation` | string | No | For example `Worldwide`, `US`, `EUROPE`, `ES`, or `DE` |
 | `page` | integer | No | Starts at `1`, defaults to `1` |
 | `limit` | integer | No | From `1` to `50`, defaults to `10` |
 
@@ -31,14 +31,17 @@ Example call:
     "name": "search_jobs",
     "arguments": {
       "query": "typescript",
-      "remoteLocation": "Europe",
+      "remoteLocation": "EUROPE",
       "limit": 3
     }
   }
 }
 ```
 
-The result contains public job data and pagination:
+Location values are case-sensitive. `EUROPE` includes worldwide offers and offers
+with matching regional eligibility. Use `ES` for Spain and `DE` for Germany.
+
+The following response is illustrative; actual jobs and counts vary:
 
 ```json
 {
@@ -78,7 +81,8 @@ Loads the public details and full description for one offer.
 | --- | --- | --- | --- |
 | `idOrSlug` | string | Yes | The UUID or slug returned by `search_jobs` |
 
-Example call:
+Replace the illustrative `idOrSlug` below with an actual `id` or `slug` from
+`search_jobs` before calling the tool:
 
 ```json
 {
@@ -106,7 +110,8 @@ Returns the original application URL for one offer.
 | --- | --- | --- | --- |
 | `idOrSlug` | string | Yes | The UUID or slug returned by `search_jobs` |
 
-Example call:
+Use the actual `id` or `slug` returned by `search_jobs` in place of the
+illustrative identifier below:
 
 ```json
 {

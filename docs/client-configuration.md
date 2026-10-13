@@ -30,6 +30,9 @@ See [Cursor configuration](https://prod.cursor.com/help/customization/mcp) and
 
 ## Claude Code
 
+Install a current Claude Code CLI and run these commands in an interactive
+terminal from your project directory.
+
 ```bash
 claude mcp add --transport http hidden-jobs https://hiddenjobs.dev/mcp
 claude mcp login hidden-jobs
@@ -41,6 +44,8 @@ Hidden Jobs there. Check the server with `claude mcp get hidden-jobs`.
 See [Claude Code documentation](https://code.claude.com/docs/en/mcp).
 
 ## Codex CLI
+
+Install a current Codex CLI and run these commands in an interactive terminal.
 
 ```bash
 codex mcp add hidden-jobs --url https://hiddenjobs.dev/mcp
