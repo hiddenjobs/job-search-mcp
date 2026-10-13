@@ -6,16 +6,15 @@ URL: https://hiddenjobs.dev/mcp
 Authentication: OAuth
 ```
 
-Use a client that supports remote HTTP MCP and OAuth. Add the server, sign in with your Hidden Jobs
-account and approve the connection.
+Add Hidden Jobs to your AI assistant, sign in with your Hidden Jobs account and approve the
+connection.
 
 ## ChatGPT and graphical clients
 
 Add a custom remote MCP server, enter the URL above and select OAuth. Complete sign-in in your
-browser. Custom-server availability depends on your client and workspace settings. Follow your
-client's current setup instructions.
+browser.
 
-For clients supporting JSON URL entries:
+For Cursor, add this configuration to `.cursor/mcp.json`:
 
 ```json
 {
@@ -60,14 +59,13 @@ servers. See [Codex documentation](https://learn.chatgpt.com/docs/extend/mcp?sur
 best match.”
 
 Your client can search and read job details after connecting. Retrieving an application link
-requires active Hidden Jobs Access for your account. Client registration and sign-in support vary by
-version; use a current client with HTTPS or HTTP loopback callbacks.
+requires active Hidden Jobs Access for your account.
 
 ## Troubleshooting
 
 | Symptom                     | Action                                                       |
 | --------------------------- | ------------------------------------------------------------ |
-| Connection discovery fails  | Check the server URL and your client's remote MCP support    |
+| Connection discovery fails  | Check the server URL and reconnect Hidden Jobs               |
 | Sign-in or approval expired | Restart the connection from your client                      |
 | `401`                       | Reconnect your Hidden Jobs account                           |
 | Application-link `402`      | Check your account's Access subscription                     |

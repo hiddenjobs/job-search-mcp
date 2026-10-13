@@ -23,8 +23,8 @@ Initialization and tool discovery are available without signing in; tool calls r
 
 ## Connection discovery
 
-OAuth-capable clients discover connection settings automatically. Custom clients can read the
-resource metadata at:
+Your MCP client discovers connection settings automatically. Custom clients can read the resource
+metadata at:
 
 ```text
 https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp
@@ -122,7 +122,7 @@ receive `-32601`. Missing tool names receive `-32602`.
 Requires cURL installed in your terminal.
 
 The following checks tool discovery on the OAuth endpoint without credentials. For authenticated
-tool calls, use an OAuth-capable client to complete login; this command does not perform OAuth:
+tool calls, complete login in your MCP client; this command does not perform OAuth:
 
 ```bash
 curl -X POST https://hiddenjobs.dev/mcp \
