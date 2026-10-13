@@ -6,14 +6,14 @@ URL: https://hiddenjobs.dev/mcp
 Authentication: OAuth
 ```
 
-Use a client that supports remote HTTP MCP and OAuth. Add the server, sign in with
-your Hidden Jobs account and approve the connection.
+Use a client that supports remote HTTP MCP and OAuth. Add the server, sign in with your Hidden Jobs
+account and approve the connection.
 
 ## ChatGPT and graphical clients
 
-Add a custom remote MCP server, enter the URL above and select OAuth. Complete
-sign-in in your browser. Custom-server availability depends on your client and
-workspace settings. Follow your client's current setup instructions.
+Add a custom remote MCP server, enter the URL above and select OAuth. Complete sign-in in your
+browser. Custom-server availability depends on your client and workspace settings. Follow your
+client's current setup instructions.
 
 For clients supporting JSON URL entries:
 
@@ -30,18 +30,17 @@ See [Cursor configuration](https://prod.cursor.com/help/customization/mcp) and
 
 ## Claude Code
 
-Install a current Claude Code CLI and run these commands in an interactive
-terminal from your project directory.
+Install a current Claude Code CLI and run these commands in an interactive terminal from your
+project directory.
 
 ```bash
 claude mcp add --transport http hidden-jobs https://hiddenjobs.dev/mcp
 claude mcp login hidden-jobs
 ```
 
-Complete sign-in and approve access in your browser. If your Claude Code version
-does not provide `mcp login`, start `claude`, enter `/mcp` and authenticate
-Hidden Jobs there. Check the server with `claude mcp get hidden-jobs`.
-See [Claude Code documentation](https://code.claude.com/docs/en/mcp).
+Complete sign-in and approve access in your browser. If your Claude Code version does not provide
+`mcp login`, start `claude`, enter `/mcp` and authenticate Hidden Jobs there. Check the server with
+`claude mcp get hidden-jobs`. See [Claude Code documentation](https://code.claude.com/docs/en/mcp).
 
 ## Codex CLI
 
@@ -52,28 +51,27 @@ codex mcp add hidden-jobs --url https://hiddenjobs.dev/mcp
 codex mcp login hidden-jobs
 ```
 
-Complete sign-in and approve access in your browser. Start `codex` and use `/mcp`
-to view available servers. See [Codex documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+Complete sign-in and approve access in your browser. Start `codex` and use `/mcp` to view available
+servers. See [Codex documentation](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
 ## Try a search
 
-“Find remote TypeScript jobs in Europe, compare three offers and show the
-application link for the best match.”
+“Find remote TypeScript jobs in Europe, compare three offers and show the application link for the
+best match.”
 
-Your client can search and read job details after connecting. Retrieving an
-application link requires active Hidden Jobs Access for your account. Client
-registration and sign-in support vary by version; use a current client with
-HTTPS or HTTP loopback callbacks.
+Your client can search and read job details after connecting. Retrieving an application link
+requires active Hidden Jobs Access for your account. Client registration and sign-in support vary by
+version; use a current client with HTTPS or HTTP loopback callbacks.
 
 ## Troubleshooting
 
-| Symptom | Action |
-| --- | --- |
-| Connection discovery fails | Check the server URL and your client's remote MCP support |
-| Sign-in or approval expired | Restart the connection from your client |
-| `401` | Reconnect your Hidden Jobs account |
-| Application-link `402` | Check your account's Access subscription |
-| `429` | Wait before retrying; limit is 600 tool calls/minute/account |
+| Symptom                     | Action                                                       |
+| --------------------------- | ------------------------------------------------------------ |
+| Connection discovery fails  | Check the server URL and your client's remote MCP support    |
+| Sign-in or approval expired | Restart the connection from your client                      |
+| `401`                       | Reconnect your Hidden Jobs account                           |
+| Application-link `402`      | Check your account's Access subscription                     |
+| `429`                       | Wait before retrying; limit is 600 tool calls/minute/account |
 
-Keep credentials out of prompts, logs and source control. Account access from
-a terminal and a graphical client follows the same connection process.
+Keep credentials out of prompts, logs and source control. Account access from a terminal and a
+graphical client follows the same connection process.
