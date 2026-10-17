@@ -4,7 +4,7 @@ Search remote technology jobs, read full descriptions, compare roles and retriev
 from your AI client.
 
 <p align="center">
-  <img src="docs/remote-jobs-mcp-flow.png" alt="Hidden Jobs MCP: connect your account with OAuth, search and read jobs, then retrieve application links with active Access" width="100%">
+  <img src="docs/remote-jobs-mcp-flow.png" alt="ChatGPT, Claude and Grok connect to Hidden Jobs through MCP" width="100%">
 </p>
 
 ## Connect Hidden Jobs
