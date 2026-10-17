@@ -1,9 +1,10 @@
 {
   "tasks": {
-    "start": "deno run --allow-env --allow-net supabase/functions/hidden-jobs-mcp/index.ts",
-    "check": "deno check supabase/functions/hidden-jobs-mcp/index.ts scripts/smoke-test.ts",
-    "fmt": "deno fmt --check supabase/functions/hidden-jobs-mcp/index.ts supabase/functions/_shared/cors.ts scripts/smoke-test.ts",
-    "smoke": "deno run --allow-env --allow-net scripts/smoke-test.ts"
+    "start": "deno run --env-file=.env --allow-env --allow-net scripts/serve.ts",
+    "check": "deno check src/*.ts scripts/*.ts tests/*.ts supabase/functions/hidden-jobs-mcp/index.ts",
+    "fmt": "deno fmt --check src scripts tests deno.json docs/deployment.md docs/backend-contract.md CONTRIBUTING.md supabase/functions/hidden-jobs-mcp/index.ts",
+    "test": "deno test --allow-env tests/",
+    "smoke": "deno run --allow-env --allow-net --allow-read scripts/smoke-test.ts"
   },
   "fmt": {
     "lineWidth": 100,

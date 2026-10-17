@@ -20,4 +20,4 @@ the application link for your preferred role. An active Access subscription is
 required for that final step.
 
 See [client configuration](client-configuration.md), [tool reference](tool-reference.md)
-and [connection verification](deployment.md).
+and [server development](deployment.md).

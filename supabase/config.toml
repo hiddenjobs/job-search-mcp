@@ -1,4 +1,3 @@
-# The MCP endpoint authenticates job-search API bearer tokens itself.
-# Supabase JWT verification must therefore be disabled for this function.
+# OAuth access tokens are verified by the MCP resource server.
 [functions.hidden-jobs-mcp]
 verify_jwt = false

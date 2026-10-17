@@ -26,3 +26,6 @@ jobs:
 
       - name: Type check
         run: deno task check
+
+      - name: Test OAuth and MCP behavior
+        run: deno task test
