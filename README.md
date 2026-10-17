@@ -4,7 +4,7 @@ Search remote technology jobs, read full descriptions, compare roles and retriev
 from your AI client.
 
 <p align="center">
-  <img src="docs/remote-jobs-mcp-flow.png" alt="ChatGPT, Claude and Grok connect to Hidden Jobs through MCP" width="100%">
+  <img src="docs/hidden-jobs-mcp-connection.png" alt="ChatGPT, Claude and Grok connect to Hidden Jobs through MCP" width="100%">
 </p>
 
 ## Connect Hidden Jobs
