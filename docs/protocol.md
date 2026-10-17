@@ -106,10 +106,10 @@ The result contains `search_jobs`, `get_job`, and `open_application_link` with t
 ```
 
 Successful calls return a JSON-RPC result with `isError: false`, a text content item containing the
-JSON API payload, and the same payload in `structuredContent`.
+JSON payload, and the same payload in `structuredContent`.
 
-Tool failures return `isError: true`. The readable message is in `content[0].text`. When the failure
-comes from the REST API, `structuredContent` includes the API error code and HTTP status.
+Tool failures return `isError: true`. The readable message is in `content[0].text`. `structuredContent` includes an error code and status. Except for authentication challenges,
+tool errors are carried in an HTTP `200` JSON-RPC result; inspect `isError` and the embedded status.
 
 ## Notifications and errors
 

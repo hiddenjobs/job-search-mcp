@@ -67,7 +67,7 @@ flowchart LR
 - [Tool reference](docs/tool-reference.md)
 - [Protocol reference](docs/protocol.md)
 - [How it works](docs/architecture.md)
-- [Connection verification](docs/deployment.md)
+- [Server development](docs/deployment.md)
 - [Security](SECURITY.md)
 - [Contributing](CONTRIBUTING.md)
 

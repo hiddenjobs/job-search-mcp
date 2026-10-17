@@ -151,6 +151,12 @@ Without active Access, the tool result is marked `isError: true` with subscripti
 | ------ | ----------------------- | --------------------------------------------------------- |
 | `400`  | `invalid_arguments`     | A required tool argument is missing                       |
 | `401`  | Authentication required | Reconnect your account                                    |
+| `403`  | `scope`                 | Reconnect and approve the requested access                |
 | `402`  | `subscription_required` | An active subscription is needed for the original URL     |
+| `404`  | `not_found`             | The offer is no longer available                          |
+| `500`  | `backend_error`         | Job retrieval failed                                      |
 | `429`  | Rate limit              | 600 tool calls/minute/account; wait before retrying       |
 | `503`  | `backend_error`         | The API authentication backend is temporarily unavailable |
+
+Statuses above are carried in `structuredContent.status`. Authentication challenges also use HTTP
+`401` or `403`; other tool failures are HTTP `200` results with `isError: true`.
