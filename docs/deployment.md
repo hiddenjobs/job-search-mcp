@@ -1,81 +1,35 @@
-# Deployment
+# Connection verification
 
-There are two supported ways to use Remote Jobs MCP.
+Add `https://hiddenjobs.dev/mcp` to your MCP client and complete account sign-in. No server
+deployment is required to use the hosted service.
 
-## Use the hosted endpoint
-
-This is the recommended path for client integrations:
-
-```text
-https://api.hiddenjobs.dev/mcp
-```
-
-Create an access key from the [developer dashboard](https://hiddenjobs.dev/dashboard), configure it in the MCP client, and no server deployment is required.
-
-The live [API reference](https://api.hiddenjobs.dev/openapi.json) documents the upstream REST resources used by this adapter.
-
-## Deploy your own Supabase Edge Function
-
-This repository contains a self-contained Supabase Edge Function and the minimal project configuration required to deploy it.
-
-### Prerequisites
-
-- Supabase CLI installed and authenticated
-- A Supabase project
-- An access key for requests from the client
-- Access to the job-search REST API
-
-### Configure the project
-
-Link the local directory to your Supabase project:
+## Check your terminal client
 
 ```bash
-supabase login
-supabase link --project-ref <your-project-ref>
+claude mcp get hidden-jobs
 ```
 
-The function reads these environment variables:
-
-| Variable | Required | Description |
-| --- | --- | --- |
-| `HIDDEN_JOBS_API_URL` | Recommended | REST API base URL, for example `https://api.hiddenjobs.dev/v1` |
-| `SUPABASE_URL` | Runtime | Supabase injects this when the function runs |
-| `SUPABASE_ANON_KEY` | Optional | Forwarded as the upstream `apikey` header when set |
-
-When `HIDDEN_JOBS_API_URL` is absent, the function falls back to `${SUPABASE_URL}/functions/v1/api-v1`. Set the explicit URL when the API is hosted elsewhere.
-
-### Deploy the function
+Or, with Codex:
 
 ```bash
-supabase functions deploy hidden-jobs-mcp --no-verify-jwt
-supabase secrets set HIDDEN_JOBS_API_URL=https://api.hiddenjobs.dev/v1
+codex mcp list
 ```
 
-The `--no-verify-jwt` flag is intentional. This function authenticates the job-search API bearer token itself. Requiring a Supabase Auth JWT at the gateway would reject valid MCP clients before the function can forward their bearer token.
+Start your client and ask: “Search Hidden Jobs for remote backend roles in Europe.” Then inspect a
+result with `get_job`. To test an application link, use an account with active Hidden Jobs Access
+and request `open_application_link` for that role.
 
-The resulting URL is:
+## Check tool discovery
 
-```text
-https://<your-project-ref>.supabase.co/functions/v1/hidden-jobs-mcp
-```
-
-Use that URL in the client instead of the hosted URL.
-
-### Local development
-
-Run the function with Deno:
+Requires cURL 7.76 or later.
 
 ```bash
-HIDDEN_JOBS_API_URL=https://api.hiddenjobs.dev/v1 SUPABASE_ANON_KEY=<supabase-anon-key> deno task start
+curl --fail-with-body --silent --show-error \
+  --request POST https://hiddenjobs.dev/mcp \
+  --header 'Content-Type: application/json' \
+  --header 'Accept: application/json, text/event-stream' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```
 
-The local server uses Deno's default HTTP port. Set `HIDDEN_JOBS_MCP_URL` to the actual local URL when running the smoke test.
-
-### Deployment checklist
-
-- Confirm `verify_jwt = false` for the MCP function
-- Set `HIDDEN_JOBS_API_URL` to a trusted HTTPS API origin
-- Never set a service-role key in an MCP client
-- Keep API keys out of the repository and CI logs
-- Test `initialize`, `tools/list`, and an authenticated `search_jobs` call
-- Test the subscription-required path for `open_application_link`
+This checks discovery. Complete account sign-in in your client before calling tools. See
+[client configuration](client-configuration.md) for connection help.

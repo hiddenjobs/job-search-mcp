@@ -7,18 +7,32 @@ Remote Jobs MCP uses JSON-RPC 2.0 over HTTP `POST`.
 Hosted endpoint:
 
 ```text
-https://api.hiddenjobs.dev/mcp
+https://hiddenjobs.dev/mcp
 ```
 
-Required request headers:
+Headers for authenticated tool calls:
 
 ```http
 Accept: application/json, text/event-stream
 Content-Type: application/json
-Authorization: Bearer hj_live_...
+Authorization: Bearer <oauth-access-token>
 ```
 
-The authorization header is required for tool calls. The handshake methods are available without authentication so clients can discover the server, but data tools still enforce API key access through the underlying REST API.
+For account connections, your MCP client manages sign-in and supplies the access token.
+Initialization and tool discovery are available without signing in; tool calls require access.
+
+## Connection discovery
+
+Your MCP client discovers connection settings automatically. Custom clients can read the resource
+metadata at:
+
+```text
+https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp
+```
+
+Authentication failures return HTTP `401` with a `WWW-Authenticate` challenge pointing to these
+settings. Follow the advertised endpoints instead of hardcoding them. The connection's identity
+scope is `email`.
 
 ## Initialize
 
@@ -54,8 +68,8 @@ Response:
       }
     },
     "serverInfo": {
-      "name": "remote-jobs-mcp",
-      "version": "1.0.0"
+      "name": "hidden-jobs-mcp-oauth",
+      "version": "2.0.0"
     }
   }
 }
@@ -91,22 +105,28 @@ The result contains `search_jobs`, `get_job`, and `open_application_link` with t
 }
 ```
 
-Successful calls return a JSON-RPC result with `isError: false`, a text content item containing the JSON API payload, and the same payload in `structuredContent`.
+Successful calls return a JSON-RPC result with `isError: false`, a text content item containing the
+JSON API payload, and the same payload in `structuredContent`.
 
-Tool failures return `isError: true`. The readable message is in `content[0].text`. When the failure comes from the REST API, `structuredContent` includes the API error code and HTTP status.
+Tool failures return `isError: true`. The readable message is in `content[0].text`. When the failure
+comes from the REST API, `structuredContent` includes the API error code and HTTP status.
 
 ## Notifications and errors
 
-Messages whose method starts with `notifications/` receive HTTP `202` with no response body. Invalid JSON-RPC requests receive a JSON-RPC error object with the standard `-32600` code. Unknown methods receive `-32601`. Missing tool names receive `-32602`.
+Messages whose method starts with `notifications/` receive HTTP `202` with no response body. Invalid
+JSON-RPC requests receive a JSON-RPC error object with the standard `-32600` code. Unknown methods
+receive `-32601`. Missing tool names receive `-32602`.
 
 ## Direct cURL check
 
-The following uses an environment variable so the key does not appear in shell history or source code:
+Requires cURL installed in your terminal.
+
+The following checks tool discovery on the OAuth endpoint without credentials. For authenticated
+tool calls, complete login in your MCP client; this command does not perform OAuth:
 
 ```bash
-curl -X POST https://api.hiddenjobs.dev/mcp \
+curl -X POST https://hiddenjobs.dev/mcp \
   -H "Accept: application/json, text/event-stream" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer ${HIDDEN_JOBS_API_KEY}" \
   --data '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
 ```

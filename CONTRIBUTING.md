@@ -22,4 +22,4 @@ Include:
 - How it was tested
 - Any compatibility or deployment notes
 
-Never include live API keys, Supabase credentials, application URLs obtained from a private request, or customer data in a pull request.
+Never include credentials, private application URLs or customer data in a pull request.

@@ -1,6 +1,7 @@
 # Remote job search tool reference
 
-The MCP server exposes three tools through `tools/call`.
+The MCP exposes three tools through `tools/call`. Connect your Hidden Jobs account, search
+TypeScript jobs, then retrieve one application's link if your Access subscription is active.
 
 ## `search_jobs`
 
@@ -8,15 +9,15 @@ Searches public remote job offers.
 
 ### Arguments
 
-| Argument | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `query` | string | No | Keywords, role, skills, or company |
-| `category` | string | No | Job category |
-| `employmentType` | string | No | Employment type |
-| `jobType` | string | No | Job type |
-| `remoteLocation` | string | No | For example `Worldwide`, `US`, `Europe`, `Spain`, or `Germany` |
-| `page` | integer | No | Starts at `1`, defaults to `1` |
-| `limit` | integer | No | From `1` to `50`, defaults to `10` |
+| Argument         | Type    | Required | Notes                                                  |
+| ---------------- | ------- | -------- | ------------------------------------------------------ |
+| `query`          | string  | No       | Keywords, role, skills, or company                     |
+| `category`       | string  | No       | Job category                                           |
+| `employmentType` | string  | No       | Employment type                                        |
+| `jobType`        | string  | No       | Job type                                               |
+| `remoteLocation` | string  | No       | For example `Worldwide`, `US`, `EUROPE`, `ES`, or `DE` |
+| `page`           | integer | No       | Starts at `1`, defaults to `1`                         |
+| `limit`          | integer | No       | From `1` to `50`, defaults to `10`                     |
 
 Example call:
 
@@ -29,14 +30,17 @@ Example call:
     "name": "search_jobs",
     "arguments": {
       "query": "typescript",
-      "remoteLocation": "Europe",
+      "remoteLocation": "EUROPE",
       "limit": 3
     }
   }
 }
 ```
 
-The result contains public job data and pagination:
+Location values are case-sensitive. `EUROPE` includes worldwide offers and offers with matching
+regional eligibility. Use `ES` for Spain and `DE` for Germany.
+
+The following response is illustrative; actual jobs and counts vary:
 
 ```json
 {
@@ -72,11 +76,12 @@ Loads the public details and full description for one offer.
 
 ### Arguments
 
-| Argument | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `idOrSlug` | string | Yes | The UUID or slug returned by `search_jobs` |
+| Argument   | Type   | Required | Notes                                      |
+| ---------- | ------ | -------- | ------------------------------------------ |
+| `idOrSlug` | string | Yes      | The UUID or slug returned by `search_jobs` |
 
-Example call:
+Replace the illustrative `idOrSlug` below with an actual `id` or `slug` from `search_jobs` before
+calling the tool:
 
 ```json
 {
@@ -92,7 +97,8 @@ Example call:
 }
 ```
 
-The response uses the same public job fields as the REST API and includes the full description. It does not include `url`, `application_url`, or `source_url`.
+The response uses the same public job fields as the REST API and includes the full description. It
+does not include `url`, `application_url`, or `source_url`.
 
 ## `open_application_link`
 
@@ -100,11 +106,12 @@ Returns the original application URL for one offer.
 
 ### Arguments
 
-| Argument | Type | Required | Notes |
-| --- | --- | --- | --- |
-| `idOrSlug` | string | Yes | The UUID or slug returned by `search_jobs` |
+| Argument   | Type   | Required | Notes                                      |
+| ---------- | ------ | -------- | ------------------------------------------ |
+| `idOrSlug` | string | Yes      | The UUID or slug returned by `search_jobs` |
 
-Example call:
+Use the actual `id` or `slug` returned by `search_jobs` in place of the illustrative identifier
+below:
 
 ```json
 {
@@ -122,8 +129,8 @@ Example call:
 
 This tool requires:
 
-- The `application-links:read` scope
-- An active access subscription for the API key owner
+- A connected Hidden Jobs account
+- An active Access subscription
 
 On success, the tool result contains:
 
@@ -135,15 +142,15 @@ On success, the tool result contains:
 }
 ```
 
-Without an active subscription, the REST API returns HTTP `402` with `subscription_required`. The MCP result is marked `isError: true` and includes the same status in `structuredContent`.
+Without active Access, the tool result is marked `isError: true` with subscription-required status
+`402` in `structuredContent`. Check the connected account’s Access subscription.
 
 ## Access errors
 
-| Status | Code | Meaning |
-| --- | --- | --- |
-| `400` | `invalid_arguments` | A required tool argument is missing |
-| `401` | `missing`, `invalid`, `revoked`, or `expired` | The bearer key is not usable |
-| `402` | `subscription_required` | An active subscription is needed for the original URL |
-| `403` | `insufficient_scope` or `paused` | The key cannot perform the operation |
-| `429` | `rate_limit` or `monthly_limit` | A configured usage limit was reached |
-| `503` | `backend_error` | The API authentication backend is temporarily unavailable |
+| Status | Code                    | Meaning                                                   |
+| ------ | ----------------------- | --------------------------------------------------------- |
+| `400`  | `invalid_arguments`     | A required tool argument is missing                       |
+| `401`  | Authentication required | Reconnect your account                                    |
+| `402`  | `subscription_required` | An active subscription is needed for the original URL     |
+| `429`  | Rate limit              | 600 tool calls/minute/account; wait before retrying       |
+| `503`  | `backend_error`         | The API authentication backend is temporarily unavailable |

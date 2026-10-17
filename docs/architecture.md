@@ -1,52 +1,23 @@
-# Architecture
-
-Remote Jobs MCP is a protocol adapter. It does not maintain a second job database and it does not implement a second authorization model.
+# How the MCP works
 
 ```mermaid
-flowchart TB
-    subgraph Client[User environment]
-        Agent[MCP-compatible AI client]
-        Secret[Client secret store]
-    end
-
-    subgraph Adapter[Remote Jobs MCP]
-        HTTP[Streamable HTTP endpoint]
-        JSONRPC[JSON-RPC dispatcher]
-        Tools[Tool argument validation]
-    end
-
-    subgraph Platform[Job search platform]
-        REST[Job Search API]
-        Auth[API key scope and rate checks]
-        Jobs[(Public job records)]
-        Billing[(Subscription state)]
-        Source[Original application URL]
-    end
-
-    Secret -->|Bearer token| Agent
-    Agent -->|HTTP POST| HTTP
-    HTTP --> JSONRPC --> Tools
-    Tools -->|Forward bearer token| REST
-    REST --> Auth
-    Auth --> Jobs
-    Auth --> Billing
-    Billing -->|Active subscription| Source
+flowchart LR
+    Client[AI client] --> MCP[Hidden Jobs MCP]
+    MCP --> Search[Search jobs]
+    MCP --> Details[Read job details]
+    MCP --> Access{Active Access subscription?}
+    Access -->|Yes| Link[Original application link]
+    Access -->|No| Upgrade[Subscription required]
 ```
 
-## Trust boundaries
+Connect your Hidden Jobs account once, then use the tools from your AI client.
+The server checks access on every request. Search and job details never include
+the original application URL; retrieve it with `open_application_link` when you
+want to apply.
 
-### MCP client to MCP server
+Example: search for remote TypeScript jobs, compare the descriptions and request
+the application link for your preferred role. An active Access subscription is
+required for that final step.
 
-The client sends a job-search API bearer key. The server does not receive a Supabase Auth session and does not need one.
-
-### MCP server to REST API
-
-The MCP adapter forwards the original `Authorization` header. The REST API remains the authority for key validity, scopes, rate limits, monthly usage, subscription checks, and URL release.
-
-### Public job data to original URLs
-
-`search_jobs` and `get_job` return descriptions and metadata but not the source URL. `open_application_link` is a separate operation with a separate scope and subscription check.
-
-## Failure propagation
-
-REST errors are converted into MCP tool errors. This preserves a readable message while retaining the original HTTP status and API code in `structuredContent` when available.
+See [client configuration](client-configuration.md), [tool reference](tool-reference.md)
+and [connection verification](deployment.md).
