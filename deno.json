@@ -1,0 +1,17 @@
+{
+  "tasks": {
+    "check": "deno check src/index.ts scripts/*.ts tests/*.ts",
+    "fmt": "npm run format:check",
+    "test": "deno test --allow-net=127.0.0.1 tests/",
+    "smoke": "deno run --allow-env --allow-net --allow-read scripts/smoke-test.ts",
+    "skills:check": "deno run --allow-read --allow-write scripts/sync-career-skills.ts --check",
+    "skills:sync": "deno run --allow-read --allow-write scripts/sync-career-skills.ts",
+    "docs:check": "deno run --allow-read=. scripts/check-docs.ts",
+    "lint": "npm run lint",
+    "coverage": "deno test --coverage=coverage --coverage-raw-data-only --clean --allow-net=127.0.0.1 tests/ && deno coverage --include=\"/src/\" --lcov --output=coverage/lcov.info coverage && deno coverage --include=\"/src/\" --html coverage && deno run --allow-read=coverage,src scripts/check-coverage.ts",
+    "fmt:fix": "npm run format"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window", "dom", "dom.iterable", "esnext"]
+  }
+}

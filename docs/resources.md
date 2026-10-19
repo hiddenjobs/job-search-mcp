@@ -1,0 +1,86 @@
+# Resources and prompts
+
+Tools perform operations. Resources supply information and reusable guidance. Prompts load a
+workflow as a user message for the assistant. For example, use the `interview` prompt, read the
+saved application resource, and save interview preparation with `save_document`.
+
+## Resource catalogue
+
+`resources/list` returns 22 shared resources: 15 workflows, four guides and three text templates.
+`resources/templates/list` returns the four private profile/CV/application/document URI patterns.
+Private record IDs come from the relevant list/get tools; they are not enumerated publicly.
+
+| URI                                 | MIME type          | Contents / names                                                                                                                                               |
+| ----------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hiddenjobs://workflows/{name}`     | `application/json` | `alerts`, `setup`, `expand`, `search`, `rank`, `apply`, `review`, `export`, `interview`, `upskill`, `outcome`, `gmail-sync`, `report`, `add-template`, `reset` |
+| `hiddenjobs://guides/{name}`        | `text/plain`       | `job-evaluation`, `document-review`, `interview`, `ats-checks`                                                                                                 |
+| `hiddenjobs://templates/{name}`     | `text/plain`       | `cv`, `cover-letter`, `interview`                                                                                                                              |
+| `hiddenjobs://me/profile`           | `application/json` | Confirmed profile, preferences and default CV                                                                                                                  |
+| `hiddenjobs://me/cvs/{id}`          | `application/json` | CV metadata and a page of immutable versions                                                                                                                   |
+| `hiddenjobs://me/applications/{id}` | `application/json` | Application, offer snapshot, selected CV version and a page of history                                                                                         |
+| `hiddenjobs://me/documents/{id}`    | `application/json` | Saved text and metadata; use `get_document_download_url` for the original file                                                                                 |
+
+Shared instructions and templates contain no private account data. Reading private resources
+requires an active OAuth connection for the owning account, just like the corresponding tools.
+
+## Read a workflow resource
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "resources/read",
+  "params": { "uri": "hiddenjobs://workflows/apply" }
+}
+```
+
+The result contains `contents`, with a JSON text document describing the workflow name, version,
+title and instructions.
+
+## Read your profile
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "resources/read",
+  "params": { "uri": "hiddenjobs://me/profile" }
+}
+```
+
+To read another private record, replace `{id}` with the UUID returned by `list_cvs`,
+`list_applications` or `list_documents`. Private resources return the first page for paginated
+children; use `get_cv` or `get_application` with `page` and `limit` for more versions or history.
+
+## MCP prompts
+
+`prompts/list` returns 15 prompts using the same workflow names as the [skill catalogue](skills.md).
+Prompts take no arguments; include the job, CV choice and your preferences in the conversation.
+
+```json
+{ "jsonrpc": "2.0", "id": 3, "method": "prompts/get", "params": { "name": "interview" } }
+```
+
+The result contains a `messages` array with the workflow instructions as a user message. The
+assistant then calls tools to read the actual application and prepare documents; fetching the prompt
+alone does not perform the workflow.
+
+## Clients without a resource or prompt interface
+
+Ask the assistant to use `get_workflow` instead:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": { "name": "get_workflow", "arguments": { "name": "interview" } }
+}
+```
+
+Use `get_candidate_profile`, `get_cv`, `get_application` and `get_document` to read private data
+through tools. Prompt, resource and skill support varies by client; the workflow and data do not
+require a local filesystem.
+
+The `alerts` workflow manages recurring email searches. Read
+`hiddenjobs://workflows/alerts` or request prompt `alerts`; see [job alerts](job-alerts.md).

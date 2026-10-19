@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.hiddenjobs/job-search-mcp",
+  "title": "Job Search MCP",
+  "description": "Find remote jobs, tailor CVs, prepare interviews and track applications with your AI assistant.",
+  "version": "1.0.1",
+  "repository": {
+    "url": "https://github.com/hiddenjobs/job-search-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://hiddenjobs.dev/mcp/docs",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://hiddenjobs.dev/mcp"
+    }
+  ]
+}

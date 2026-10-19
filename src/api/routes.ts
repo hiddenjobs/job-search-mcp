@@ -1,0 +1,85 @@
+/** Public HTTP contract. Paths are relative to the configured REST API base URL. */
+export interface RestRoute {
+  method: string;
+  path: string;
+  scope: string;
+}
+export const restRoutes: Record<string, RestRoute> = {
+  get_job_alerts: { method: 'GET', path: '/me/alerts', scope: 'alerts:read' },
+  create_job_alert: { method: 'POST', path: '/me/alerts', scope: 'alerts:write' },
+  update_job_alert: { method: 'PATCH', path: '/me/alerts/{alertId}', scope: 'alerts:write' },
+  delete_job_alert: { method: 'DELETE', path: '/me/alerts/{alertId}', scope: 'alerts:delete' },
+  pause_job_alerts: { method: 'POST', path: '/me/alerts/pause', scope: 'alerts:write' },
+  resume_job_alerts: { method: 'POST', path: '/me/alerts/resume', scope: 'alerts:write' },
+  search_jobs: { method: 'GET', path: '/jobs', scope: 'jobs:read' },
+  get_job: { method: 'GET', path: '/jobs/{idOrSlug}', scope: 'jobs:read' },
+  open_application_link: {
+    method: 'POST',
+    path: '/jobs/{idOrSlug}/application-link',
+    scope: 'application-links:read',
+  },
+  get_company: { method: 'GET', path: '/jobs/{idOrSlug}/company', scope: 'jobs:read' },
+  get_workflow: { method: 'GET', path: '/workflows/{name}', scope: 'account:read' },
+  get_candidate_profile: { method: 'GET', path: '/me/profile', scope: 'career:read' },
+  save_candidate_profile: { method: 'PUT', path: '/me/profile', scope: 'career:write' },
+  list_cvs: { method: 'GET', path: '/me/cvs', scope: 'career:read' },
+  get_cv: { method: 'GET', path: '/me/cvs/{cvId}', scope: 'career:read' },
+  save_cv: { method: 'POST', path: '/me/cvs', scope: 'career:write' },
+  update_cv: { method: 'PATCH', path: '/me/cvs/{cvId}', scope: 'career:write' },
+  set_default_cv: { method: 'PUT', path: '/me/default-cv', scope: 'career:write' },
+  select_application_cv: {
+    method: 'PUT',
+    path: '/me/applications/{applicationId}/cv',
+    scope: 'career:write',
+  },
+  create_document_upload: { method: 'POST', path: '/me/document-uploads', scope: 'career:write' },
+  upload_document_chunk: {
+    method: 'PUT',
+    path: '/me/document-uploads/{documentId}/chunks/{index}',
+    scope: 'career:write',
+  },
+  finalize_document_upload: {
+    method: 'POST',
+    path: '/me/document-uploads/{documentId}/complete',
+    scope: 'career:write',
+  },
+  import_document: { method: 'POST', path: '/me/documents/import', scope: 'career:write' },
+  list_documents: { method: 'GET', path: '/me/documents', scope: 'career:read' },
+  get_document: { method: 'GET', path: '/me/documents/{documentId}', scope: 'career:read' },
+  get_document_download_url: {
+    method: 'POST',
+    path: '/me/documents/{documentId}/download',
+    scope: 'career:read',
+  },
+  save_document: { method: 'POST', path: '/me/documents', scope: 'career:write' },
+  delete_document: { method: 'DELETE', path: '/me/documents/{documentId}', scope: 'career:delete' },
+  render_document: {
+    method: 'POST',
+    path: '/me/documents/{documentId}/pdf',
+    scope: 'career:write',
+  },
+  check_document: { method: 'GET', path: '/me/documents/{documentId}/check', scope: 'career:read' },
+  get_search_history: { method: 'GET', path: '/me/searches', scope: 'career:read' },
+  save_search_history: { method: 'POST', path: '/me/searches', scope: 'career:write' },
+  list_job_activity: { method: 'GET', path: '/me/job-activity', scope: 'career:read' },
+  update_job_activity: { method: 'PUT', path: '/me/job-activity/{jobId}', scope: 'career:write' },
+  get_job_evaluations: { method: 'GET', path: '/me/evaluations', scope: 'career:read' },
+  save_job_evaluation: { method: 'POST', path: '/me/evaluations', scope: 'career:write' },
+  list_applications: { method: 'GET', path: '/me/applications', scope: 'career:read' },
+  get_application: {
+    method: 'GET',
+    path: '/me/applications/{applicationId}',
+    scope: 'career:read',
+  },
+  save_application: { method: 'POST', path: '/me/applications', scope: 'career:write' },
+  update_application: {
+    method: 'PATCH',
+    path: '/me/applications/{applicationId}',
+    scope: 'career:write',
+  },
+  get_learning_plan: { method: 'GET', path: '/me/learning-plans', scope: 'career:read' },
+  save_learning_plan: { method: 'POST', path: '/me/learning-plans', scope: 'career:write' },
+  get_application_report: { method: 'GET', path: '/me/application-report', scope: 'career:read' },
+  export_user_data: { method: 'POST', path: '/me/exports', scope: 'career:read' },
+  reset_user_data: { method: 'GET', path: '/me/reset-preview', scope: 'career:read' },
+};
