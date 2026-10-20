@@ -16,6 +16,12 @@ Deno.test('discovery preserves the public capabilities and the career feature fl
     );
     const listed = await readRpc(await handler(rpc('tools/list')));
     assert.equal(listed.result.tools.length, careerEnabled ? 45 : 9);
+    for (const tool of listed.result.tools) {
+      assert(tool.title.trim().length > 0 && !tool.title.includes('_'), tool.name);
+      for (const hint of ['readOnlyHint', 'destructiveHint', 'openWorldHint']) {
+        assert.equal(typeof tool.annotations[hint], 'boolean', `${tool.name}.${hint}`);
+      }
+    }
     assert(
       listed.result.tools.every(
         (tool) => (tool.securitySchemes[0] as { type: string }).type === 'oauth2',

@@ -9,6 +9,7 @@ const source = {
 export const jobTools: ToolDefinition[] = [
   {
     name: 'search_jobs',
+    title: 'Search jobs',
     description:
       'Search the sources explicitly chosen by the user. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links require Access. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs.',
     inputSchema: {
@@ -55,6 +56,7 @@ export const jobTools: ToolDefinition[] = [
   },
   {
     name: 'get_job',
+    title: 'Read job details',
     description:
       'Read a job from its original source using the source and id returned by search_jobs. External details are rechecked through the public provider API/feed. Hidden Jobs original application URLs remain excluded.',
     inputSchema: {
@@ -72,6 +74,7 @@ export const jobTools: ToolDefinition[] = [
   },
   {
     name: 'open_application_link',
+    title: 'Open application link',
     description:
       'Open the supplied source link for an external offer for free. For Hidden Jobs, reveal the original application URL only with active Access. Pass the source and id returned by search_jobs; never replace external source links with employer links.',
     inputSchema: {
@@ -91,6 +94,7 @@ export const jobTools: ToolDefinition[] = [
 
 export const companyTool: ToolDefinition = {
   name: 'get_company',
+  title: 'Read company context',
   description:
     'Read anonymous industry, company size, founding year and verification date for a job. Employer identity is withheld.',
   inputSchema: {
