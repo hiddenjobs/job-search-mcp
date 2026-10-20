@@ -21,6 +21,7 @@ export const page = {
 };
 export interface ToolDefinition {
   name: string;
+  title: string;
   description: string;
   inputSchema: Record<string, unknown>;
   securitySchemes: unknown[];
@@ -28,6 +29,7 @@ export interface ToolDefinition {
 }
 export const define = (
   name: string,
+  title: string,
   description: string,
   properties: Record<string, Property> = {},
   required: string[] = [],
@@ -35,6 +37,7 @@ export const define = (
   destructive = false,
 ): ToolDefinition => ({
   name,
+  title,
   description,
   inputSchema: { type: 'object', properties, required, additionalProperties: false },
   securitySchemes: [{ type: 'oauth2', scopes: ['email'] }],

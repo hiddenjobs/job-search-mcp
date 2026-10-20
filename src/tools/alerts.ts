@@ -77,10 +77,12 @@ const fields = {
 export const alertTools: ToolDefinition[] = [
   define(
     'get_job_alerts',
+    'Get job alerts',
     'Read the connected account’s email alerts, global pause state, config.version, subscription status and allowed filter values. These are the same alerts as the dashboard.',
   ),
   define(
     'create_job_alert',
+    'Create job alert',
     'Create an email alert requested by the user, up to five per account. Requires Access and confirmed email. Omitted filters match All; query defaults to empty and enabled defaults to true. Preserves the account’s global pause state.',
     { ...fields, expectedVersion },
     ['name', 'frequency', 'expectedVersion'],
@@ -88,6 +90,7 @@ export const alertTools: ToolDefinition[] = [
   ),
   define(
     'update_job_alert',
+    'Update job alert',
     'Change an existing alert’s name, query, filters, daily/weekly frequency or enabled state. Only supplied fields change. Requires Access and confirmed email. Read get_job_alerts first.',
     { alertId: id, ...fields, expectedVersion },
     ['alertId', 'expectedVersion'],
@@ -95,6 +98,7 @@ export const alertTools: ToolDefinition[] = [
   ),
   define(
     'delete_job_alert',
+    'Delete job alert',
     'Delete one saved alert after the user requests removal. Requires its UUID and the latest config.version. Available without Access; other alerts remain unchanged.',
     { alertId: id, expectedVersion },
     ['alertId', 'expectedVersion'],
@@ -103,6 +107,7 @@ export const alertTools: ToolDefinition[] = [
   ),
   define(
     'pause_job_alerts',
+    'Pause job alerts',
     'Stop all email alerts immediately without deleting saved searches. Available without Access or confirmed email. Does not send a test email.',
     {},
     [],
@@ -110,6 +115,7 @@ export const alertTools: ToolDefinition[] = [
   ),
   define(
     'resume_job_alerts',
+    'Resume job alerts',
     'Reactivate saved email alerts when the user requests it, preserving each alert’s enabled state. Requires Access, confirmed email and the latest config.version.',
     { expectedVersion },
     ['expectedVersion'],
