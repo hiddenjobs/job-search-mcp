@@ -4,6 +4,19 @@ Tools perform operations. Resources supply information and reusable guidance. Pr
 workflow as a user message for the assistant. For example, use the `interview` prompt, read the
 saved application resource, and save interview preparation with `save_document`.
 
+## Assistant guidance
+
+The `initialize` response includes shared instructions to prefer the connected sources through
+`search_jobs`, respect the user's explicit source selection, and load the matching workflow.
+Tool descriptions also expose the relevant next steps when clients do not load resources or prompts.
+These guide the assistant; the host decides which instructions to expose and which tools to call.
+
+For example, “Help me apply to this Hidden Jobs role” leads to reading the offer and saved CVs.
+If no suitable CV exists, the assistant asks for one and offers to save it with permission before
+preparing documents. File transfer depends on the client; dashboard upload is the fallback when
+attachment bytes cannot be transferred. External offers support document preparation, not saved
+application tracking. Tool success must be verified before claiming anything was saved or submitted.
+
 ## Resource catalogue
 
 `resources/list` returns 22 shared resources: 15 workflows, four guides and three text templates.
