@@ -1,6 +1,6 @@
 # Job sources
 
-One tool, `search_jobs`, searches the user's chosen sources. `sources` is required, nonempty and unique. There is no automatic selection or paid-source fallback.
+One tool, `search_jobs`, searches the user's chosen sources. `sources` is required, nonempty and unique. There is no automatic source selection or fallback.
 
 ```json
 {
@@ -21,7 +21,7 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
 
 | Source           | Data and access                                                                                                                                                                                       |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hiddenjobs`     | Hidden Jobs database. Original employer application links require active Access or trial.                                                                                                             |
+| `hiddenjobs`     | Hidden Jobs database. Original employer application links are retrieved with open_application_link.                                                                                                   |
 | `jobicy`         | Free public API. Recent seven-day feed, delayed by three hours. Keep the Jobicy source and listing link.                                                                                              |
 | `weworkremotely` | Free public RSS. Current feed only, with WWR attribution and links.                                                                                                                                   |
 | `remoteok`       | Free public API. Current feed only. Mention Remote OK, preserve its listing link, do not use its logo. Render a followed link where the client permits; clients control final link attributes.        |
@@ -41,7 +41,7 @@ For external pagination, pass returned cursors in `cursors`, keyed by source, re
 
 ## Details and application links
 
-Pass the **source and id from the same result** to `get_job` and `open_application_link`. Never construct, decode or substitute IDs. `source` is required for both operations, including Hidden Jobs offers; omitting it is an error. External links use the provider's URL and are free even when the connected account has no active Access. External details are reread through the original API/feed; a missing offer means unavailable in that feed, not necessarily closed.
+Pass the **source and id from the same result** to `get_job` and `open_application_link`. Never construct, decode or substitute IDs. `source` is required for both operations, including Hidden Jobs offers; omitting it is an error. External links use the provider's URL. External details are reread through the original API/feed; a missing offer means unavailable in that feed, not necessarily closed.
 
 WWR and Himalayas listing pages can reject automated HTML requests with a security challenge while opening normally in a browser. The MCP reads their public API/feed rather than scraping listing pages. Users open the supplied provider link in their browser. A provider may require its own account to apply; for example, Himalayas can direct Apply now to its signup page. This is separate from Hidden Jobs Access and does not prevent searching or reading the offer through MCP.
 

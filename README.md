@@ -82,8 +82,7 @@ for the offer. Transfer files through your client's supported file capability, o
 
 Choose sources in `search_jobs`: Hidden Jobs, Jobicy, We Work Remotely, Remote OK or Himalayas.
 `sources` is required, with at least one selection and no default. Reading an offer or opening its
-link also requires the returned `source`. External provider links are free;
-Hidden Jobs original employer links require active Access. External offers are queried through
+link also requires the returned `source`. Use `open_application_link` to retrieve original application links. External offers are queried through
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
 See [job sources](docs/job-sources.md).
@@ -121,8 +120,7 @@ next steps. Use **Profile** for your experience, CV library and connected applic
 > Change that alert to weekly. Pause it for now, then show me my other alerts.
 
 Manage the same alerts as the dashboard: up to five saved searches, daily or weekly emails, and
-multiple filter selections. Creating, modifying or resuming requires Hidden Jobs Access and a
-confirmed account email. You can pause all alerts or delete them without Access. See
+multiple filter selections. Creating, modifying or resuming requires a confirmed account email. You can also pause all alerts or delete them. See
 [job alerts](docs/job-alerts.md) for filters, version conflicts and examples.
 
 ## Skills
@@ -248,5 +246,4 @@ backend and account dashboards are maintained in the Hidden Jobs application rep
 MIT. See [LICENSE](LICENSE).
 
 Employer names and identifying job slugs are withheld from search and detail results. `get_company`
-provides anonymous company context using a job ID. If an application link requires Access, the
-assistant receives a link to the 7-day free trial and its renewal terms.
+provides anonymous company context using a job ID. If an operation requires account action, the assistant receives a link to the account settings.

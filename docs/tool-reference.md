@@ -7,7 +7,7 @@ combine them into a complete job search.
 ## Access and writing rules
 
 - Job and company tools require a connected Hidden Jobs account. Original employer URLs come only
-  from `open_application_link`, with active Hidden Jobs Access. External provider links are free and preserve attribution.
+  from `open_application_link`. External provider links are free and preserve attribution.
 - Career data belongs to the connected account. An active OAuth connection authorizes its career
   tools; the server checks account ownership and live consent.
 - Hidden Jobs record IDs are UUIDs; `idOrSlug` also accepts a Hidden Jobs slug. External offers
@@ -192,7 +192,7 @@ Read details using the exact source and opaque id returned by search_jobs. Exter
 
 ## `open_application_link`
 
-For Hidden Jobs, retrieve the original employer application URL with active Access. For external offers, return the supplied provider URL for free. Does not submit anything.
+For Hidden Jobs, retrieve the original employer application URL. For external offers, return the supplied provider URL for free. Does not submit anything.
 
 | Argument   | Type   | Required | Constraints / notes                                                                            |
 | ---------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
@@ -570,7 +570,7 @@ Arguments: `{}`.
 ## `reset_user_data`
 
 Preview career-data deletion and return an account page for the user to confirm. This tool never
-deletes data or changes subscriptions.
+deletes data or changes account settings.
 
 Arguments: `{}`.
 
@@ -607,7 +607,7 @@ tool result even when the HTTP response is `200`.
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | 400       | `invalid_arguments`                                            | Read the input schema and correct arguments or missing confirmation                           |
 | 401 / 403 | OAuth challenge                                                | Reconnect and approve the connection                                                          |
-| 402       | `subscription_required`                                        | Follow the free-trial link; check eligibility and renewal terms                               |
+| 402       | Account access                                                 | Follow the supplied account settings link                                                     |
 | 403       | `connection_required`                                          | Reconnect the account; consent may have been revoked                                          |
 | 404       | `not_found`                                                    | Reread the list; the offer or private record is unavailable                                   |
 | 409       | `revision_conflict`, `idempotency_conflict`, `document_in_use` | Reread revisions, preserve request keys correctly, or retain referenced documents             |
@@ -625,13 +625,13 @@ These operations use no `requestId`; global pause also needs no version. See [jo
 
 ## `get_job_alerts`
 
-Read the connected account’s email alerts, global pause state, config.version, subscription status and allowed filter values. These are the same alerts as the dashboard.
+Read the connected account’s email alerts, global pause state, config.version, account access status and allowed filter values. These are the same alerts as the dashboard.
 
 No arguments.
 
 ## `create_job_alert`
 
-Create an email alert requested by the user, up to five per account. Requires Access and confirmed email. Omitted filters match All; query defaults to empty and enabled defaults to true. Preserves the account’s global pause state.
+Create an email alert requested by the user, up to five per account. Requires confirmed email. Omitted filters match All; query defaults to empty and enabled defaults to true. Preserves the account’s global pause state.
 
 | Argument          | Type    | Required | Details                                                                                                                                                                                                                                                                                                             |
 | ----------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -647,7 +647,7 @@ Create an email alert requested by the user, up to five per account. Requires Ac
 
 ## `update_job_alert`
 
-Change an existing alert’s name, query, filters, daily/weekly frequency or enabled state. Only supplied fields change. Requires Access and confirmed email. Read get_job_alerts first.
+Change an existing alert’s name, query, filters, daily/weekly frequency or enabled state. Only supplied fields change. Requires confirmed email. Read get_job_alerts first.
 
 | Argument          | Type    | Required | Details                                                                                                                                                                                                                                                                                                             |
 | ----------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -679,7 +679,7 @@ No arguments.
 
 ## `resume_job_alerts`
 
-Reactivate saved email alerts when the user requests it, preserving each alert’s enabled state. Requires Access, confirmed email and the latest config.version.
+Reactivate saved email alerts when the user requests it, preserving each alert’s enabled state. Requires confirmed email and the latest config.version.
 
 | Argument          | Type    | Required | Details                                                                                                     |
 | ----------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------- |

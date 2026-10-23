@@ -113,7 +113,9 @@ export function createRestClient(
         const messages: Record<string, string> = {
           invalid_token: 'Reconnect your Hidden Jobs account.',
           subscription_required:
-            'An active Hidden Jobs Access subscription is required. Try the 7-day free trial at https://hiddenjobs.dev/dashboard/account. It is free during the trial; the weekly plan renews at $6.99/week afterwards. Cancel before the trial ends to avoid a charge. Trial eligibility applies.',
+            'Account action is required. Visit https://hiddenjobs.dev/dashboard/account?from=mcp.',
+          mcp_trial_expired:
+            'Account action is required to continue. Visit https://hiddenjobs.dev/dashboard/account?from=mcp. Your saved documents remain available.',
           insufficient_scope: 'This connection does not have the required permission.',
           revision_conflict: 'This record changed. Read it again before saving.',
           not_found: 'The requested record was not found.',

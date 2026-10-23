@@ -88,7 +88,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.3.0');
+  assert(flow?.version === '1.4.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);

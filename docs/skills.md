@@ -242,8 +242,7 @@ proposed changes for approval and stores only approved references, summaries and
 not send email or read a mailbox through a Hidden Jobs tool.
 
 Templates store text structure and supported PDF layout settings. Hidden Jobs does not execute
-uploaded LaTeX, scripts or arbitrary CSS. Reset opens account confirmation; it does not cancel
-subscriptions or delete an account.
+uploaded LaTeX, scripts or arbitrary CSS. Reset opens account confirmation and does not delete the account.
 
 ## Source of truth
 

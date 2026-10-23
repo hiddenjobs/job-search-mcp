@@ -14,7 +14,7 @@ This repository maintains the MCP integration contract:
 - Client connection guides, connection metadata and protocol tests.
 
 The Hidden Jobs application repository maintains the hosted implementation: database migrations,
-account and subscription checks, private file storage, document extraction, PDF generation,
+account and account access checks, private file storage, document extraction, PDF generation,
 dashboards and deployment configuration.
 
 For example, `save_cv` defines the tool arguments here. The Hidden Jobs backend stores the version,
@@ -85,7 +85,7 @@ HIDDEN_JOBS_OAUTH_TOKEN_FILE=/private/path/access-token.txt \
 ```
 
 The check searches, reads a returned offer and verifies either application-link access or the
-subscription-required result. Tokens and application URLs are never printed. It does not perform
+account-access denial. Tokens and application URLs are never printed. It does not perform
 browser login or refresh tokens. An expired token or empty search result fails the check.
 
 To check a development endpoint, set `HIDDEN_JOBS_MCP_URL` and `MCP_RESOURCE_URL` to its public MCP
