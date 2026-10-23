@@ -74,7 +74,7 @@ instructions through MCP.
 the source link for the best match.”
 
 Your client can search and read job details after connecting. Retrieving an application link
-for a Hidden Jobs offer requires active Hidden Jobs Access. External provider links are free. Specify the sources to search, for example “Use Hidden Jobs and Jobicy.”
+for a Hidden Jobs offer requires account access. External provider links are free. Specify the sources to search, for example “Use Hidden Jobs and Jobicy.”
 
 ## Troubleshooting
 
@@ -83,7 +83,7 @@ for a Hidden Jobs offer requires active Hidden Jobs Access. External provider li
 | Connection discovery fails  | Check the server URL and reconnect Hidden Jobs                                                 |
 | Sign-in or approval expired | Restart the connection from your client                                                        |
 | `401`                       | Reconnect your Hidden Jobs account                                                             |
-| Application-link `402`      | Check your account's Access subscription                                                       |
+| Application-link `402`      | Follow the account settings link returned by the tool                                          |
 | `403 connection_required`   | Reconnect your Hidden Jobs account                                                             |
 | `409 revision_conflict`     | Ask the assistant to reread the record before resolving the update                             |
 | `429`                       | Wait before retrying; limit is 600 authenticated tool/private-resource requests/minute/account |

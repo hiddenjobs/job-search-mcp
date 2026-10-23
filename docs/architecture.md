@@ -31,19 +31,19 @@ which verifies the signature and checks live session/consent validity before eac
 operation.
 
 Job search and descriptions are available to connected accounts. Only `open_application_link`
-returns a Hidden Jobs original employer URL after checking active Access. External sources return their provider links for free, with attribution; their offers are never imported into the Hidden Jobs database. The same OAuth connection
+returns a Hidden Jobs original employer URL. External sources return their provider links for free, with attribution; their offers are never imported into the Hidden Jobs database. The same OAuth connection
 authorizes career reads and writes for that account.
 
 ## Instructions and operations
 
-| Layer                           | Responsibility                                                                                       |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 15 skills / prompts / workflows | Guide setup, search, ranking, tailoring, review, export, interviews and tracking                     |
-| 45 tools                        | Read and save account data, search offers and transfer/render documents                              |
-| 22 shared resources             | Workflow instructions, review guides and text templates                                              |
-| Four private resource patterns  | Profile, CV, application and document access with OAuth and account ownership                        |
-| Your assistant                  | Analysis, writing, interview practice and proposed updates                                           |
-| Hidden Jobs                     | User-approved storage, ownership checks, history, revisions, file operations and subscription checks |
+| Layer                           | Responsibility                                                                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 15 skills / prompts / workflows | Guide setup, search, ranking, tailoring, review, export, interviews and tracking                       |
+| 45 tools                        | Read and save account data, search offers and transfer/render documents                                |
+| 22 shared resources             | Workflow instructions, review guides and text templates                                                |
+| Four private resource patterns  | Profile, CV, application and document access with OAuth and account ownership                          |
+| Your assistant                  | Analysis, writing, interview practice and proposed updates                                             |
+| Hidden Jobs                     | User-approved storage, ownership checks, history, revisions, file operations and account access checks |
 
 The canonical workflow source is [`src/resources/workflows.ts`](../src/resources/workflows.ts).
 Skill files are generated from it, while prompts and resources read it directly. Neither importing a
