@@ -40,7 +40,7 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'update_application',
     'Update application',
-    'Update state, notes, next steps or final document references. Only mark applied after the user confirms submission. Gmail-derived changes need user approval; store only approved references and minimal notes.',
+    'Update state, notes, next steps or final document references. Only mark applied after the user confirms submission. email-derived changes need user approval; store only approved references and minimal notes.',
     {
       applicationId: id,
       status: { type: 'string', enum: STATUSES },

@@ -518,7 +518,7 @@ version. Does not submit anything.
 ## `update_application`
 
 Update state, notes, next steps or final document references. Only mark applied after the user
-confirms submission. Gmail-derived changes need user approval; store only approved references and
+confirms submission. email-derived changes need user approval; store only approved references and
 minimal notes.
 
 | Argument                | Type    | Required | Constraints / notes                                                                                                        |

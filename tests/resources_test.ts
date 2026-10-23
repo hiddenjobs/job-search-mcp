@@ -17,8 +17,10 @@ Deno.test(
       const result = await readRpc(await handler(rpc('resources/read', { uri: resource.uri }, '')));
       assert.equal(result.result.contents[0].uri, resource.uri);
     }
-    const prompt = await readRpc(await handler(rpc('prompts/get', { name: 'rank' }, '')));
-    assert.equal(prompt.result.messages[0].content.text, getWorkflow('rank')?.instructions);
+    for (const name of ['match', 'email-sync']) {
+      const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+      assert.equal(prompt.result.messages[0].content.text, getWorkflow(name)?.instructions);
+    }
     assert.equal(
       (await readRpc(await handler(rpc('prompts/get', { name: 'unknown' })))).error.code,
       -32602,
@@ -88,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.4.0');
+  assert(flow?.version === '1.5.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);

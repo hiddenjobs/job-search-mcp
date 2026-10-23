@@ -23,15 +23,15 @@ application tracking. Tool success must be verified before claiming anything was
 `resources/templates/list` returns the four private profile/CV/application/document URI patterns.
 Private record IDs come from the relevant list/get tools; they are not enumerated publicly.
 
-| URI                                 | MIME type          | Contents / names                                                                                                                                               |
-| ----------------------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hiddenjobs://workflows/{name}`     | `application/json` | `alerts`, `setup`, `expand`, `search`, `rank`, `apply`, `review`, `export`, `interview`, `upskill`, `outcome`, `gmail-sync`, `report`, `add-template`, `reset` |
-| `hiddenjobs://guides/{name}`        | `text/plain`       | `job-evaluation`, `document-review`, `interview`, `ats-checks`                                                                                                 |
-| `hiddenjobs://templates/{name}`     | `text/plain`       | `cv`, `cover-letter`, `interview`                                                                                                                              |
-| `hiddenjobs://me/profile`           | `application/json` | Confirmed profile, preferences and default CV                                                                                                                  |
-| `hiddenjobs://me/cvs/{id}`          | `application/json` | CV metadata and a page of immutable versions                                                                                                                   |
-| `hiddenjobs://me/applications/{id}` | `application/json` | Application, offer snapshot, selected CV version and a page of history                                                                                         |
-| `hiddenjobs://me/documents/{id}`    | `application/json` | Saved text and metadata; use `get_document_download_url` for the original file                                                                                 |
+| URI                                 | MIME type          | Contents / names                                                                                                                                                |
+| ----------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hiddenjobs://workflows/{name}`     | `application/json` | `alerts`, `setup`, `expand`, `search`, `match`, `apply`, `review`, `export`, `interview`, `upskill`, `outcome`, `email-sync`, `report`, `add-template`, `reset` |
+| `hiddenjobs://guides/{name}`        | `text/plain`       | `job-evaluation`, `document-review`, `interview`, `ats-checks`                                                                                                  |
+| `hiddenjobs://templates/{name}`     | `text/plain`       | `cv`, `cover-letter`, `interview`                                                                                                                               |
+| `hiddenjobs://me/profile`           | `application/json` | Confirmed profile, preferences and default CV                                                                                                                   |
+| `hiddenjobs://me/cvs/{id}`          | `application/json` | CV metadata and a page of immutable versions                                                                                                                    |
+| `hiddenjobs://me/applications/{id}` | `application/json` | Application, offer snapshot, selected CV version and a page of history                                                                                          |
+| `hiddenjobs://me/documents/{id}`    | `application/json` | Saved text and metadata; use `get_document_download_url` for the original file                                                                                  |
 
 Shared instructions and templates contain no private account data. Reading private resources
 requires an active OAuth connection for the owning account, just like the corresponding tools.
