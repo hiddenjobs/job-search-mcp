@@ -96,7 +96,7 @@ automatically.
 
 For example: **“I have an interview next Tuesday. Update this application's status and save ‘prepare
 project examples’ as the next step.”** The assistant confirms the event and records the update.
-Gmail-based proposals need your separately connected Gmail and approval; Hidden Jobs stores only
+email-based proposals need your separately connected email and approval; Hidden Jobs stores only
 approved references and summaries.
 
 ## Interviews, learning and company information
