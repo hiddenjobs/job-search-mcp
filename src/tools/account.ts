@@ -20,7 +20,7 @@ export const accountTools: ToolDefinition[] = [
   define(
     'reset_user_data',
     'Reset user data',
-    'Preview career-data deletion and return an account page for the user to confirm. This tool never deletes data or changes subscriptions.',
+    'Preview career-data deletion and return an account page for the user to confirm. This tool never deletes data or changes account settings.',
     {},
     [],
     false,

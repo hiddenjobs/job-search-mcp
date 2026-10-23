@@ -130,7 +130,7 @@ must reconnect; another account cannot read your files or application records.
 
 `export_user_data` produces a private manifest and short-lived file links. Download the files before
 links expire. `delete_document` refuses referenced files. `reset_user_data` opens the account
-confirmation step; you choose the scope and confirm deletion there. Account, subscription and
+confirmation step; you choose the scope and confirm deletion there. Account and
 job-board data are preserved.
 
 See [skills](skills.md), [tools](tool-reference.md), [resources and prompts](resources.md), and

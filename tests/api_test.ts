@@ -106,13 +106,14 @@ Deno.test(
   },
 );
 Deno.test(
-  'REST denials preserve OAuth challenges, quota, subscription and revision errors without leaking upstream text',
+  'REST denials preserve OAuth challenges, quota, account access and revision errors without leaking upstream text',
   async () => {
     for (const [status, code] of [
       [401, 'invalid_token'],
       [403, 'insufficient_scope'],
       [429, 'rate_limit'],
       [402, 'subscription_required'],
+      [402, 'mcp_trial_expired'],
       [409, 'revision_conflict'],
     ] as const) {
       const handler = createRestMcpHandler({
@@ -131,10 +132,9 @@ Deno.test(
       assert(!text.includes('PRIVATE') && !text.includes('a.b.c'));
       if (status === 402) {
         assert(
-          text.includes('7-day free trial') &&
+          text.includes('Account action is required') &&
             text.includes('https://hiddenjobs.dev/dashboard/account'),
         );
-        assert(text.includes('$6.99/week') && text.includes('Cancel before'));
       }
       if (status === 401 || status === 403) {
         assert(

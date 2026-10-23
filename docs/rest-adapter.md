@@ -5,7 +5,7 @@ API at `https://api.hiddenjobs.dev/v1`. Account storage and processing remain in
 
 `src/index.ts` binds the JSON-RPC handler to `src/api/client.ts`. Each request keeps its own OAuth
 token; no account token is stored in shared state. The API verifies the exact account-token
-audience, signature, expiry and live session/consent, and enforces ownership, subscription and
+audience, signature, expiry and live session/consent, and enforces ownership, account access and
 quota. The MCP and its first-party REST API form one OAuth protected service. The adapter never
 sends credentials to a third-party resource or follows HTTP redirects.
 
@@ -67,5 +67,4 @@ Paths below are relative to the REST API base URL. Full argument definitions are
 | `reset_user_data`           | `GET`    | `/me/reset-preview`                                |
 
 Job results omit employer names and identifying slugs. Company context uses the job ID and returns
-only industry, employee range, founding year and verification date. `402 subscription_required`
-includes a free-trial link and renewal terms.
+only industry, employee range, founding year and verification date. HTTP `402` indicates that account action is required, including for direct REST calls with the same OAuth token.

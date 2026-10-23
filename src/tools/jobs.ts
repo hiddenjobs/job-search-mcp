@@ -11,7 +11,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'search_jobs',
     title: 'Search jobs',
     description:
-      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK and Himalayas instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links require Access. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs.',
+      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK and Himalayas instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links are included. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -76,7 +76,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'open_application_link',
     title: 'Open application link',
     description:
-      'Open the supplied source link for an external offer for free. For Hidden Jobs, reveal the original application URL only with active Access. Pass the source and id returned by search_jobs; never replace external source links with employer links.',
+      'Open the supplied source link for an external offer for free. For Hidden Jobs, reveal the original application URL. Pass the source and id returned by search_jobs; never replace external source links with employer links.',
     inputSchema: {
       type: 'object',
       properties: { idOrSlug: { type: 'string', maxLength: 2000 }, source },
