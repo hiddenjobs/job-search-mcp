@@ -74,7 +74,7 @@ instructions through MCP.
 the source link for the best match.”
 
 Your client can search and read job details after connecting. Retrieving an application link
-for a Hidden Jobs offer requires active Hidden Jobs Access. External provider links are free. Specify the sources to search, for example “Use Hidden Jobs and Jobicy.”
+for a Hidden Jobs offer requires an active MCP trial or Hidden Jobs Access. External provider links are free. Specify the sources to search, for example “Use Hidden Jobs and Jobicy.”
 
 ## Troubleshooting
 

@@ -83,7 +83,7 @@ export const alertTools: ToolDefinition[] = [
   define(
     'create_job_alert',
     'Create job alert',
-    'Create an email alert requested by the user, up to five per account. Requires Access and confirmed email. Omitted filters match All; query defaults to empty and enabled defaults to true. Preserves the account’s global pause state.',
+    'Create an email alert requested by the user, up to five per account. Requires an active MCP trial or Access and confirmed email. Omitted filters match All; query defaults to empty and enabled defaults to true. Preserves the account’s global pause state.',
     { ...fields, expectedVersion },
     ['name', 'frequency', 'expectedVersion'],
     true,
@@ -91,7 +91,7 @@ export const alertTools: ToolDefinition[] = [
   define(
     'update_job_alert',
     'Update job alert',
-    'Change an existing alert’s name, query, filters, daily/weekly frequency or enabled state. Only supplied fields change. Requires Access and confirmed email. Read get_job_alerts first.',
+    'Change an existing alert’s name, query, filters, daily/weekly frequency or enabled state. Only supplied fields change. Requires an active MCP trial or Access and confirmed email. Read get_job_alerts first.',
     { alertId: id, ...fields, expectedVersion },
     ['alertId', 'expectedVersion'],
     true,
@@ -116,7 +116,7 @@ export const alertTools: ToolDefinition[] = [
   define(
     'resume_job_alerts',
     'Resume job alerts',
-    'Reactivate saved email alerts when the user requests it, preserving each alert’s enabled state. Requires Access, confirmed email and the latest config.version.',
+    'Reactivate saved email alerts when the user requests it, preserving each alert’s enabled state. Requires an active MCP trial or Access, confirmed email and the latest config.version.',
     { expectedVersion },
     ['expectedVersion'],
     true,

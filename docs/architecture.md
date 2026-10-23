@@ -31,7 +31,7 @@ which verifies the signature and checks live session/consent validity before eac
 operation.
 
 Job search and descriptions are available to connected accounts. Only `open_application_link`
-returns a Hidden Jobs original employer URL after checking active Access. External sources return their provider links for free, with attribution; their offers are never imported into the Hidden Jobs database. The same OAuth connection
+returns a Hidden Jobs original employer URL after checking MCP trial or Access eligibility. External sources return their provider links for free, with attribution; their offers are never imported into the Hidden Jobs database. The same OAuth connection
 authorizes career reads and writes for that account.
 
 ## Instructions and operations

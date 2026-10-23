@@ -21,7 +21,7 @@ values returned by `get_job_alerts`. For example, `["Backend", "DevOps"]` matche
 that category filter combines with the location filter using AND. `["All"]` removes a filter.
 Regional searches also include worldwide roles, following the dashboard's matching rules.
 
-Creating, modifying or resuming requires active Hidden Jobs Access and a confirmed account email.
+Creating, modifying or resuming requires an active MCP trial or Hidden Jobs Access and a confirmed account email.
 Pausing all alerts or deleting a search remains available without Access. The same subscription,
 scheduler, deduplication and unsubscribe system serves the dashboard and connected assistants.
 Creating an alert while global delivery is paused keeps it paused.

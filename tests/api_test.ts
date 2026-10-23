@@ -113,6 +113,7 @@ Deno.test(
       [403, 'insufficient_scope'],
       [429, 'rate_limit'],
       [402, 'subscription_required'],
+      [402, 'mcp_trial_expired'],
       [409, 'revision_conflict'],
     ] as const) {
       const handler = createRestMcpHandler({
@@ -131,10 +132,10 @@ Deno.test(
       assert(!text.includes('PRIVATE') && !text.includes('a.b.c'));
       if (status === 402) {
         assert(
-          text.includes('7-day free trial') &&
+          text.includes('no additional free trial') &&
             text.includes('https://hiddenjobs.dev/dashboard/account'),
         );
-        assert(text.includes('$6.99/week') && text.includes('Cancel before'));
+        assert(text.includes('Payment starts immediately'));
       }
       if (status === 401 || status === 403) {
         assert(

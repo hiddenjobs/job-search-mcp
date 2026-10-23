@@ -11,6 +11,17 @@ CV versions, email alerts and application history together in your account.
 [Connect](#quick-start) · [Sources](docs/job-sources.md) · [Skills](#skills) · [Tools](#tools) · [Resources](#resources) ·
 [Documentation](#documentation)
 
+## Access
+
+Your first authenticated connection starts a three-day full-access MCP trial, with no card required.
+Search all connected sources, open Hidden Jobs application links, save CV versions and prepare
+applications. Afterwards, activate the same Hidden Jobs Access plans as the website; payment starts
+immediately with no additional trial. Existing Access subscribers are already covered.
+
+Saved documents, downloads, export and account controls remain available after expiry. External
+providers do not charge through Hidden Jobs; continued use of this MCP service requires trial or
+Access eligibility. Trial timing is shared by the account across assistants and reconnections.
+
 ## How it works
 
 ```text
@@ -83,7 +94,7 @@ for the offer. Transfer files through your client's supported file capability, o
 Choose sources in `search_jobs`: Hidden Jobs, Jobicy, We Work Remotely, Remote OK or Himalayas.
 `sources` is required, with at least one selection and no default. Reading an offer or opening its
 link also requires the returned `source`. External provider links are free;
-Hidden Jobs original employer links require active Access. External offers are queried through
+Hidden Jobs original employer links are included in the three-day MCP trial or active Access. External offers are queried through
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
 See [job sources](docs/job-sources.md).
@@ -121,7 +132,7 @@ next steps. Use **Profile** for your experience, CV library and connected applic
 > Change that alert to weekly. Pause it for now, then show me my other alerts.
 
 Manage the same alerts as the dashboard: up to five saved searches, daily or weekly emails, and
-multiple filter selections. Creating, modifying or resuming requires Hidden Jobs Access and a
+multiple filter selections. Creating, modifying or resuming requires an active MCP trial or Hidden Jobs Access and a
 confirmed account email. You can pause all alerts or delete them without Access. See
 [job alerts](docs/job-alerts.md) for filters, version conflicts and examples.
 
@@ -249,4 +260,4 @@ MIT. See [LICENSE](LICENSE).
 
 Employer names and identifying job slugs are withheld from search and detail results. `get_company`
 provides anonymous company context using a job ID. If an application link requires Access, the
-assistant receives a link to the 7-day free trial and its renewal terms.
+assistant receives a link to activate Access, billed immediately without a second trial.

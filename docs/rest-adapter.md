@@ -68,4 +68,4 @@ Paths below are relative to the REST API base URL. Full argument definitions are
 
 Job results omit employer names and identifying slugs. Company context uses the job ID and returns
 only industry, employee range, founding year and verification date. `402 subscription_required`
-includes a free-trial link and renewal terms.
+links to the Access checkout without an additional trial. `402 mcp_trial_expired` blocks new MCP work after 72 hours, including direct REST calls with the same OAuth token.
