@@ -134,14 +134,14 @@ instructions your assistant can follow.
 | [`setup`](skills/setup/SKILL.md)               | Build your profile — Import a CV, confirm your experience and preferences, and choose a default CV.                   |
 | [`expand`](skills/expand/SKILL.md)             | Add depth to your profile — Capture achievements, responsibilities and examples that make applications specific.      |
 | [`search`](skills/search/SKILL.md)             | Search selected sources, check location eligibility and preserve provider attribution.                                |
-| [`rank`](skills/rank/SKILL.md)                 | Compare your matches — Evaluate requirements against your chosen CV and explain the ranking.                          |
+| [`match`](skills/match/SKILL.md)               | Compare your matches — Evaluate requirements against your chosen CV and explain the ranking.                          |
 | [`apply`](skills/apply/SKILL.md)               | Tailor an application — Draft a tailored CV and cover letter, preserve the base CV version, and save the application. |
 | [`review`](skills/review/SKILL.md)             | Review before sending — Check facts, relevance, clarity and unsupported claims in the draft.                          |
 | [`export`](skills/export/SKILL.md)             | Download a PDF — Generate a PDF from a saved document and check its text and layout limits.                           |
 | [`interview`](skills/interview/SKILL.md)       | Prepare for interviews — Practise likely questions and evidence-based answers using the offer and your experience.    |
 | [`upskill`](skills/upskill/SKILL.md)           | Build a learning plan — Turn requirements you want to develop into exercises and milestones.                          |
 | [`outcome`](skills/outcome/SKILL.md)           | Track applications — Record confirmed submissions, interviews, offers, rejections and next steps.                     |
-| [`gmail-sync`](skills/gmail-sync/SKILL.md)     | Review email updates — Use your separately connected Gmail to propose application updates for your approval.          |
+| [`email-sync`](skills/email-sync/SKILL.md)     | Review email updates — Use your separately connected email to propose application updates for your approval.          |
 | [`report`](skills/report/SKILL.md)             | Review your progress — Summarize your pipeline, recent activity and next actions; save a report when requested.       |
 | [`add-template`](skills/add-template/SKILL.md) | Use your own structure — Save document structure and supported PDF layout settings.                                   |
 | [`reset`](skills/reset/SKILL.md)               | Manage saved data — Preview deletion and open your account for explicit confirmation.                                 |
@@ -202,8 +202,8 @@ For example, `hiddenjobs://workflows/interview` explains how to prepare for an i
 enforce the same OAuth and account-ownership checks as the tools. Use `resources/templates/list` to
 discover private URI patterns and the list/get tools to obtain record IDs.
 
-The 15 MCP prompts use the workflow names: `alerts`, `setup`, `expand`, `search`, `rank`, `apply`, `review`,
-`export`, `interview`, `upskill`, `outcome`, `gmail-sync`, `report`, `add-template`, `reset`. See
+The 15 MCP prompts use the workflow names: `alerts`, `setup`, `expand`, `search`, `match`, `apply`, `review`,
+`export`, `interview`, `upskill`, `outcome`, `email-sync`, `report`, `add-template`, `reset`. See
 the [resources and prompts reference](docs/resources.md).
 
 ## Your data and documents
@@ -218,7 +218,7 @@ the [resources and prompts reference](docs/resources.md).
 - Application states are `saved`, `preparing`, `prepared`, `applied`, `interview`, `offer`,
   `rejected` and `withdrawn`. Prepared documents are not sent automatically; submission and outcome
   changes are recorded with your confirmation.
-- Gmail updates use your separately authorized Gmail connector and your approval. Hidden Jobs keeps
+- Email updates use your separately authorized email connector and your approval. Hidden Jobs keeps
   approved references and summaries, not mailbox credentials or email bodies.
 
 See the [career workspace guide](docs/career-workspace.md) for storage, document transfer,
