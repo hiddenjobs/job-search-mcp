@@ -1,9 +1,14 @@
 import { define, id, key, page, revision, stringProperty, type ToolDefinition } from './schemas.ts';
 export const cvsTools: ToolDefinition[] = [
-  define('list_cvs', 'List CVs', "List the user's independent CVs; each has immutable versions.", {
-    ...page,
-    includeArchived: { type: 'boolean' },
-  }),
+  define(
+    'list_cvs',
+    'List CVs',
+    'Use before preparing an application or asking the user for a CV. List saved CVs with immutable versions; read the chosen CV with get_cv and get_document. If no suitable CV exists, ask for one and offer to save it using the setup workflow.',
+    {
+      ...page,
+      includeArchived: { type: 'boolean' },
+    },
+  ),
   define(
     'get_cv',
     'Get CV',
@@ -14,7 +19,7 @@ export const cvsTools: ToolDefinition[] = [
   define(
     'save_cv',
     'Save CV',
-    'Create a CV or append an immutable version from a ready CV document. Never overwrite an existing version.',
+    'After an agreed CV import or save_document, create a CV or append an immutable version from the ready documentId. Use the returned exact version for the application. Never overwrite an existing version or claim success before the tool confirms it.',
     {
       cvId: id,
       name: stringProperty(),
