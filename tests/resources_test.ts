@@ -88,7 +88,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.2.1');
+  assert(flow?.version === '1.3.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -109,3 +109,66 @@ Deno.test('shared resource names cannot resolve inherited object properties', as
   }
   assert.equal(getWorkflow('constructor'), null);
 });
+
+Deno.test(
+  'application guidance reaches clients through prompts, resources and workflow tools',
+  async () => {
+    const workflow = getWorkflow('apply');
+    assert(workflow);
+    const calls: string[] = [];
+    const handler = createRestMcpHandler({
+      fetcher: (input) => {
+        const request = new Request(input);
+        calls.push(new URL(request.url).pathname);
+        return Promise.resolve(Response.json({ data: workflow }));
+      },
+    });
+    const prompt = await readRpc(await handler(rpc('prompts/get', { name: 'apply' }, '')));
+    const resource = await readRpc(
+      await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/apply' }, '')),
+    );
+    const tool = await readRpc(
+      await handler(rpc('tools/call', { name: 'get_workflow', arguments: { name: 'apply' } })),
+    );
+    assert.equal(prompt.result.messages[0].content.text, workflow.instructions);
+    assert.equal(
+      parseResource(resource.result.contents[0].text).instructions,
+      workflow.instructions,
+    );
+    assert.deepEqual(tool.result.structuredContent.data, workflow);
+    assert.deepEqual(calls, ['/v1/workflows/apply']);
+
+    const scenarios: [string, string, string[]][] = [
+      [
+        'saved CV',
+        workflow.instructions,
+        ['list_cvs', 'get_cv and get_document', 'exact CV version'],
+      ],
+      [
+        'missing CV',
+        getWorkflow('setup')?.instructions ?? '',
+        ['ask the user to attach one', 'finalize_document_upload', 'call save_cv', 'dashboard'],
+      ],
+      [
+        'external offer',
+        workflow.instructions,
+        ['External application tracking is not supported', 'without save_application'],
+      ],
+      [
+        'source selection',
+        getWorkflow('search')?.instructions ?? '',
+        [
+          'before general web search',
+          'ask which connected sources',
+          'source failures are not empty results',
+        ],
+      ],
+    ];
+    for (const [scenario, instructions, requirements] of scenarios) {
+      assert.equal(typeof instructions, 'string');
+      for (const requirement of requirements) {
+        assert(instructions.includes(requirement), `${scenario}: ${requirement}`);
+      }
+    }
+  },
+);

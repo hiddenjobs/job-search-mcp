@@ -2,7 +2,7 @@ import { define, stringProperty, type ToolDefinition } from './schemas.ts';
 export const workflowTool = define(
   'get_workflow',
   'Get workflow',
-  "Read a Hidden Jobs career workflow. The user's assistant performs all reasoning and drafting.",
+  "Read the matching workflow before job searches, CV selection/import, application preparation or PDF export: search, rank, setup, apply or export. The user's assistant performs all reasoning and drafting.",
   { name: stringProperty() },
   ['name'],
 );

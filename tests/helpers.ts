@@ -17,6 +17,7 @@ export const rpc = (method: string, params: unknown = {}, token = TOKEN) =>
 interface RpcReply {
   result: {
     protocolVersion: string;
+    instructions: string;
     capabilities: { resources?: { subscribe: boolean } };
     tools: import('../src/tools/schemas.ts').ToolDefinition[];
     resourceTemplates: { uriTemplate: string }[];

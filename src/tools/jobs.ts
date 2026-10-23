@@ -11,7 +11,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'search_jobs',
     title: 'Search jobs',
     description:
-      'Search the sources explicitly chosen by the user. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links require Access. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs.',
+      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK and Himalayas instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links require Access. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs.',
     inputSchema: {
       type: 'object',
       properties: {

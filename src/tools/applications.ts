@@ -32,7 +32,7 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'save_application',
     'Save application',
-    'Create a draft application with a server-captured Hidden Jobs offer snapshot and an exact base CV version. Does not submit anything.',
+    'After reading the offer and selecting a saved CV version, create a draft application with a server-captured Hidden Jobs offer snapshot. If no suitable CV exists, ask for one and follow get_workflow setup first. Requires a Hidden Jobs jobId; external offers cannot be tracked here. Does not submit anything.',
     { jobId: id, cvVersionId: id, data: obj, requestId: key },
     ['jobId', 'cvVersionId', 'requestId'],
     true,
