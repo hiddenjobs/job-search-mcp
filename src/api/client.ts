@@ -115,7 +115,7 @@ export function createRestClient(
           subscription_required:
             'Hidden Jobs Access is required. Subscribe at https://hiddenjobs.dev/dashboard/account?from=mcp. Payment starts immediately; no additional free trial.',
           mcp_trial_expired:
-            'Your three-day MCP trial has ended. Activate Hidden Jobs Access at https://hiddenjobs.dev/dashboard/account?from=mcp to continue. Payment starts immediately; no additional free trial. Your saved documents remain available.',
+            'Your MCP trial has ended. Activate Hidden Jobs Access at https://hiddenjobs.dev/dashboard/account?from=mcp to continue. Payment starts immediately; no additional free trial. Your saved documents remain available.',
           insufficient_scope: 'This connection does not have the required permission.',
           revision_conflict: 'This record changed. Read it again before saving.',
           not_found: 'The requested record was not found.',

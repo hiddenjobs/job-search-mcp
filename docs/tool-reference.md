@@ -7,7 +7,7 @@ combine them into a complete job search.
 ## Access and writing rules
 
 - Job and company tools require a connected Hidden Jobs account. Original employer URLs come only
-  from `open_application_link`, during the three-day MCP trial or with active Hidden Jobs Access. External provider links are free and preserve attribution.
+  from `open_application_link`, during the MCP trial or with active Hidden Jobs Access. External provider links are free and preserve attribution.
 - Career data belongs to the connected account. An active OAuth connection authorizes its career
   tools; the server checks account ownership and live consent.
 - Hidden Jobs record IDs are UUIDs; `idOrSlug` also accepts a Hidden Jobs slug. External offers
@@ -607,7 +607,7 @@ tool result even when the HTTP response is `200`.
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | 400       | `invalid_arguments`                                            | Read the input schema and correct arguments or missing confirmation                           |
 | 401 / 403 | OAuth challenge                                                | Reconnect and approve the connection                                                          |
-| 402       | `subscription_required`                                        | Activate Access after the three-day MCP trial; no second trial                                |
+| 402       | `subscription_required`                                        | Activate Access after the MCP trial; no second trial                                          |
 | 403       | `connection_required`                                          | Reconnect the account; consent may have been revoked                                          |
 | 404       | `not_found`                                                    | Reread the list; the offer or private record is unavailable                                   |
 | 409       | `revision_conflict`, `idempotency_conflict`, `document_in_use` | Reread revisions, preserve request keys correctly, or retain referenced documents             |

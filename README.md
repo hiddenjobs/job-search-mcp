@@ -11,17 +11,6 @@ CV versions, email alerts and application history together in your account.
 [Connect](#quick-start) · [Sources](docs/job-sources.md) · [Skills](#skills) · [Tools](#tools) · [Resources](#resources) ·
 [Documentation](#documentation)
 
-## Access
-
-Your first authenticated connection starts a three-day full-access MCP trial, with no card required.
-Search all connected sources, open Hidden Jobs application links, save CV versions and prepare
-applications. Afterwards, activate the same Hidden Jobs Access plans as the website; payment starts
-immediately with no additional trial. Existing Access subscribers are already covered.
-
-Saved documents, downloads, export and account controls remain available after expiry. External
-providers do not charge through Hidden Jobs; continued use of this MCP service requires trial or
-Access eligibility. Trial timing is shared by the account across assistants and reconnections.
-
 ## How it works
 
 ```text
@@ -94,7 +83,7 @@ for the offer. Transfer files through your client's supported file capability, o
 Choose sources in `search_jobs`: Hidden Jobs, Jobicy, We Work Remotely, Remote OK or Himalayas.
 `sources` is required, with at least one selection and no default. Reading an offer or opening its
 link also requires the returned `source`. External provider links are free;
-Hidden Jobs original employer links are included in the three-day MCP trial or active Access. External offers are queried through
+Hidden Jobs original employer links are included in the MCP trial or active Access. External offers are queried through
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
 See [job sources](docs/job-sources.md).
