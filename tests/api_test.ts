@@ -301,3 +301,60 @@ Deno.test(
     }
   },
 );
+
+Deno.test(
+  'file attachment references survive MCP-to-REST without being fetched or echoed by the adapter',
+  async () => {
+    const file = {
+      download_url: 'https://files.client.test/cv.pdf?temporary=credential',
+      file_id: 'file-cv',
+    };
+    const args = {
+      file,
+      filename: 'cv.pdf',
+      mimeType: 'application/pdf',
+      kind: 'cv',
+      requestId: 'native-cv-import',
+    };
+    const requests: Request[] = [];
+    const handler = createRestMcpHandler({
+      fetcher: (input, init) => {
+        requests.push(new Request(input, init));
+        return Promise.resolve(Response.json({ data: { id: uuid, state: 'ready' } }));
+      },
+    });
+    const tools = (await readRpc(await handler(request('tools/list')))).result.tools;
+    assert.deepEqual(tools.find((t) => t.name === 'import_document')?._meta, {
+      'openai/fileParams': ['file'],
+    });
+    const result = await readRpc(
+      await handler(request('tools/call', { name: 'import_document', arguments: args })),
+    );
+    assert.equal(requests.length, 1);
+    assert.equal(new URL(requests[0].url).pathname, '/v1/me/documents/import');
+    assert.deepEqual(await requests[0].json(), args);
+    assert(!JSON.stringify(result).includes('credential'));
+  },
+);
+
+Deno.test(
+  'attachment errors explain the next step without reflecting temporary credentials',
+  async () => {
+    for (const code of ['unsupported_file_reference', 'invalid_file']) {
+      const client = createRestClient('a.b.c', undefined, () =>
+        Promise.resolve(
+          Response.json(
+            { code, message: 'https://private.test/file?token=secret' },
+            { status: 400 },
+          ),
+        ),
+      );
+      await assert.rejects(client.call('import_document', {}), (error: unknown) => {
+        assert(error instanceof Error);
+        assert(error.message.includes('https://hiddenjobs.dev/dashboard/career'));
+        assert(!error.message.includes('token=secret'));
+        return true;
+      });
+    }
+  },
+);

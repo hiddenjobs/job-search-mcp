@@ -46,8 +46,13 @@ using:
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | Signed upload            | `create_document_upload` with `mode: "signed"` → client transfers actual bytes to `uploadUrl` → `finalize_document_upload`  |
 | Chunked upload           | `create_document_upload` with `mode: "chunks"` → `upload_document_chunk` for zero-based chunks → `finalize_document_upload` |
-| Supported file reference | `import_document` with the actual HTTPS download reference from an allowlisted client file origin                           |
+| Supported file reference | `import_document` with a client-provided `file` object or `sourceUrl` from an allowlisted HTTPS origin                      |
 | Account upload           | Upload the file in **Profile**, then read the saved CV/document from your assistant                                         |
+
+Prefer a supported file reference: Hidden Jobs downloads the original directly, without requiring
+the assistant to reproduce binary data. File objects contain `download_url` and `file_id`, with
+optional `mime_type` and `file_name`. The original filename and MIME type are supplied separately.
+The host provides the temporary reference; do not invent it or paste it into the conversation.
 
 All routes transfer the original file. Never invent a download URL or claim a file is imported
 before it is ready. Request upload metadata using the actual filename, MIME type, byte count and

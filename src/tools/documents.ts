@@ -69,15 +69,28 @@ export const documentTools: ToolDefinition[] = [
   define(
     'import_document',
     'Import document',
-    'Import a client-provided HTTPS attachment reference from an administrator-approved origin. If the client cannot expose the attachment, use signed upload or chunks. No arbitrary website fetching.',
+    'Import the original attachment directly on the server. Prefer a client-provided file object when available; otherwise provide sourceUrl. Supply exactly one of file or sourceUrl, using the actual filename and MIME type. Only approved HTTPS origins are accepted. Do not invent file references or expose their temporary URLs. If unavailable, follow the setup upload fallback.',
     {
-      sourceUrl: stringProperty(),
+      file: {
+        type: 'object',
+        description:
+          'Client-provided attachment with download_url and file_id; mime_type and file_name are optional.',
+        properties: {
+          download_url: { type: 'string', maxLength: 4096 },
+          file_id: { type: 'string', maxLength: 512 },
+          mime_type: { type: 'string', maxLength: 200 },
+          file_name: { type: 'string', maxLength: 200 },
+        },
+        required: ['download_url', 'file_id'],
+        additionalProperties: false,
+      },
+      sourceUrl: { type: 'string', maxLength: 4096 },
       filename: stringProperty(),
       mimeType: { type: 'string', enum: MIME_TYPES },
       kind: { type: 'string', enum: DOCUMENT_KINDS },
       requestId: key,
     },
-    ['sourceUrl', 'filename', 'mimeType', 'kind', 'requestId'],
+    ['filename', 'mimeType', 'kind', 'requestId'],
     true,
   ),
   define(

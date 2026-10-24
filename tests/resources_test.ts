@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.5.1');
+  assert(flow?.version === '1.6.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -187,6 +187,7 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/setup' }, '')),
   );
   const requirements = [
+    'client-provided file object',
     'mode chunks and a fresh requestId',
     'DNS resolution',
     'redacted',
