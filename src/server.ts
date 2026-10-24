@@ -1,5 +1,9 @@
 import { CareerError } from './errors.ts';
-import { SEARCH_INSTRUCTIONS, CAREER_INSTRUCTIONS } from './resources/workflows.ts';
+import {
+  SEARCH_INSTRUCTIONS,
+  CAREER_INSTRUCTIONS,
+  DOCUMENT_UPLOAD_INSTRUCTIONS,
+} from './resources/workflows.ts';
 import { careerResources, isSharedResource } from './resources/index.ts';
 import { getTools } from './tools/index.ts';
 import { validateCareerArguments as validateArguments } from './tools/validation.ts';
@@ -95,7 +99,7 @@ export function createMcpHandler({
         },
         serverInfo: { name: 'hidden-jobs-mcp-oauth', version: '2.0.0' },
         instructions: careerEnabled
-          ? `${SEARCH_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}`
+          ? `${SEARCH_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}\n\n${DOCUMENT_UPLOAD_INSTRUCTIONS}`
           : SEARCH_INSTRUCTIONS,
       });
     }
