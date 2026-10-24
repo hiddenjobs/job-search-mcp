@@ -33,7 +33,7 @@ export const documentTools: ToolDefinition[] = [
   define(
     'create_document_upload',
     'Create document upload',
-    'Begin a private PDF, DOCX or text upload (maximum 2 MiB). Prefer a signed upload if the client can transfer files; otherwise send base64 chunks. Do not invent attachment URLs or bytes.',
+    'Begin a private PDF, DOCX or text upload (maximum 2 MiB) using actual bytes, size and SHA-256. Try signed when the client can access its URL and transfer bytes. If the URL is redacted, DNS or transfer fails, or direct transfer is unavailable, create a new chunks session with a fresh requestId and upload_document_chunk. If bytes cannot be transferred reliably or chunks fail, ask the user to upload at https://hiddenjobs.dev/dashboard/career, then reread list_cvs. Never replace the original file with a transcription or claim an unconfirmed upload succeeded.',
     {
       filename: stringProperty(),
       mimeType: { type: 'string', enum: MIME_TYPES },
