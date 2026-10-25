@@ -9,11 +9,12 @@ account; client setup requires no backend credentials. See
 This repository maintains the MCP integration contract:
 
 - Tool definitions, argument validation, the JSON-RPC handler and REST implementations.
+- External-source API/RSS adapters, normalization, filtering, continuation and temporary caching in `src/sources/`.
 - Portable skills and their corresponding prompts and workflow resources.
 - Shared guides, document templates and private resource URI patterns.
 - Client connection guides, connection metadata and protocol tests.
 
-The Hidden Jobs application repository maintains the hosted implementation: database migrations,
+The Hidden Jobs application repository reuses a pinned copy of these adapters and maintains the hosted implementation: database migrations,
 account and account access checks, private file storage, document extraction, PDF generation,
 dashboards and deployment configuration.
 
@@ -91,3 +92,19 @@ browser login or refresh tokens. An expired token or empty search result fails t
 To check a development endpoint, set `HIDDEN_JOBS_MCP_URL` and `MCP_RESOURCE_URL` to its public MCP
 URL. Discover its OAuth endpoints from resource metadata. Backend provisioning and deployments are
 managed in the Hidden Jobs application repository.
+
+## External-source adapters
+
+`src/sources/index.ts` exports `createExternalJobs(fetcher, now)`. The fetch and clock dependencies can be injected; importing the module performs no network request. The default fetcher is used only when a search or detail lookup is requested.
+
+```ts
+import { createExternalJobs } from '../src/sources/index.ts';
+
+const sources = createExternalJobs();
+const result = await sources.search(
+  'remoteok',
+  new URLSearchParams({ q: 'typescript', limit: '10' }),
+);
+```
+
+The adapters contain public provider URLs, temporary public-response caching, normalization, source attribution, location filtering and opaque references/cursors. They do not authenticate accounts, enforce subscriptions, query the Hidden Jobs catalogue or store records. The remote MCP still calls the hosted REST API; moving adapters here does not make the MCP client query providers directly. The hosted backend vendors this same source with revision and hash checks. Provider behavior is tested with injected responses, without live requests or credentials.
