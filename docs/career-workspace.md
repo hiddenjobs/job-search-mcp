@@ -68,6 +68,13 @@ text; OCR is not included.
 immutable version. Use `list_cvs` / `get_cv` to select the version, and `set_default_cv` for the
 default. The default is a convenience, not permission to replace an application's selection.
 
+After tailoring a CV, the assistant offers to save a reusable version with a concrete name for
+future applications, even when the offer comes from another source. For example: **“Save this as
+Senior Data Scientist - Iwana Labs in Hidden Jobs, keeping the original?”** After agreement it
+uses `save_document` and `save_cv`, then confirms the saved name and version. A downloaded PDF or
+an application attachment alone does not create a CV-library version. If saving was already
+requested, it proceeds without asking again.
+
 You can delegate the choice: **“Compare all my saved CVs against this offer, choose the best match
 and use it to prepare my application.”** The assistant reads all active CVs, using each latest ready
 version unless you specify otherwise, compares their actual contents with the offer and explains its

@@ -3,7 +3,7 @@ export const cvsTools: ToolDefinition[] = [
   define(
     'list_cvs',
     'List CVs',
-    'Use before preparing an application or asking the user for a CV. List saved CVs with immutable versions; read the chosen CV with get_cv and get_document. If no suitable CV exists, ask for one and offer to save it using the setup workflow.',
+    'Use before preparing an application or asking the user for a CV. After tailoring one, offer to save a named reusable version in Hidden Jobs; an exported file alone is not a saved version. List saved CVs with immutable versions; read the chosen CV with get_cv and get_document. If no suitable CV exists, ask for one and offer to save it using the setup workflow.',
     {
       ...page,
       includeArchived: { type: 'boolean' },
@@ -12,14 +12,14 @@ export const cvsTools: ToolDefinition[] = [
   define(
     'get_cv',
     'Get CV',
-    'Read a CV and a page of its versions. Read the linked document to get its text.',
+    'Read a CV and a page of its versions. Read the linked document to get its text. After tailoring this CV, offer to save a named version for future applications, preserving its original; call save_cv only when authorized.',
     { cvId: id, ...page },
     ['cvId'],
   ),
   define(
     'save_cv',
     'Save CV',
-    'After an agreed CV import or save_document, create a CV or append an immutable version from the ready documentId. Use the returned exact version for the application. Never overwrite an existing version or claim success before the tool confirms it.',
+    'Use after an authorized import or tailored-CV save. Proactively offer a concrete name for the reusable version when not yet authorized; do not wait for the user to ask if it was saved. Once authorized, create a CV or append an immutable version from the ready documentId returned by import_document or save_document. Use the returned exact version for the application. Never overwrite an existing version or claim success before the tool confirms it.',
     {
       cvId: id,
       name: stringProperty(),

@@ -1,4 +1,4 @@
-import { getWorkflow, workflows } from '../src/resources/workflows.ts';
+import { getWorkflow, workflows, PROACTIVE_INSTRUCTIONS } from '../src/resources/workflows.ts';
 import { careerResources } from '../src/resources/index.ts';
 import { createRestMcpHandler } from '../src/index.ts';
 import { assert, rpc, UUID, readRpc, parseResource } from './helpers.ts';
@@ -90,11 +90,56 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.6.0');
+  assert(flow?.version === '1.7.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
 });
+
+Deno.test(
+  'career follow-ups reach clients before a workflow is selected without writes',
+  async () => {
+    let calls = 0;
+    const handler = createRestMcpHandler({
+      fetcher: () => {
+        calls++;
+        throw new Error('Guidance discovery must not access account data');
+      },
+    });
+    const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+    const firstContext = initialized.result.instructions.slice(0, 512);
+    for (const expected of ['named version', 'daily/weekly', 'Ask before saving']) {
+      assert(firstContext.includes(expected), `Missing early follow-up: ${expected}`);
+    }
+    const listed = await readRpc(await handler(rpc('tools/list', {}, '')));
+    for (const name of ['get_cv', 'get_document', 'render_document', 'open_application_link']) {
+      const tool = listed.result.tools.find((tool) => tool.name === name);
+      assert(tool?.description.includes('named'), `${name} must offer a concrete CV save`);
+      assert(tool?.description.includes('version'), `${name} must distinguish a CV version`);
+    }
+    for (const name of ['setup', 'search', 'apply', 'export', 'outcome']) {
+      const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+      const resource = await readRpc(
+        await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+      );
+      for (const instructions of [
+        prompt.result.messages[0].content.text,
+        parseResource(resource.result.contents[0].text).instructions,
+      ]) {
+        assert(typeof instructions === 'string');
+        assert(instructions.startsWith(PROACTIVE_INSTRUCTIONS));
+        assert(instructions.includes('An offer of a next step is not permission to execute it'));
+        assert(instructions.includes('skip declined or completed offers'));
+      }
+    }
+    const apply = getWorkflow('apply')?.instructions ?? '';
+    assert(apply.includes('Do not finish with only downloads'));
+    assert(apply.includes('If that save was already requested, execute it'));
+    assert(apply.includes('External application tracking is not supported, but a CV'));
+    assert(getWorkflow('search')?.instructions.includes('this alert covers Hidden Jobs only'));
+    assert.equal(calls, 0);
+  },
+);
 
 Deno.test('shared resource names cannot resolve inherited object properties', async () => {
   const handler = createRestMcpHandler({
