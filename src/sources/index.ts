@@ -37,15 +37,24 @@ function parseContinuation(value: unknown): SourceContinuation {
   const { page, next, offset } = row;
   if (
     page !== undefined &&
-    (typeof page !== 'number' || !Number.isSafeInteger(page) || page < 1 || page > 10000)
+    (typeof page !== 'number' ||
+      !Number.isSafeInteger(page) ||
+      page < 1 ||
+      page > SOURCE_LIMITS.pageNumber)
   )
     throw invalidSourceArguments();
   if (
     offset !== undefined &&
-    (typeof offset !== 'number' || !Number.isSafeInteger(offset) || offset < 0 || offset > 100000)
+    (typeof offset !== 'number' ||
+      !Number.isSafeInteger(offset) ||
+      offset < 0 ||
+      offset > SOURCE_LIMITS.offset)
   )
     throw invalidSourceArguments();
-  if (next !== undefined && (typeof next !== 'string' || next.length > 1024))
+  if (
+    next !== undefined &&
+    (typeof next !== 'string' || next.length > SOURCE_LIMITS.nativeCursorLength)
+  )
     throw invalidSourceArguments();
   return { page, next, offset };
 }
@@ -87,7 +96,7 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
         .trim()
         .slice(0, SOURCE_LIMITS.queryLength);
       const location = text(params.get('remoteLocation')) || text(params.get('location')) || 'All';
-      const requestedLimit = Number(text(params.get('limit')) || 20);
+      const requestedLimit = Number(text(params.get('limit')) || SOURCE_LIMITS.defaultPageSize);
       if (!Number.isSafeInteger(requestedLimit)) throw invalidSourceArguments();
       const limit = Math.max(1, Math.min(requestedLimit, SOURCE_LIMITS.pageSize));
       const key = JSON.stringify([source, query, location, limit]);

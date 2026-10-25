@@ -61,7 +61,17 @@ export interface SourceSearchResult {
 
 export const SOURCE_LIMITS = {
   queryLength: 120,
+  defaultPageSize: 20,
   pageSize: 50,
+  pageNumber: 10000,
+  offset: 100000,
+  nativeCursorLength: 1024,
+  urlLength: 1000,
+  trackingValueLength: 200,
+  titleLength: 500,
+  nativeIdLength: 1000,
+  descriptionLength: 60000,
+  previewLength: 600,
   referenceLength: 2000,
   cursorLength: 2048,
 } as const;

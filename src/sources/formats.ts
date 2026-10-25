@@ -1,5 +1,5 @@
 import { anonymousJob } from './privacy.ts';
-import { providers, type ExternalJob, type Source } from './contracts.ts';
+import { SOURCE_LIMITS, providers, type ExternalJob, type Source } from './contracts.ts';
 
 export type Row = Record<string, unknown>;
 export const record = (value: unknown): Row =>
@@ -25,7 +25,7 @@ export const decode = (value: string): Row =>
 
 /** Only canonical provider pages can become references or application destinations. */
 export function sourceUrl(source: Source, value: unknown): string {
-  if (text(value).length > 1000) throw new Error('Invalid provider URL');
+  if (text(value).length > SOURCE_LIMITS.urlLength) throw new Error('Invalid provider URL');
   const url = new URL(text(value));
   if (
     url.origin !== providers[source].origin ||
@@ -33,7 +33,8 @@ export function sourceUrl(source: Source, value: unknown): string {
     url.password ||
     [...url.searchParams].some(
       ([key, value]) =>
-        !['utm_source', 'utm_medium', 'utm_campaign'].includes(key) || value.length > 200,
+        !['utm_source', 'utm_medium', 'utm_campaign'].includes(key) ||
+        value.length > SOURCE_LIMITS.trackingValueLength,
     ) ||
     url.hash ||
     !providers[source].path.test(url.pathname)
@@ -114,7 +115,8 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     text(row.guid) ||
     text(row.url);
   if (!title || !nativeId) return null; // Remote OK includes a non-job legal notice.
-  if (title.length > 500 || nativeId.length > 1000) throw new Error('Invalid provider job');
+  if (title.length > SOURCE_LIMITS.titleLength || nativeId.length > SOURCE_LIMITS.nativeIdLength)
+    throw new Error('Invalid provider job');
   const url = sourceUrl(source, text(row.url) || text(row.applicationLink));
   const locations = strings(row.locationRestrictions);
   const location = text(row.jobGeo) || text(row.location) || locations.join(', ');
@@ -122,10 +124,13 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     id: nativeId,
     title,
     company: text(row.companyName) || text(row.company),
-    description: (text(row.jobDescription) || text(row.description)).slice(0, 60000),
+    description: (text(row.jobDescription) || text(row.description)).slice(
+      0,
+      SOURCE_LIMITS.descriptionLength,
+    ),
     descriptionPreview: (text(row.jobExcerpt) || text(row.excerpt) || text(row.description)).slice(
       0,
-      600,
+      SOURCE_LIMITS.previewLength,
     ),
     location: location || (source === 'himalayas' ? 'Worldwide' : null),
     category: strings(row.jobIndustry ?? row.categories).join(', ') || text(row.category),
@@ -140,7 +145,7 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     description: text(publicFields.description),
     salary: text(publicFields.salary),
     location: typeof publicFields.location === 'string' ? publicFields.location : null,
-    id: encode({ source, nativeId, query: title.slice(0, 120), url }),
+    id: encode({ source, nativeId, query: title.slice(0, SOURCE_LIMITS.queryLength), url }),
     source,
     sourceName: providers[source].name,
     sourceUrl: url,
