@@ -65,7 +65,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'get_job',
     title: 'Read job details',
     description:
-      'Read a job from its original source using the source and id returned by search_jobs. ITjobs provides remote-only summary metadata; check its original page for full requirements. External details are rechecked through the public provider API/feed. Hidden Jobs original application URLs remain excluded.',
+      'Read a job from its original source using the source and id returned by search_jobs. External details are rechecked through the public provider API/feed. Hidden Jobs original application URLs remain excluded.',
     inputSchema: {
       type: 'object',
       properties: { idOrSlug: { type: 'string', maxLength: 2000 }, source },
