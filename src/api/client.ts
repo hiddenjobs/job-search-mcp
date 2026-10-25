@@ -120,6 +120,10 @@ export function createRestClient(
           revision_conflict: 'This record changed. Read it again before saving.',
           not_found: 'The requested record was not found.',
           invalid_arguments: 'Invalid operation arguments.',
+          unsupported_file_reference:
+            'This attachment origin is not approved. Use a supported file reference or upload at https://hiddenjobs.dev/dashboard/career.',
+          invalid_file:
+            'The file could not be downloaded or verified. Request a fresh supported attachment reference or upload at https://hiddenjobs.dev/dashboard/career.',
           email_unconfirmed:
             'Confirm your Hidden Jobs email address before creating, changing or resuming email alerts.',
           alert_limit:

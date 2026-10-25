@@ -1,5 +1,6 @@
 import { CareerError } from './errors.ts';
 import {
+  PROACTIVE_INSTRUCTIONS,
   SEARCH_INSTRUCTIONS,
   CAREER_INSTRUCTIONS,
   DOCUMENT_UPLOAD_INSTRUCTIONS,
@@ -99,7 +100,7 @@ export function createMcpHandler({
         },
         serverInfo: { name: 'hidden-jobs-mcp-oauth', version: '2.0.0' },
         instructions: careerEnabled
-          ? `${SEARCH_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}\n\n${DOCUMENT_UPLOAD_INSTRUCTIONS}`
+          ? `${PROACTIVE_INSTRUCTIONS}\n\n${SEARCH_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}\n\n${DOCUMENT_UPLOAD_INSTRUCTIONS}`
           : SEARCH_INSTRUCTIONS,
       });
     }

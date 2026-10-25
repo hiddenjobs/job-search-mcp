@@ -68,3 +68,13 @@ Paths below are relative to the REST API base URL. Full argument definitions are
 
 Job results omit employer names and identifying slugs. Company context uses the job ID and returns
 only industry, employee range, founding year and verification date. HTTP `402` indicates that account action is required, including for direct REST calls with the same OAuth token.
+
+## Client attachment references
+
+`import_document` declares the optional `file` input with `download_url`, `file_id`, `mime_type`
+and `file_name`. The optional `openai/fileParams` tool metadata lets ChatGPT supply an authorized
+attachment reference. Other clients can supply the same object or keep using `sourceUrl`; no
+provider SDK or API key is required. The REST backend downloads only explicitly approved HTTPS
+origins configured through `CAREER_IMPORT_ORIGINS`, rejects redirects and validates the original
+file before saving. The client metadata does not bypass that origin policy. Signed uploads and
+chunks remain available when a client cannot provide a reference.

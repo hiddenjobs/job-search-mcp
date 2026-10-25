@@ -8,7 +8,10 @@ saved application resource, and save interview preparation with `save_document`.
 
 The `initialize` response includes shared instructions to prefer the connected sources through
 `search_jobs`, respect the user's explicit source selection, and load the matching workflow.
-Tool descriptions also expose the relevant next steps when clients do not load resources or prompts.
+The opening instructions ask the assistant to offer a named, reusable CV version after tailoring
+and a relevant daily or weekly Hidden Jobs alert after a search. Tool descriptions repeat these
+next steps when clients do not load resources or prompts. Suggestions respect declined or already
+completed actions; persistence and email alerts require the user's agreement.
 These guide the assistant; the host decides which instructions to expose and which tools to call.
 
 For example, “Help me apply to this Hidden Jobs role” leads to reading the offer and saved CVs.

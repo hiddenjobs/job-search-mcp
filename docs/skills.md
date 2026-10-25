@@ -109,13 +109,16 @@ but are not saved in application tracking and must not be passed to tools requir
 > tailored CV and cover letter.
 
 The assistant explains its choice and preserves the selected base version. If you name a CV, it uses
-that CV instead. You still review the documents and submit the application yourself.
+that CV instead. After tailoring, it offers to save a named reusable version in Hidden Jobs,
+preserving the original. Downloading or sending a document does not save that CV-library version;
+the assistant uses `save_cv` after agreement and confirms the result. Application submission
+depends on the client and the employer's process.
 
 - Skill file: [SKILL.md](../skills/apply/SKILL.md)
 - MCP prompt: `apply`
 - Resource: `hiddenjobs://workflows/apply`
 - Tool instructions: `get_workflow` with `{"name":"apply"}`
-- Typical tools: `save_application`, `get_cv`, `save_document`, `update_application`,
+- Typical tools: `save_application`, `get_cv`, `save_document`, `save_cv`, `update_application`,
   `open_application_link`.
 
 ## `review` — Review before sending
