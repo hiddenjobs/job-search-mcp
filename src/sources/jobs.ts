@@ -118,7 +118,10 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     (typeof row.id === 'number' && row.id ? String(row.id) : text(row.id)) ||
     text(row.guid) ||
     text(row.url);
-  if (!title || !nativeId) return null; // Remote OK includes a non-job legal notice.
+  if (!title || !nativeId) {
+    if (source === 'itjobs') throw new Error('Invalid provider job');
+    return null; // Remote OK includes a non-job legal notice.
+  }
   if (title.length > SOURCE_LIMITS.titleLength || nativeId.length > SOURCE_LIMITS.nativeIdLength)
     throw new Error('Invalid provider job');
   const url = sourceUrl(source, text(row.url) || text(row.applicationLink));

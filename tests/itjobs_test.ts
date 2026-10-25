@@ -246,3 +246,36 @@ Deno.test(
     }
   },
 );
+
+Deno.test(
+  'malformed remote ITjobs entries produce source errors or partial-result warnings',
+  async () => {
+    const invalid = [
+      item({ title: '' }),
+      item({ title: '   ' }),
+      item()
+        .replace(/<guid[^>]*>.*?<\/guid>/, '')
+        .replace(/<link>.*?<\/link>/, ''),
+    ];
+    for (const malformed of invalid) {
+      const unavailable = await createExternalJobs(() =>
+        Promise.resolve(new Response(feed(malformed))),
+      ).search('itjobs', params());
+      assert.equal(unavailable.error?.code, 'source_unavailable');
+      assert.deepEqual(unavailable.jobs, []);
+
+      const partial = await createExternalJobs(() =>
+        Promise.resolve(new Response(feed(malformed, item({ id: 2 })))),
+      ).search('itjobs', params());
+      assert.equal(partial.error, undefined);
+      assert.equal(partial.jobs.length, 1);
+      assert.equal(partial.warning, 'Some malformed provider entries were omitted.');
+    }
+    const excluded = await createExternalJobs(() =>
+      Promise.resolve(new Response(feed(item({ title: '', model: 'Híbrido' })))),
+    ).search('itjobs', params());
+    assert.deepEqual(excluded.jobs, []);
+    assert.equal(excluded.error, undefined);
+    assert.equal(excluded.warning, undefined);
+  },
+);
