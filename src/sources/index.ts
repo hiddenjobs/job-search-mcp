@@ -164,8 +164,7 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
         });
         let next: SourceContinuation | null =
           offset + limit < matched.length ? { ...state, offset: offset + limit } : null;
-        if (!next && page.next)
-          next = source === 'jobicy' ? { next: page.next } : { page: Number(page.next) };
+        next ??= page.next;
         return {
           source,
           jobs,
@@ -190,6 +189,7 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
     },
     async get(source: Source, reference: string) {
       let ref: Row;
+      let state: SourceContinuation;
       try {
         if (reference.length > SOURCE_LIMITS.referenceLength) throw invalidSourceArguments();
         ref = decode(reference);
@@ -205,20 +205,13 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
         )
           throw invalidSourceArguments();
         sourceUrl(source, ref.url);
-        parseContinuation(ref.continuation);
+        state = parseContinuation(ref.continuation);
       } catch {
         throw invalidSourceArguments();
       }
       let jobs: ExternalJob[];
       try {
-        jobs = (
-          await readNormalizedPage(
-            source,
-            text(ref.query),
-            Number(ref.limit),
-            parseContinuation(ref.continuation),
-          )
-        ).jobs;
+        jobs = (await readNormalizedPage(source, text(ref.query), Number(ref.limit), state)).jobs;
       } catch {
         throw new CareerError(
           'source_unavailable',

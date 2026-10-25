@@ -1,5 +1,4 @@
 import { parseFeed, record, text } from './formats.ts';
-
 import type { ProviderPage, SourceContinuation, Source } from './contracts.ts';
 
 const CACHE_CAPACITY = 16;
@@ -95,13 +94,16 @@ export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.n
       }
       const data = record(await loadPublicResponse(url, source === 'jobicy' ? HOUR_MS : DAY_MS));
       if (!Array.isArray(data.jobs)) throw new Error('source_unavailable');
+      const cursor = text(data.nextCursor);
       return {
         rows: data.jobs,
         next:
           source === 'jobicy'
-            ? text(data.nextCursor) || null
+            ? cursor
+              ? { next: cursor }
+              : null
             : data.jobs.length
-              ? String((continuation.page ?? 1) + 1)
+              ? { page: (continuation.page ?? 1) + 1 }
               : null,
         coverage:
           source === 'jobicy'

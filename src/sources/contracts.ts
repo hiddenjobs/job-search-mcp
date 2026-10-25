@@ -23,7 +23,7 @@ export interface SourceContinuation {
 
 export interface ProviderPage {
   rows: unknown[];
-  next: string | null;
+  next: SourceContinuation | null;
   coverage: string;
 }
 
