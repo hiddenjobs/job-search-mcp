@@ -94,6 +94,7 @@ src/
     account.ts             Workflow discovery, reports, export and reset
     schemas.ts             Shared schema definitions
     validation.ts          Tool argument validation
+  sources/                 Public external-source adapters, normalization, caching and privacy
   resources/
     index.ts               Resources and prompts
     workflows.ts           Canonical workflow instructions
