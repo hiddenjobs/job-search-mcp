@@ -1,5 +1,12 @@
 import type { ToolDefinition } from './schemas.ts';
-export const JOB_SOURCES = ['hiddenjobs', 'jobicy', 'weworkremotely', 'remoteok', 'himalayas'];
+export const JOB_SOURCES = [
+  'hiddenjobs',
+  'jobicy',
+  'weworkremotely',
+  'remoteok',
+  'himalayas',
+  'itjobs',
+];
 const source = {
   type: 'string',
   enum: JOB_SOURCES,
@@ -11,7 +18,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'search_jobs',
     title: 'Search jobs',
     description:
-      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK and Himalayas instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links are included. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs. After presenting results, offer a named daily/weekly Hidden Jobs alert for the agreed role/location when relevant; respect source exclusions and create it only with approval. Offer saved-CV matching when that is the more useful next step.',
+      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK, Himalayas and ITjobs instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links are included. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs. After presenting results, offer a named daily/weekly Hidden Jobs alert for the agreed role/location when relevant; respect source exclusions and create it only with approval. Offer saved-CV matching when that is the more useful next step.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -19,11 +26,11 @@ export const jobTools: ToolDefinition[] = [
         sources: {
           type: 'array',
           minItems: 1,
-          maxItems: 5,
+          maxItems: JOB_SOURCES.length,
           uniqueItems: true,
           items: { type: 'string', enum: JOB_SOURCES },
           description:
-            'Required selection; no default. hiddenjobs, jobicy, weworkremotely, remoteok, himalayas.',
+            'Required selection; no default. hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs.',
         },
         cursors: {
           type: 'object',
@@ -58,7 +65,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'get_job',
     title: 'Read job details',
     description:
-      'Read a job from its original source using the source and id returned by search_jobs. External details are rechecked through the public provider API/feed. Hidden Jobs original application URLs remain excluded.',
+      'Read a job from its original source using the source and id returned by search_jobs. ITjobs provides remote-only summary metadata; check its original page for full requirements. External details are rechecked through the public provider API/feed. Hidden Jobs original application URLs remain excluded.',
     inputSchema: {
       type: 'object',
       properties: { idOrSlug: { type: 'string', maxLength: 2000 }, source },

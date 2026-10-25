@@ -10,7 +10,7 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
   "params": {
     "name": "search_jobs",
     "arguments": {
-      "sources": ["hiddenjobs", "jobicy", "weworkremotely", "remoteok", "himalayas"],
+      "sources": ["hiddenjobs", "jobicy", "weworkremotely", "remoteok", "himalayas", "itjobs"],
       "query": "typescript",
       "remoteLocation": "EUROPE",
       "limit": 10
@@ -19,15 +19,16 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
 }
 ```
 
-| Source           | Data and access                                                                                                                                                                                       |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hiddenjobs`     | Hidden Jobs database. Original employer application links are retrieved with open_application_link.                                                                                                   |
-| `jobicy`         | Free public API. Recent seven-day feed, delayed by three hours. Keep the Jobicy source and listing link.                                                                                              |
-| `weworkremotely` | Free public RSS. Current feed only, with WWR attribution and links.                                                                                                                                   |
-| `remoteok`       | Free public API. Current feed only. Mention Remote OK, preserve its listing link, do not use its logo. Render a followed link where the client permits; clients control final link attributes.        |
-| `himalayas`      | Free public search API, refreshed daily. Preserve Himalayas attribution and the supplied applicationLink; do not replace it with an employer/ATS link. Country and timezone restrictions both matter. |
+| Source           | Data and access                                                                                                                                                                                                                                                                                                                                      |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hiddenjobs`     | Hidden Jobs database. Original employer application links are retrieved with open_application_link.                                                                                                                                                                                                                                                  |
+| `jobicy`         | Free public API. Recent seven-day feed, delayed by three hours. Keep the Jobicy source and listing link.                                                                                                                                                                                                                                             |
+| `weworkremotely` | Free public RSS. Current feed only, with WWR attribution and links.                                                                                                                                                                                                                                                                                  |
+| `remoteok`       | Free public API. Current feed only. Mention Remote OK, preserve its listing link, do not use its logo. Render a followed link where the client permits; clients control final link attributes.                                                                                                                                                       |
+| `himalayas`      | Free public search API, refreshed daily. Preserve Himalayas attribution and the supplied applicationLink; do not replace it with an employer/ATS link. Country and timezone restrictions both matter.                                                                                                                                                |
+| `itjobs`         | Public RSS, no API key. Fully remote roles only; hybrid/unknown work models are excluded. Portugal-focused coverage, up to 100 recent feed entries before filtering. Attribute to ITjobs, preserve the original itjobs.pt listing/application link, and do not use its logo. Summary metadata only; read the original listing for full requirements. |
 
-External offers are fetched from their provider. No job records, snapshots or user-specific search results are persisted. A bounded in-memory public-response cache reduces polling; it contains no account tokens or private data and is not a database. Its lifetime is one hour for Jobicy, WWR and Remote OK, and one day for Himalayas. A restarted process starts with an empty cache.
+External offers are fetched from their provider. No job records, snapshots or user-specific search results are persisted. A bounded in-memory public-response cache reduces polling; it contains no account tokens or private data and is not a database. Its lifetime is one hour for Jobicy, WWR, Remote OK and ITjobs, and one day for Himalayas. A restarted process starts with an empty cache.
 
 ## Results and continuation
 
@@ -45,7 +46,7 @@ Pass the **source and id from the same result** to `get_job` and `open_applicati
 
 WWR and Himalayas listing pages can reject automated HTML requests with a security challenge while opening normally in a browser. The MCP reads their public API/feed rather than scraping listing pages. Users open the supplied provider link in their browser. A provider may require its own account to apply; for example, Himalayas can direct Apply now to its signup page. This is separate from Hidden Jobs Access and does not prevent searching or reading the offer through MCP.
 
-MCP still uses the connected account's OAuth session. REST also accepts scoped API keys; its existing GET /jobs defaults to hiddenjobs when sources is omitted. Explicit REST sources are comma-separated, and cursors is a JSON object in the query string. Job reads use the source query parameter; application-link requests use source in the JSON body. Authentication and quotas still apply; external providers never receive the user's token, profile or CV.
+MCP still uses the connected account's OAuth session. REST also accepts scoped API keys; GET /jobs requires explicit sources, just like MCP. Explicit REST sources are comma-separated, and cursors is a JSON object in the query string. Job reads use the source query parameter; application-link requests use source in the JSON body. Authentication and quotas still apply; external providers never receive the user's token, profile or CV.
 
 Career records that require a Hidden Jobs jobId (saved evaluations, job activity, application tracking and email alerts) continue to operate on Hidden Jobs offers only. An assistant can compare external offers and draft CVs or letters, but must not pass external references to those tools or claim to have saved an external application.
 
@@ -57,3 +58,11 @@ Career records that require a Hidden Jobs jobId (saved evaluations, job activity
 - [Himalayas API](https://himalayas.app/api) and [terms](https://himalayas.app/terms)
 
 Himalayas permits API integrations but separately restricts redistribution to job boards, aggregators and job-search engines. This adapter queries the provider and does not import its listings into Hidden Jobs. That architecture is not a substitute for any permission the provider requires for a particular deployment. Remote OK's followed-link requirement also depends on the consuming client's rendering. No provider endorsement or blanket authorization is implied.
+
+## ITjobs scope and permission
+
+The operator proposed and authorized this source in [issue #6](https://github.com/hiddenjobs/job-search-mcp/issues/6). The hosted implementation reads `https://feeds.itjobs.pt/feed/emprego?remote=1&limit=100` at most once per hour per running provider client, including after upstream errors. Concurrent requests and different search filters share the same temporary response; process restarts and independent instances have independent caches, as with the existing providers. No listings are written to the Hidden Jobs catalogue.
+
+Only `Modelo de trabalho: Remoto` is included. The feed has no upstream pagination; continuation covers the matching portion of the current 100-item feed. It is not a complete ITjobs search. Portugal is a source-level eligibility context, not a guarantee of residency, visa or language eligibility. For example, a Portugal search can include a Lisbon remote role; a Spain or Worldwide search must not assume it accepts those candidates. Salary, when present, is gross annual EUR; `n/d` remains unknown.
+
+Example: `search_jobs` with `{"sources":["itjobs"],"query":"java","remoteLocation":"PT"}`. Preserve source attribution and check the original page before applying. This contract needs the coordinated hosted backend release; opening or merging this PR alone does not deploy that release.
