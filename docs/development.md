@@ -108,3 +108,16 @@ const result = await sources.search(
 ```
 
 The adapters contain public provider URLs, temporary public-response caching, normalization, source attribution, location filtering and opaque references/cursors. They do not authenticate accounts, enforce subscriptions, query the Hidden Jobs catalogue or store records. The remote MCP still calls the hosted REST API; moving adapters here does not make the MCP client query providers directly. The hosted backend vendors this same source with revision and hash checks. Provider behavior is tested with injected responses, without live requests or credentials.
+
+The source modules follow the same domain/client/schema/validation split as the rest of the repository:
+
+| Module                  | Responsibility                                                             |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `sources/index.ts`      | Coordinate searches, details and continuation                              |
+| `sources/client.ts`     | Provider HTTP requests and response cache, like `api/client.ts`            |
+| `sources/schemas.ts`    | Source definitions, typed contracts and limits, like `tools/schemas.ts`    |
+| `sources/validation.ts` | Validate references, cursors and provider URLs, like `tools/validation.ts` |
+| `sources/jobs.ts`       | Interpret and normalize provider job data and location eligibility         |
+| `sources/privacy.ts`    | Sanitize the fields exposed to callers                                     |
+
+For example, change provider transport policy in `client.ts`, and job field mapping in `jobs.ts`.

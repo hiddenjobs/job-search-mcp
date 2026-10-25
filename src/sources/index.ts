@@ -1,15 +1,16 @@
 import { CareerError } from '../errors.ts';
+import { normalize, locationMatches } from './jobs.ts';
 import {
-  type Row,
   record,
   text,
-  normalize,
-  locationMatches,
   encode,
   decode,
   sourceUrl,
-} from './formats.ts';
-import { createProviderClient } from './providers.ts';
+  invalidSourceArguments,
+  parseContinuation,
+  type Row,
+} from './validation.ts';
+import { createProviderClient } from './client.ts';
 import {
   SOURCE_LIMITS,
   providers,
@@ -18,46 +19,10 @@ import {
   type ExternalJobSummary,
   type SourceContinuation,
   type SourceSearchResult,
-} from './contracts.ts';
-export type { SourceSearchResult } from './contracts.ts';
+} from './schemas.ts';
+export type { SourceSearchResult } from './schemas.ts';
 
 export const isExternal = (source: string): source is Source => Object.hasOwn(providers, source);
-const invalidSourceArguments = () =>
-  new CareerError(
-    'invalid_arguments',
-    'Invalid source, job reference or cursor. Read search_jobs again.',
-    400,
-  );
-function parseContinuation(value: unknown): SourceContinuation {
-  if (value !== undefined && (!value || typeof value !== 'object' || Array.isArray(value)))
-    throw invalidSourceArguments();
-  const row = record(value);
-  if (Object.keys(row).some((key) => !['page', 'next', 'offset'].includes(key)))
-    throw invalidSourceArguments();
-  const { page, next, offset } = row;
-  if (
-    page !== undefined &&
-    (typeof page !== 'number' ||
-      !Number.isSafeInteger(page) ||
-      page < 1 ||
-      page > SOURCE_LIMITS.pageNumber)
-  )
-    throw invalidSourceArguments();
-  if (
-    offset !== undefined &&
-    (typeof offset !== 'number' ||
-      !Number.isSafeInteger(offset) ||
-      offset < 0 ||
-      offset > SOURCE_LIMITS.offset)
-  )
-    throw invalidSourceArguments();
-  if (
-    next !== undefined &&
-    (typeof next !== 'string' || next.length > SOURCE_LIMITS.nativeCursorLength)
-  )
-    throw invalidSourceArguments();
-  return { page, next, offset };
-}
 /** Reads public provider APIs/feeds; no database, email, user documents or write operations. */
 export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now) {
   const client = createProviderClient(fetcher, now);

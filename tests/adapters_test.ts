@@ -1,14 +1,8 @@
 import { assert } from './helpers.ts';
-import type { Source } from '../src/sources/contracts.ts';
+import type { Source } from '../src/sources/schemas.ts';
 import { createExternalJobs } from '../src/sources/index.ts';
-import {
-  normalize,
-  parseFeed,
-  locationMatches,
-  decode,
-  encode,
-  type Row,
-} from '../src/sources/formats.ts';
+import { normalize, parseFeed, locationMatches } from '../src/sources/jobs.ts';
+import { decode, encode, type Row } from '../src/sources/validation.ts';
 const requireJob = (source: Source, value: unknown) => {
   const job = normalize(source, value);
   assert.ok(job);

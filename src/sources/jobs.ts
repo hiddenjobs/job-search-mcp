@@ -1,47 +1,7 @@
 import { anonymousJob } from './privacy.ts';
-import { SOURCE_LIMITS, providers, type ExternalJob, type Source } from './contracts.ts';
+import { SOURCE_LIMITS, providers, type ExternalJob, type Source } from './schemas.ts';
+import { record, text, strings, encode, sourceUrl, type Row } from './validation.ts';
 
-export type Row = Record<string, unknown>;
-export const record = (value: unknown): Row =>
-  value && typeof value === 'object' && !Array.isArray(value) ? (value as Row) : {};
-export const text = (value: unknown): string => (typeof value === 'string' ? value : '');
-export const strings = (value: unknown): string[] =>
-  Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-export const encode = (value: unknown): string =>
-  btoa(String.fromCharCode(...new TextEncoder().encode(JSON.stringify(value))))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-export const decode = (value: string): Row =>
-  record(
-    JSON.parse(
-      new TextDecoder('utf-8', { fatal: true }).decode(
-        Uint8Array.from(atob(value.replace(/-/g, '+').replace(/_/g, '/')), (ch) =>
-          ch.charCodeAt(0),
-        ),
-      ),
-    ),
-  );
-
-/** Only canonical provider pages can become references or application destinations. */
-export function sourceUrl(source: Source, value: unknown): string {
-  if (text(value).length > SOURCE_LIMITS.urlLength) throw new Error('Invalid provider URL');
-  const url = new URL(text(value));
-  if (
-    url.origin !== providers[source].origin ||
-    url.username ||
-    url.password ||
-    [...url.searchParams].some(
-      ([key, value]) =>
-        !['utm_source', 'utm_medium', 'utm_campaign'].includes(key) ||
-        value.length > SOURCE_LIMITS.trackingValueLength,
-    ) ||
-    url.hash ||
-    !providers[source].path.test(url.pathname)
-  )
-    throw new Error('Invalid provider URL');
-  return url.href;
-}
 const entity = (value: string) =>
   value.replace(/&(?:amp|lt|gt|quot|apos|nbsp);|&#(?:x[0-9a-f]+|\d+);/gi, (match) => {
     const named: Record<string, string> = {

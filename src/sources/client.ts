@@ -1,5 +1,6 @@
-import { parseFeed, record, text } from './formats.ts';
-import type { ProviderPage, SourceContinuation, Source } from './contracts.ts';
+import { parseFeed } from './jobs.ts';
+import { record, text } from './validation.ts';
+import type { ProviderPage, SourceContinuation, Source } from './schemas.ts';
 
 const CACHE_CAPACITY = 16;
 const HOUR_MS = 60 * 60 * 1000;
