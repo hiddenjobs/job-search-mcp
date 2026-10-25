@@ -1,20 +1,6 @@
 import { anonymousJob } from './privacy.ts';
+import { providers, type ExternalJob, type Source } from './contracts.ts';
 
-export const providers = {
-  jobicy: { name: 'Jobicy', origin: 'https://jobicy.com', path: /^\/jobs\/[^/]+$/ },
-  weworkremotely: {
-    name: 'We Work Remotely',
-    origin: 'https://weworkremotely.com',
-    path: /^\/remote-jobs\/[^/]+$/,
-  },
-  remoteok: { name: 'Remote OK', origin: 'https://remoteok.com', path: /^\/remote-jobs\/[^/]+$/ },
-  himalayas: {
-    name: 'Himalayas',
-    origin: 'https://himalayas.app',
-    path: /^\/companies\/[^/]+\/jobs\/[^/]+$/,
-  },
-};
-export type Source = keyof typeof providers;
 export type Row = Record<string, unknown>;
 export const record = (value: unknown): Row =>
   value && typeof value === 'object' && !Array.isArray(value) ? (value as Row) : {};
@@ -39,7 +25,7 @@ export const decode = (value: string): Row =>
 
 /** Only canonical provider pages can become references or application destinations. */
 export function sourceUrl(source: Source, value: unknown): string {
-  if (text(value).length > 1000) throw Error('Invalid provider URL');
+  if (text(value).length > 1000) throw new Error('Invalid provider URL');
   const url = new URL(text(value));
   if (
     url.origin !== providers[source].origin ||
@@ -52,7 +38,7 @@ export function sourceUrl(source: Source, value: unknown): string {
     url.hash ||
     !providers[source].path.test(url.pathname)
   )
-    throw Error('Invalid provider URL');
+    throw new Error('Invalid provider URL');
   return url.href;
 }
 const entity = (value: string) =>
@@ -72,7 +58,7 @@ const entity = (value: string) =>
     return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : '';
   });
 export function parseFeed(xml: string): Row[] {
-  if (!/<rss\b/i.test(xml) || /<!DOCTYPE|<!ENTITY/i.test(xml)) throw Error('Invalid RSS');
+  if (!/<rss\b/i.test(xml) || /<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error('Invalid RSS');
   return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].map(([, item]) => {
     const field = (name: string) => {
       const value =
@@ -120,7 +106,7 @@ function salary(row: Row, source: Source): string {
     .filter(Boolean)
     .join(' ');
 }
-export function normalize(source: Source, value: unknown): Row | null {
+export function normalize(source: Source, value: unknown): ExternalJob | null {
   const row = record(value);
   const title = (text(row.jobTitle) || text(row.position) || text(row.title)).trim();
   const nativeId =
@@ -128,7 +114,7 @@ export function normalize(source: Source, value: unknown): Row | null {
     text(row.guid) ||
     text(row.url);
   if (!title || !nativeId) return null; // Remote OK includes a non-job legal notice.
-  if (title.length > 500 || nativeId.length > 1000) throw Error('Invalid provider job');
+  if (title.length > 500 || nativeId.length > 1000) throw new Error('Invalid provider job');
   const url = sourceUrl(source, text(row.url) || text(row.applicationLink));
   const locations = strings(row.locationRestrictions);
   const location = text(row.jobGeo) || text(row.location) || locations.join(', ');
@@ -150,6 +136,10 @@ export function normalize(source: Source, value: unknown): Row | null {
   });
   return {
     ...publicFields,
+    title: text(publicFields.title),
+    description: text(publicFields.description),
+    salary: text(publicFields.salary),
+    location: typeof publicFields.location === 'string' ? publicFields.location : null,
     id: encode({ source, nativeId, query: title.slice(0, 120), url }),
     source,
     sourceName: providers[source].name,
@@ -268,7 +258,7 @@ export function locationMatches(value: unknown, code: string): boolean {
         EMEA: ['EMEA', ...europe, 'Middle East', 'Africa'],
       } as Partial<Record<string, string[]>>
     )[code];
-  if (!aliases) throw Error('Unsupported location');
+  if (!aliases) throw new Error('Unsupported location');
   return aliases.some((name) =>
     new RegExp('(^|[^a-z])' + name.toLowerCase() + '([^a-z]|$)').test(location),
   );

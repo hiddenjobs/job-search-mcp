@@ -1,4 +1,5 @@
 import { assert } from './helpers.ts';
+import type { Source } from '../src/sources/contracts.ts';
 import { createExternalJobs } from '../src/sources/index.ts';
 import {
   normalize,
@@ -6,14 +7,12 @@ import {
   locationMatches,
   decode,
   encode,
-  type Source,
   type Row,
 } from '../src/sources/formats.ts';
-type Job = Row & {
-  id: string;
-  description: string;
-  salary: string;
-  attribution: { name: string; url: string; linkRel?: string; logoAllowed?: boolean };
+const requireJob = (source: Source, value: unknown) => {
+  const job = normalize(source, value);
+  assert.ok(job);
+  return job;
 };
 const rss =
   '<rss><channel><item><title>Acme: TypeScript Engineer</title><link>https://weworkremotely.com/remote-jobs/acme-typescript</link><region>Europe</region><description><![CDATA[<p>Acme TypeScript &amp; SQL</p>]]></description><pubDate>Mon, 19 Oct 2026 10:00:00 GMT</pubDate></item></channel></rss>';
@@ -73,26 +72,23 @@ Deno.test(
     for (const source of Object.keys({ ...samples, weworkremotely: {} }) as Source[]) {
       const result = await service.search(source, params());
       assert.equal(result.jobs.length, 1, JSON.stringify(result));
-      const job = result.jobs[0] as Job;
+      const job = result.jobs[0];
       assert.equal(job.source, source);
       assert.equal(job.sourceUrl, job.applicationUrl);
       assert.ok(job.attribution.name);
       assert.equal(job.company, undefined);
       assert.ok(!JSON.stringify(job).includes('"company"'));
-      const detail = (await service.get(source, job.id)) as Job;
+      const detail = await service.get(source, job.id);
       assert.ok(detail.description.includes('[company withheld]'));
       assert.ok(detail.description.includes('TypeScript'));
       assert.equal(detail.attribution.url, job.sourceUrl);
     }
     assert.ok(requests.every((r) => !new Headers(r.init?.headers).has('authorization')));
-    const remote = normalize('remoteok', samples.remoteok) as Job;
+    const remote = requireJob('remoteok', samples.remoteok);
     assert.equal(remote.salary, '');
     assert.equal(remote.attribution.linkRel, 'follow');
-    assert.match((normalize('himalayas', samples.himalayas) as Job).salary, /hourly/);
-    assert.deepEqual(
-      (normalize('himalayas', samples.himalayas) as Job).timezoneRestrictions,
-      [0, 1, 2],
-    );
+    assert.match(requireJob('himalayas', samples.himalayas).salary, /hourly/);
+    assert.deepEqual(requireJob('himalayas', samples.himalayas).timezoneRestrictions, [0, 1, 2]);
   },
 );
 Deno.test(
@@ -223,7 +219,7 @@ Deno.test(
     );
     assert.equal(second.jobs.length, 10);
     assert.equal(calls, 1);
-    assert.notEqual(String(first.jobs[0].id), second.jobs[0].id);
+    assert.notEqual(first.jobs[0].id, second.jobs[0].id);
     const end = await service.search(
       'himalayas',
       params({ cursors: JSON.stringify({ himalayas: second.nextCursor }) }),
@@ -261,9 +257,9 @@ Deno.test(
       params({ cursors: JSON.stringify({ jobicy: first.nextCursor }) }),
     );
     assert.equal(seen[1].searchParams.get('cursor'), 'native-cursor');
-    await assert.rejects(() => service.get('remoteok', String(first.jobs[0].id)), { status: 400 });
+    await assert.rejects(() => service.get('remoteok', first.jobs[0].id), { status: 400 });
     await assert.rejects(() => service.get('jobicy', 'not-base64'), { status: 400 });
-    const ref = decode(String(first.jobs[0].id));
+    const ref = decode(first.jobs[0].id);
     await assert.rejects(() => service.get('jobicy', encode({ ...ref, nativeId: 'missing' })), {
       status: 404,
     });
@@ -299,7 +295,7 @@ Deno.test(
     }
     const absent = createExternalJobs(() => Promise.resolve(Response.json([])));
     assert.equal((await absent.search('remoteok', params())).jobs.length, 0);
-    const reference = (normalize('jobicy', samples.jobicy) as Job).id;
+    const reference = requireJob('jobicy', samples.jobicy).id;
     const forged = encode({
       ...decode(reference),
       query: 'typescript',
@@ -419,6 +415,11 @@ Deno.test(
       'bad',
       encode({ key: 'wrong', state: {} }),
       ...[
+        null,
+        [],
+        false,
+        'not-an-object',
+        { page: '1' },
         { extra: 1 },
         { page: 0 },
         { page: 10001 },
@@ -435,9 +436,12 @@ Deno.test(
         { status: 400 },
       );
     }
+    for (const limit of ['NaN', 'Infinity', '1.5']) {
+      await assert.rejects(() => service.search('jobicy', params({ limit })), { status: 400 });
+    }
     assert.equal(count, 0);
     const first = await service.search('jobicy', params());
-    const reference = decode(String(first.jobs[0].id));
+    const reference = decode(first.jobs[0].id);
     for (const change of [
       { nativeId: '' },
       { nativeId: 3 },
