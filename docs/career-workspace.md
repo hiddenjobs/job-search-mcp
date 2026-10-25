@@ -46,8 +46,13 @@ using:
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
 | Signed upload            | `create_document_upload` with `mode: "signed"` → client transfers actual bytes to `uploadUrl` → `finalize_document_upload`  |
 | Chunked upload           | `create_document_upload` with `mode: "chunks"` → `upload_document_chunk` for zero-based chunks → `finalize_document_upload` |
-| Supported file reference | `import_document` with the actual HTTPS download reference from an allowlisted client file origin                           |
+| Supported file reference | `import_document` with a client-provided `file` object or `sourceUrl` from an allowlisted HTTPS origin                      |
 | Account upload           | Upload the file in **Profile**, then read the saved CV/document from your assistant                                         |
+
+Prefer a supported file reference: Hidden Jobs downloads the original directly, without requiring
+the assistant to reproduce binary data. File objects contain `download_url` and `file_id`, with
+optional `mime_type` and `file_name`. The original filename and MIME type are supplied separately.
+The host provides the temporary reference; do not invent it or paste it into the conversation.
 
 All routes transfer the original file. Never invent a download URL or claim a file is imported
 before it is ready. Request upload metadata using the actual filename, MIME type, byte count and
@@ -62,6 +67,13 @@ text; OCR is not included.
 `save_document` stores a draft or uploaded text. `save_cv` adds a document to a named CV as an
 immutable version. Use `list_cvs` / `get_cv` to select the version, and `set_default_cv` for the
 default. The default is a convenience, not permission to replace an application's selection.
+
+After tailoring a CV, the assistant offers to save a reusable version with a concrete name for
+future applications, even when the offer comes from another source. For example: **“Save this as
+Senior Data Scientist - Iwana Labs in Hidden Jobs, keeping the original?”** After agreement it
+uses `save_document` and `save_cv`, then confirms the saved name and version. A downloaded PDF or
+an application attachment alone does not create a CV-library version. If saving was already
+requested, it proceeds without asking again.
 
 You can delegate the choice: **“Compare all my saved CVs against this offer, choose the best match
 and use it to prepare my application.”** The assistant reads all active CVs, using each latest ready

@@ -338,12 +338,14 @@ user-provided text; OCR is not available.
 
 ## `import_document`
 
-Import a client-provided HTTPS attachment reference from an administrator-approved origin. If the
-client cannot expose the attachment, use signed upload or chunks. No arbitrary website fetching.
+Import the original attachment directly on the server. Provide exactly one of `file` (a
+client-provided file reference) or `sourceUrl`. Only approved HTTPS origins are accepted. If the
+client cannot expose a reference, follow the setup workflow's upload alternatives.
 
 | Argument    | Type   | Required | Constraints / notes                                                                                                         |
 | ----------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `sourceUrl` | string | Yes      | —                                                                                                                           |
+| `file`      | object | No       | Client reference: required `download_url` and `file_id`; optional `mime_type` and `file_name`. Use instead of `sourceUrl`.  |
+| `sourceUrl` | string | No       | —                                                                                                                           |
 | `filename`  | string | Yes      | —                                                                                                                           |
 | `mimeType`  | string | Yes      | Values: application/pdf, text/plain, text/markdown, application/vnd.openxmlformats-officedocument.wordprocessingml.document |
 | `kind`      | string | Yes      | Values: cv, cover_letter, interview, template, report, other                                                                |
@@ -579,8 +581,8 @@ Arguments: `{}`.
 Original files accept PDF, DOCX and UTF-8 text/Markdown, up to 2 MiB and 20 PDF pages.
 `create_document_upload` accepts `mode: "signed"` or `"chunks"`; chunks contain at most 8192 decoded
 bytes and use zero-based indexes. Finalization verifies size, SHA-256 and structure.
-`import_document` accepts only allowlisted HTTPS client file origins; an attachment is not
-automatically a remote file reference.
+`import_document` accepts a client-provided `file` object or `sourceUrl` from an allowlisted HTTPS
+origin. Hidden Jobs downloads the original; temporary references are not saved in document metadata.
 
 `render_document` generates a PDF from a saved text document and optional supported layout template.
 No OCR or executable template engine is provided. `check_document` checks extraction and layout

@@ -26,6 +26,7 @@ export interface ToolDefinition {
   inputSchema: Record<string, unknown>;
   securitySchemes: unknown[];
   annotations: Record<string, boolean>;
+  _meta?: Record<string, unknown>;
 }
 export const define = (
   name: string,
@@ -41,6 +42,7 @@ export const define = (
   description,
   inputSchema: { type: 'object', properties, required, additionalProperties: false },
   securitySchemes: [{ type: 'oauth2', scopes: ['email'] }],
+  ...(name === 'import_document' ? { _meta: { 'openai/fileParams': ['file'] } } : {}),
   annotations: {
     readOnlyHint: !write,
     destructiveHint: destructive,
