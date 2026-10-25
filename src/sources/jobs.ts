@@ -78,8 +78,16 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
   if (title.length > SOURCE_LIMITS.titleLength || nativeId.length > SOURCE_LIMITS.nativeIdLength)
     throw new Error('Invalid provider job');
   const url = sourceUrl(source, text(row.url) || text(row.applicationLink));
-  const locations = strings(row.locationRestrictions);
-  const location = text(row.jobGeo) || text(row.location) || locations.join(', ');
+  const restrictions = row.locationRestrictions;
+  const validRestrictions =
+    Array.isArray(restrictions) &&
+    restrictions.every((item: unknown) => typeof item === 'string' && !!item.trim());
+  const location =
+    source === 'himalayas'
+      ? validRestrictions
+        ? strings(restrictions).join(', ') || 'Worldwide'
+        : null
+      : text(row.jobGeo) || text(row.location) || strings(restrictions).join(', ') || null;
   const publicFields = anonymousJob({
     id: nativeId,
     title,
@@ -92,7 +100,7 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
       0,
       SOURCE_LIMITS.previewLength,
     ),
-    location: location || (source === 'himalayas' ? 'Worldwide' : null),
+    location,
     category: strings(row.jobIndustry ?? row.categories).join(', ') || text(row.category),
     employmentType: strings(row.jobType).join(', ') || text(row.employmentType),
     createdAt: date(row.pubDate ?? row.date),
@@ -184,11 +192,38 @@ const europe = [
   'Sweden',
   'Ukraine',
 ];
+const canonicalLocation = (value: string): string =>
+  (countries[value.toUpperCase()]?.[0] ?? value).toLowerCase();
+const knownLocations = new Set(
+  [
+    ...Object.values(countries).flatMap((names) => names ?? []),
+    ...europe,
+    'Americas',
+    'North America',
+    'South America',
+    'Latin America',
+    'LATAM',
+    'APAC',
+    'Asia Pacific',
+    'Asia',
+    'Oceania',
+    'EMEA',
+    'Middle East',
+    'Africa',
+  ].map(canonicalLocation),
+);
+function locationList(value: string): string[] | null {
+  const names = value
+    .trim()
+    .replace(/^(?:anywhere (?:in|within) |(?:in|within|from) )(?:the )?/, '')
+    .split(/[,;|/]|\s+(?:or|and)\s+/)
+    .map((name) => canonicalLocation(name.trim()));
+  return names.every((name) => knownLocations.has(name)) ? names : null;
+}
+
 export function locationMatches(value: unknown, code: string): boolean {
   if (!code || code === 'All') return true;
-  const location = text(value).toLowerCase();
-  if (/\b(worldwide|anywhere|global)\b/.test(location)) return true;
-  if (code === 'Worldwide') return false;
+
   const country = countries[code];
   const regional = ['US', 'CA', 'MX'].includes(code)
     ? ['Americas', 'North America']
@@ -223,8 +258,18 @@ export function locationMatches(value: unknown, code: string): boolean {
         EMEA: ['EMEA', ...europe, 'Middle East', 'Africa'],
       } as Partial<Record<string, string[]>>
     )[code];
-  if (!aliases) throw new Error('Unsupported location');
-  return aliases.some((name) =>
-    new RegExp('(^|[^a-z])' + name.toLowerCase() + '([^a-z]|$)').test(location),
-  );
+  if (!aliases && code !== 'Worldwide') throw new Error('Unsupported location');
+  const location = text(value).toLowerCase().replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+  const parts = location.split(/\s+(?:except|excluding|but not|not including)\s+/);
+  if (parts.length > 2) return false;
+  const included = parts[0].replace(/^remote[\s:-]+/, '');
+  const excluded = parts.length === 1 ? [] : locationList(parts[1]);
+  if (!excluded) return false;
+  const accepted = new Set((aliases ?? []).map(canonicalLocation));
+  if (excluded.some((name) => accepted.has(name))) return false;
+  const worldwide =
+    /^(?:worldwide|global|anywhere|anywhere in (?:the )?world|work from anywhere)$/.test(included);
+  if (code === 'Worldwide') return worldwide && excluded.length === 0;
+  if (worldwide) return true;
+  return locationList(included)?.some((name) => accepted.has(name)) ?? false;
 }

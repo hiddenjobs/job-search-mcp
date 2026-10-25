@@ -8,6 +8,12 @@ export function anonymousJob(row: Record<string, unknown>): Record<string, unkno
       v.trim().replace(/,?\s+(?:inc\.?|llc|ltd\.?|limited|gmbh|corporation|corp\.?)$/i, ''),
     ])
     .sort((a, b) => b.length - a.length);
+  const names = [...new Set(identities)].map((identity) =>
+    identity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+'),
+  );
+  const employer = names.length
+    ? new RegExp(`(?<![\\p{L}\\p{N}_])(?:${names.join('|')})(?![\\p{L}\\p{N}_])`, 'giu')
+    : null;
   const entities: Record<string, string> = {
     amp: '&',
     nbsp: ' ',
@@ -18,7 +24,7 @@ export function anonymousJob(row: Record<string, unknown>): Record<string, unkno
   };
   const clean = (value: unknown): unknown => {
     if (typeof value === 'string') {
-      let text = value
+      const text = value
         .replace(/&#(x[0-9a-f]+|[0-9]+);/gi, (_match, code: string) => {
           const n = code.toLowerCase().startsWith('x') ? parseInt(code.slice(1), 16) : Number(code);
           return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : '';
@@ -31,14 +37,7 @@ export function anonymousJob(row: Record<string, unknown>): Record<string, unkno
         .replace(/<[^>]*>/g, ' ')
         .replace(/https?:\/\/[^\s<>"')]+/gi, '[link withheld]')
         .replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi, '[email withheld]');
-      for (const identity of identities) {
-        const escaped = identity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        text = text.replace(
-          new RegExp(escaped.replace(/\s+/g, '\\s+'), 'gi'),
-          '[company withheld]',
-        );
-      }
-      return text;
+      return employer ? text.replace(employer, '[company withheld]') : text;
     }
     if (Array.isArray(value)) return value.map(clean);
     if (value && typeof value === 'object') {
