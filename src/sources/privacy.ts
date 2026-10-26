@@ -55,6 +55,7 @@ export function anonymousJob(row: Record<string, unknown>): Record<string, unkno
     'location',
     'category',
     'employmentType',
+    'contract',
     'jobType',
     'createdAt',
     'updatedAt',

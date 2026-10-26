@@ -34,10 +34,18 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
   ) {
     const page = await client.page(source, query, limit, state);
     let rejected = 0;
+    const seenIds = new Set<string>();
+    const seenUrls = new Set<string>();
     const jobs = page.rows.flatMap((row) => {
       try {
         const job = normalize(source, row);
         if (!job) return [];
+        if (source === 'itjobs') {
+          const nativeId = text(decode(job.id).nativeId);
+          if (seenIds.has(nativeId) || seenUrls.has(job.sourceUrl)) return [];
+          seenIds.add(nativeId);
+          seenUrls.add(job.sourceUrl);
+        }
         job.id = encode({
           ...decode(job.id),
           query,
@@ -52,7 +60,8 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
         return [];
       }
     });
-    if (page.rows.length && !jobs.length) throw new Error('source_unavailable');
+    if (page.rows.length && !jobs.length && (source !== 'itjobs' || rejected > 0))
+      throw new Error('source_unavailable');
     return { ...page, jobs, rejected };
   }
   return {
@@ -118,7 +127,8 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
             (source === 'jobicy' ||
               source === 'himalayas' ||
               words.every((word) => haystack.includes(word))) &&
-            locationMatches(job.location, location)
+            // The ITjobs feed is Portugal-focused; its city labels are display metadata.
+            locationMatches(source === 'itjobs' ? 'Portugal' : job.location, location)
           );
         });
         const offset = state.offset ?? 0;

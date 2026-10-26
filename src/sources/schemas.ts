@@ -6,6 +6,11 @@ export const providers = {
     path: /^\/remote-jobs\/[^/]+$/,
   },
   remoteok: { name: 'Remote OK', origin: 'https://remoteok.com', path: /^\/remote-jobs\/[^/]+$/ },
+  itjobs: {
+    name: 'ITjobs',
+    origin: 'https://www.itjobs.pt',
+    path: /^\/oferta\/\d+\/[^/]+$/,
+  },
   himalayas: {
     name: 'Himalayas',
     origin: 'https://himalayas.app',
@@ -38,6 +43,9 @@ export interface ExternalJobSummary extends Record<string, unknown> {
   sourceName: string;
   sourceUrl: string;
   applicationUrl: string;
+  workModel?: 'Remote';
+  contract?: string;
+  descriptionKind?: 'summary';
   attribution: {
     name: string;
     url: string;

@@ -107,7 +107,7 @@ const result = await sources.search(
 );
 ```
 
-The adapters contain public provider URLs, temporary public-response caching, normalization, source attribution, location filtering and opaque references/cursors. They do not authenticate accounts, enforce subscriptions, query the Hidden Jobs catalogue or store records. The remote MCP still calls the hosted REST API; moving adapters here does not make the MCP client query providers directly. The hosted backend vendors this same source with revision and hash checks. Provider behavior is tested with injected responses, without live requests or credentials.
+The adapters contain public provider URLs, temporary public-response caching, normalization, source attribution, location filtering and opaque references/cursors. They do not authenticate accounts, enforce subscriptions, query the Hidden Jobs catalogue or store records. The remote MCP still calls the hosted REST API; moving adapters here does not make the MCP client query providers directly. The hosted backend vendors this same source with revision and hash checks. Provider behavior is tested with injected responses, without live requests or credentials. ITjobs uses the same modules for its remote-only RSS summaries, with Portugal-focused eligibility and an hourly cache shared across queries and detail reads.
 
 The source modules follow the same domain/client/schema/validation split as the rest of the repository:
 

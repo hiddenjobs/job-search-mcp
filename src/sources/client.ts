@@ -2,6 +2,7 @@ import { parseFeed } from './jobs.ts';
 import { record, text } from './validation.ts';
 import type { ProviderPage, SourceContinuation, Source } from './schemas.ts';
 
+const ITJOBS_FEED = 'https://feeds.itjobs.pt/feed/emprego?remote=1&limit=100';
 const CACHE_CAPACITY = 16;
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -12,12 +13,16 @@ const MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
 /** Public data only. The cache is bounded, temporary and never contains user tokens. */
 export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.now) {
   const cache = new Map<string, { expires: number; value: Promise<unknown> }>();
-  async function loadPublicResponse(url: URL, ttl: number, rss = false): Promise<unknown> {
+  async function loadPublicResponse(
+    url: URL,
+    ttl: number,
+    rss: 'weworkremotely' | 'itjobs' | false = false,
+  ): Promise<unknown> {
     const key = url.href;
     const entry = cache.get(key);
     if (entry && entry.expires > now()) return entry.value;
     if (cache.size >= CACHE_CAPACITY) {
-      const oldest = cache.keys().next().value;
+      const oldest = [...cache.keys()].find((key) => key !== ITJOBS_FEED);
       if (oldest !== undefined) cache.delete(oldest);
     }
     const value = (async () => {
@@ -48,13 +53,13 @@ export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.n
       } finally {
         await reader.cancel();
       }
-      return rss ? parseFeed(body) : (JSON.parse(body) as unknown);
+      return rss ? parseFeed(body, rss) : (JSON.parse(body) as unknown);
     })();
     cache.set(key, { expires: now() + ttl, value });
     try {
       return await value;
     } catch (error) {
-      cache.set(key, { expires: now() + FAILURE_COOLDOWN_MS, value });
+      cache.set(key, { expires: now() + (key === ITJOBS_FEED ? ttl : FAILURE_COOLDOWN_MS), value });
       throw error;
     }
   }
@@ -65,12 +70,22 @@ export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.n
       limit: number,
       continuation: SourceContinuation = {},
     ): Promise<ProviderPage> {
+      if (source === 'itjobs') {
+        const rows = await loadPublicResponse(new URL(ITJOBS_FEED), HOUR_MS, 'itjobs');
+        if (!Array.isArray(rows)) throw new Error('source_unavailable');
+        return {
+          rows,
+          next: null,
+          coverage:
+            'Current remote-only feed (up to 100 entries); Portugal-focused summary metadata, refreshed hourly.',
+        };
+      }
       if (source === 'remoteok' || source === 'weworkremotely') {
         const rss = source === 'weworkremotely';
         const data = await loadPublicResponse(
           new URL(rss ? 'https://weworkremotely.com/remote-jobs.rss' : 'https://remoteok.com/api'),
           HOUR_MS,
-          rss,
+          rss ? 'weworkremotely' : false,
         );
         if (!Array.isArray(data)) throw new Error('source_unavailable');
         return {

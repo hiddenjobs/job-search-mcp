@@ -8,7 +8,7 @@ flowchart LR
     MCP --> REST[Hidden Jobs REST API]
     REST --> Jobs[Hidden Jobs offers and company facts]
     REST --> Adapters[Public source adapters: src/sources]
-    Adapters --> Sources[Jobicy / WWR / Remote OK / Himalayas]
+    Adapters --> Sources[Jobicy / WWR / Remote OK / Himalayas / ITjobs]
     REST --> Career[Private profile, CVs and applications]
     REST --> Files[Document extraction and PDF export]
     User --> Account[Profile and Applications dashboard]
