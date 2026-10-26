@@ -49,7 +49,7 @@ Deno.test(
     };
     try {
       assert.equal((await readRpc(await send('initialize'))).result.protocolVersion, '2025-06-18');
-      assert.equal((await readRpc(await send('tools/list'))).result.tools.length, 46);
+      assert.equal((await readRpc(await send('tools/list'))).result.tools.length, 45);
       assert.equal(operations.length, 0);
       const denied = await send(
         'tools/call',

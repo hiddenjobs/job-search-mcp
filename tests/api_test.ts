@@ -49,7 +49,7 @@ Deno.test(
     const tools = (await readRpc(await handler(request('tools/list')))).result.tools.filter(
       (tool) => tool.name !== 'upload_cv',
     );
-    assert(tools.length === 45 && Object.keys(restRoutes).length === 45);
+    assert(tools.length === 44 && Object.keys(restRoutes).length === 44);
     assert.equal(requests.length, 0, 'Discovery called REST');
     for (const tool of tools) {
       const args = sample(tool.inputSchema);
@@ -77,7 +77,7 @@ Deno.test(
         assert(new URL(sent.url).searchParams.get('q') === 'typescript');
       }
     }
-    assert.equal(requests.length, 45, 'Tool calls were duplicated');
+    assert.equal(requests.length, 44, 'Tool calls were duplicated');
   },
 );
 Deno.test(

@@ -28,7 +28,7 @@ const readme = await read('README.md');
 const reference = await read('docs/tool-reference.md');
 const skillGuide = await read('docs/skills.md');
 const resources = await read('docs/resources.md');
-assert(tools.length === 46, 'Update documented tool count');
+assert(tools.length === 45, 'Update documented tool count');
 assert(Object.keys(workflows).length === 15, 'Update documented skill/prompt count');
 assert(
   Object.keys(guides).length + Object.keys(templates).length + Object.keys(workflows).length === 22,
