@@ -127,8 +127,8 @@ Deno.test(
         parseResource(resource.result.contents[0].text).instructions,
       ]) {
         assert(typeof instructions === 'string');
-    assert(!instructions.includes('upload_document_chunk'));
-    assert(!instructions.includes('mode chunks'));
+        assert(!instructions.includes('upload_document_chunk'));
+        assert(!instructions.includes('mode chunks'));
         assert(instructions.startsWith(PROACTIVE_INSTRUCTIONS));
         assert(instructions.includes('An offer of a next step is not permission to execute it'));
         assert(instructions.includes('skip declined or completed offers'));

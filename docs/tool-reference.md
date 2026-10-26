@@ -168,35 +168,35 @@ or application.
 
 Search explicitly selected sources. External provider links are free; Hidden Jobs original application URLs remain excluded. See [job sources](job-sources.md) for attribution, coverage and pagination.
 
-| Argument         | Type    | Required | Constraints / notes                                                                              |
-| ---------------- | ------- | -------- | ------------------------------------------------------------------------------------------------ |
-| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas. No default. |
-| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                           |
-| `query`          | string  | No       | —                                                                                                |
-| `category`       | string  | No       | —                                                                                                |
-| `employmentType` | string  | No       | —                                                                                                |
-| `jobType`        | string  | No       | —                                                                                                |
-| `remoteLocation` | string  | No       | —                                                                                                |
-| `page`           | integer | No       | Min: 1; Default: 1                                                                               |
-| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                     |
+| Argument         | Type    | Required | Constraints / notes                                                                                      |
+| ---------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs. No default. |
+| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                                   |
+| `query`          | string  | No       | —                                                                                                        |
+| `category`       | string  | No       | —                                                                                                        |
+| `employmentType` | string  | No       | —                                                                                                        |
+| `jobType`        | string  | No       | —                                                                                                        |
+| `remoteLocation` | string  | No       | —                                                                                                        |
+| `page`           | integer | No       | Min: 1; Default: 1                                                                                       |
+| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                             |
 
 ## `get_job`
 
 Read details using the exact source and opaque id returned by search_jobs. External details are rechecked through the public API/feed. Hidden Jobs original application URLs are excluded.
 
-| Argument   | Type   | Required | Constraints / notes                                                                            |
-| ---------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
-| `idOrSlug` | string | Yes      | Job ID returned by search_jobs.                                                                |
-| `source`   | string | Yes      | hiddenjobs, jobicy, weworkremotely, remoteok or himalayas. Pass the source returned by search. |
+| Argument   | Type   | Required | Constraints / notes                                                                                    |
+| ---------- | ------ | -------- | ------------------------------------------------------------------------------------------------------ |
+| `idOrSlug` | string | Yes      | Job ID returned by search_jobs.                                                                        |
+| `source`   | string | Yes      | hiddenjobs, jobicy, weworkremotely, remoteok, himalayas or itjobs. Pass the source returned by search. |
 
 ## `open_application_link`
 
 For Hidden Jobs, retrieve the original employer application URL. For external offers, return the supplied provider URL for free. Does not submit anything.
 
-| Argument   | Type   | Required | Constraints / notes                                                                            |
-| ---------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
-| `idOrSlug` | string | Yes      | Job ID returned by search_jobs.                                                                |
-| `source`   | string | Yes      | hiddenjobs, jobicy, weworkremotely, remoteok or himalayas. Pass the source returned by search. |
+| Argument   | Type   | Required | Constraints / notes                                                                                    |
+| ---------- | ------ | -------- | ------------------------------------------------------------------------------------------------------ |
+| `idOrSlug` | string | Yes      | Job ID returned by search_jobs.                                                                        |
+| `source`   | string | Yes      | hiddenjobs, jobicy, weworkremotely, remoteok, himalayas or itjobs. Pass the source returned by search. |
 
 ## `get_company`
 
