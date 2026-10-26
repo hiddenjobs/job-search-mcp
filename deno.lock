@@ -18,8 +18,10 @@
     "packageJson": {
       "dependencies": [
         "npm:@eslint/js@10.0.1",
+        "npm:@modelcontextprotocol/ext-apps@2.0.3",
         "npm:@types/deno@2.7.0",
         "npm:@types/node@22.20.5",
+        "npm:esbuild@0.28.2",
         "npm:eslint-config-prettier@10.1.8",
         "npm:eslint@10.13.0",
         "npm:prettier@3.9.10",

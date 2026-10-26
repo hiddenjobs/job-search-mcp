@@ -40,7 +40,7 @@ authorizes career reads and writes for that account.
 | Layer                           | Responsibility                                                                                         |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | 15 skills / prompts / workflows | Guide setup, search, ranking, tailoring, review, export, interviews and tracking                       |
-| 45 tools                        | Read and save account data, search offers and transfer/render documents                                |
+| 44 tools                        | Read and save account data, search offers and transfer/render documents                                |
 | 22 shared resources             | Workflow instructions, review guides and text templates                                                |
 | Four private resource patterns  | Profile, CV, application and document access with OAuth and account ownership                          |
 | Your assistant                  | Analysis, writing, interview practice and proposed updates                                             |

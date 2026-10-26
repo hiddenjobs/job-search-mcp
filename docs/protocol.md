@@ -155,7 +155,7 @@ enables; unsupported methods return a method-not-found error.
 
 JSON-RPC bodies are limited to 16 KiB. Original document files are limited to 2 MiB and 20 PDF
 pages. Transfer the actual file via a signed upload URL, allowlisted client download reference, or
-chunks of at most 8192 decoded bytes. File transfer is explicit; a path or attachment mentioned in a
+the in-chat upload panel. File transfer is explicit; a path or attachment mentioned in a
 chat is not a file upload. See the [workspace guide](career-workspace.md#cv-and-document-transfer).
 
 ## Notifications and errors

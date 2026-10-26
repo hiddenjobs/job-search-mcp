@@ -10,5 +10,5 @@
     "types": ["deno", "node"],
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts"]
+  "include": ["src/**/*.ts", "scripts/**/*.ts", "tests/**/*.ts", "ui/**/*.ts"]
 }

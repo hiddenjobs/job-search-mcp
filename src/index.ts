@@ -5,6 +5,7 @@ interface RestMcpOptions {
   apiBaseUrl?: string;
   metadataUrl?: string;
   careerEnabled?: boolean;
+  uploadOrigins?: string[];
   fetcher?: typeof fetch;
 }
 
@@ -13,6 +14,7 @@ export function createRestMcpHandler(options: RestMcpOptions = {}) {
   return createMcpHandler({
     metadataUrl: options.metadataUrl,
     careerEnabled: options.careerEnabled,
+    uploadOrigins: options.uploadOrigins,
     execute: (token, name, args) =>
       createRestClient(token, options.apiBaseUrl, options.fetcher).call(name, args),
   });

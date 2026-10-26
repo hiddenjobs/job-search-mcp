@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default defineConfig(
-  { ignores: ['coverage/**', 'dist/**'] },
+  { ignores: ['coverage/**', 'dist/**', 'src/ui/panel.generated.ts'] },
   {
     files: ['**/*.ts'],
     extends: [

@@ -19,6 +19,7 @@ interface HandlerOptions {
   execute: ExecuteTool;
   metadataUrl?: string;
   careerEnabled?: boolean;
+  uploadOrigins?: string[];
 }
 const RESOURCE_METADATA = 'https://hiddenjobs.dev/.well-known/oauth-protected-resource/mcp';
 const headers = {
@@ -44,6 +45,7 @@ export function createMcpHandler({
   execute,
   metadataUrl = RESOURCE_METADATA,
   careerEnabled = true,
+  uploadOrigins,
 }: HandlerOptions) {
   const tools = getTools(careerEnabled);
   const denied = (id: unknown, failure: CareerError) => {
@@ -91,6 +93,7 @@ export function createMcpHandler({
         protocolVersion: '2025-06-18',
         capabilities: {
           tools: { listChanged: false },
+          ...(careerEnabled ? { extensions: { 'io.modelcontextprotocol/ui': {} } } : {}),
           ...(careerEnabled
             ? {
                 resources: { subscribe: false, listChanged: false },
@@ -159,10 +162,26 @@ export function createMcpHandler({
       if (resourceRead) {
         return response(
           id,
-          await careerResources.readResource(uri, (operation, arguments_ = {}) =>
-            execute(token, operation, arguments_),
+          await careerResources.readResource(
+            uri,
+            (operation, arguments_ = {}) => execute(token, operation, arguments_),
+            uploadOrigins,
           ),
         );
+      }
+      if (name === 'upload_cv') {
+        // A presentation-only tool. REST still validates this account before showing the panel.
+        await execute(token, 'get_candidate_profile', {});
+        return response(id, {
+          isError: false,
+          content: [
+            {
+              type: 'text',
+              text: 'Select your PDF or DOCX in the upload panel and confirm the save. Wait for the user; the CV is not saved yet. If the panel is unavailable, use https://hiddenjobs.dev/dashboard/career.',
+            },
+          ],
+          structuredContent: { name: args.name ?? '' },
+        });
       }
       const wrapped = { data: await execute(token, name, args) };
       return response(id, {

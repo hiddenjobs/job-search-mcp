@@ -11,7 +11,7 @@ Deno.test(
         throw new Error('Unexpected REST call');
       },
     });
-    assert.equal(careerResources.resourceList().resources.length, 22);
+    assert.equal(careerResources.resourceList().resources.length, 23);
     assert.equal(careerResources.promptList().prompts.length, 15);
     for (const resource of careerResources.resourceList().resources) {
       const result = await readRpc(await handler(rpc('resources/read', { uri: resource.uri }, '')));
@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.7.1');
+  assert(flow?.version === '1.8.1');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -127,6 +127,8 @@ Deno.test(
         parseResource(resource.result.contents[0].text).instructions,
       ]) {
         assert(typeof instructions === 'string');
+        assert(!instructions.includes('upload_document_chunk'));
+        assert(!instructions.includes('mode chunks'));
         assert(instructions.startsWith(PROACTIVE_INSTRUCTIONS));
         assert(instructions.includes('An offer of a next step is not permission to execute it'));
         assert(instructions.includes('skip declined or completed offers'));
@@ -233,11 +235,11 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
   );
   const requirements = [
     'client-provided file object',
-    'mode chunks and a fresh requestId',
+    'upload_cv',
+    'Return the panel immediately',
+    'finalize_document_upload after the direct transfer',
     'DNS resolution',
     'redacted',
-    'never the signed session',
-    'every chunk is acknowledged',
     'SHA-256',
     'https://hiddenjobs.dev/dashboard/career',
     'reread list_cvs and get_cv',
@@ -248,6 +250,8 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     parseResource(setupResource.result.contents[0].text).instructions,
   ]) {
     assert(typeof instructions === 'string');
+    assert(!instructions.includes('upload_document_chunk'));
+    assert(!instructions.includes('mode chunks'));
     for (const requirement of requirements) assert(instructions.includes(requirement), requirement);
   }
 });
