@@ -32,14 +32,14 @@ Deno.test(
       rpc('tools/call', {
         name: 'search_jobs',
         arguments: {
-          sources: ['jobicy', 'himalayas'],
+          sources: ['jobicy', 'himalayas', 'itjobs'],
           query: 'typescript',
-          cursors: { jobicy: 'opaque' },
+          cursors: { jobicy: 'opaque', itjobs: 'itjobs-page' },
         },
       }),
     );
-    assert.equal(sent[0].searchParams.get('sources'), 'jobicy,himalayas');
-    assert.equal(sent[0].searchParams.get('cursors'), '{"jobicy":"opaque"}');
+    assert.equal(sent[0].searchParams.get('sources'), 'jobicy,himalayas,itjobs');
+    assert.equal(sent[0].searchParams.get('cursors'), '{"jobicy":"opaque","itjobs":"itjobs-page"}');
     await handler(
       rpc('tools/call', {
         name: 'get_job',
@@ -79,12 +79,35 @@ Deno.test('job details and links require an explicit source before any REST requ
       const result = await readRpc(await handler(rpc('tools/call', { name, arguments: args })));
       assert.equal(result.error.code, -32602);
     }
-    for (const source of ['hiddenjobs', 'jobicy', 'weworkremotely', 'remoteok', 'himalayas']) {
+    for (const source of [
+      'hiddenjobs',
+      'jobicy',
+      'weworkremotely',
+      'remoteok',
+      'himalayas',
+      'itjobs',
+    ]) {
       const result = await readRpc(
         await handler(rpc('tools/call', { name, arguments: { idOrSlug: 'job-id', source } })),
       );
       assert.equal(result.result.isError, false);
     }
   }
-  assert.equal(calls, 10);
+  assert.equal(calls, 12);
+});
+
+Deno.test('all six sources can be selected together without losing ITjobs routing', async () => {
+  const sent: URL[] = [];
+  const handler = createRestMcpHandler({
+    fetcher: (input) => {
+      sent.push(new URL(input instanceof Request ? input.url : input));
+      return Promise.resolve(Response.json({ data: { jobs: [], sourceResults: [] } }));
+    },
+  });
+  const sources = ['hiddenjobs', 'jobicy', 'weworkremotely', 'remoteok', 'himalayas', 'itjobs'];
+  const result = await readRpc(
+    await handler(rpc('tools/call', { name: 'search_jobs', arguments: { sources } })),
+  );
+  assert.equal(result.result.isError, false);
+  assert.equal(sent[0].searchParams.get('sources'), sources.join(','));
 });

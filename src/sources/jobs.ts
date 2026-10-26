@@ -18,7 +18,10 @@ const entity = (value: string) =>
       : Number(match.slice(2, -1));
     return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : '';
   });
-export function parseFeed(xml: string): Row[] {
+export function parseFeed(
+  xml: string,
+  source: 'weworkremotely' | 'itjobs' = 'weworkremotely',
+): Row[] {
   if (!/<rss\b/i.test(xml) || /<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error('Invalid RSS');
   return [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item>/gi)].map(([, item]) => {
     const field = (name: string) => {
@@ -29,6 +32,8 @@ export function parseFeed(xml: string): Row[] {
       return entity(value.trim().replace(/^<!\[CDATA\[([\s\S]*)\]\]>$/, '$1'));
     };
     const title = field('title');
+    if (source === 'itjobs')
+      return itjobsRow(title, field('guid'), field('link'), field('description'), field('pubDate'));
     const separator = title.indexOf(':');
     return {
       id: field('link'),
@@ -42,6 +47,44 @@ export function parseFeed(xml: string): Row[] {
       employmentType: field('type'),
     };
   });
+}
+/** ITjobs exposes labelled summary metadata, not a full job description. */
+function itjobsRow(
+  title: string,
+  guid: string,
+  url: string,
+  description: string,
+  published: string,
+): Row {
+  const fields = new Map<string, string>(
+    description
+      .replace(/<br\s*\/?\s*>/gi, '\n')
+      .split(/\r?\n/)
+      .flatMap<[string, string]>((line) => {
+        const plain = line.replace(/<[^>]*>/g, '').trim();
+        const colon = plain.indexOf(':');
+        return colon < 0 ? [] : [[plain.slice(0, colon).trim(), plain.slice(colon + 1).trim()]];
+      }),
+  );
+  const known = (label: string) => {
+    const value = fields.get(label);
+    return value === 'n/d' ? '' : (value ?? '');
+  };
+  const location = known('Localidade');
+  const annual = known('Salário anual');
+  return {
+    id: guid,
+    url,
+    title,
+    company: known('Empresa'),
+    description,
+    location: location ? `${location}, Portugal` : 'Portugal',
+    workModel: known('Modelo de trabalho'),
+    employmentType: known('Tipo'),
+    contract: known('Contrato'),
+    date: published,
+    salary: annual ? `${annual} EUR gross annual` : '',
+  };
 }
 function date(value: unknown): string {
   const timestamp = typeof value === 'number' ? value * 1000 : text(value);
@@ -69,12 +112,16 @@ function salary(row: Row, source: Source): string {
 }
 export function normalize(source: Source, value: unknown): ExternalJob | null {
   const row = record(value);
+  if (source === 'itjobs' && row.workModel !== 'Remoto') return null;
   const title = (text(row.jobTitle) || text(row.position) || text(row.title)).trim();
   const nativeId =
     (typeof row.id === 'number' && row.id ? String(row.id) : text(row.id)) ||
     text(row.guid) ||
     text(row.url);
-  if (!title || !nativeId) return null; // Remote OK includes a non-job legal notice.
+  if (!title || !nativeId) {
+    if (source === 'itjobs') throw new Error('Invalid provider job');
+    return null; // Remote OK includes a non-job legal notice.
+  }
   if (title.length > SOURCE_LIMITS.titleLength || nativeId.length > SOURCE_LIMITS.nativeIdLength)
     throw new Error('Invalid provider job');
   const url = sourceUrl(source, text(row.url) || text(row.applicationLink));
@@ -106,6 +153,7 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     createdAt: date(row.pubDate ?? row.date),
     salary: salary(row, source),
     hasApplicationLink: true,
+    ...(source === 'itjobs' ? { contract: text(row.contract) } : {}),
   });
   return {
     ...publicFields,
@@ -121,8 +169,16 @@ export function normalize(source: Source, value: unknown): ExternalJob | null {
     attribution: {
       name: providers[source].name,
       url,
-      ...(source === 'remoteok' ? { linkRel: 'follow', logoAllowed: false } : {}),
+      ...(['remoteok', 'itjobs'].includes(source) ? { logoAllowed: false } : {}),
+      ...(source === 'remoteok' ? { linkRel: 'follow' } : {}),
     },
+    ...(source === 'itjobs'
+      ? {
+          workModel: 'Remote' as const,
+          contract: text(publicFields.contract),
+          descriptionKind: 'summary' as const,
+        }
+      : {}),
     ...(source === 'himalayas'
       ? {
           timezoneRestrictions: Array.isArray(row.timezoneRestrictions)
