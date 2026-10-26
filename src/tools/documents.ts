@@ -1,7 +1,5 @@
-import { CareerError } from '../errors.ts';
 import { define, id, key, page, stringProperty, type ToolDefinition } from './schemas.ts';
 export const MAX_FILE_BYTES = 2 * 1024 * 1024;
-export const CHUNK_BYTES = 8192;
 export const DOCUMENT_KINDS = ['cv', 'cover_letter', 'interview', 'template', 'report', 'other'];
 export const MIME_TYPES = [
   'application/pdf',
@@ -9,53 +7,21 @@ export const MIME_TYPES = [
   'text/markdown',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
-export function decodeChunk(value: unknown) {
-  if (
-    typeof value !== 'string' ||
-    value.length > 10924 ||
-    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)
-  ) {
-    throw new CareerError(
-      'invalid_arguments',
-      'Provide canonical base64, at most 8192 decoded bytes.',
-    );
-  }
-  const result = Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
-  if (
-    !result.length ||
-    result.length > CHUNK_BYTES ||
-    btoa(String.fromCharCode(...result)) !== value
-  )
-    throw new CareerError('invalid_arguments', 'Invalid chunk size or encoding.');
-  return result;
-}
 export const documentTools: ToolDefinition[] = [
   define(
     'create_document_upload',
     'Create document upload',
-    'Begin a private PDF, DOCX or text upload (maximum 2 MiB) using actual bytes, size and SHA-256. Try signed when the client can access its URL and transfer bytes. If the URL is redacted, DNS or transfer fails, or direct transfer is unavailable, create a new chunks session with a fresh requestId and upload_document_chunk. If bytes cannot be transferred reliably or chunks fail, ask the user to upload at https://hiddenjobs.dev/dashboard/career, then reread list_cvs. Never replace the original file with a transcription or claim an unconfirmed upload succeeded.',
+    'Begin a private PDF, DOCX or text upload (maximum 2 MiB) using actual bytes, size and SHA-256. Use signed when the client can access its URL and transfer bytes. If the URL is redacted, DNS or transfer fails, prefer upload_cv so the user selects and saves the original file in the chat panel. Never manually reproduce binary base64 or replace the original with text. If neither transfer nor panel works, use https://hiddenjobs.dev/dashboard/career and reread list_cvs.',
     {
       filename: stringProperty(),
       mimeType: { type: 'string', enum: MIME_TYPES },
       kind: { type: 'string', enum: DOCUMENT_KINDS },
       byteSize: { type: 'integer', minimum: 1, maximum: MAX_FILE_BYTES },
       sha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
-      mode: { type: 'string', enum: ['signed', 'chunks'] },
+      mode: { type: 'string', enum: ['signed'] },
       requestId: key,
     },
     ['filename', 'mimeType', 'kind', 'byteSize', 'sha256', 'mode', 'requestId'],
-    true,
-  ),
-  define(
-    'upload_document_chunk',
-    'Upload document chunk',
-    'Send one immutable, zero-based chunk, at most 8192 decoded bytes. Retrying the same bytes is safe. All chunks except the last must be 8192 bytes.',
-    {
-      documentId: id,
-      index: { type: 'integer', minimum: 0, maximum: 255 },
-      base64: stringProperty(),
-    },
-    ['documentId', 'index', 'base64'],
     true,
   ),
   define(

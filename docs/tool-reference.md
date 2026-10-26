@@ -1,6 +1,6 @@
 # Tool reference
 
-The MCP exposes **45 tools**: three job tools, company lookup, six alert tools and 35 workflow/career tools. Call
+The MCP exposes **45 tools**: three job tools, company lookup, six alert tools, 34 workflow/career tools and a CV upload panel. Call
 `tools/list` for the exact machine-readable schemas. The [skills guide](skills.md) explains how to
 combine them into a complete job search.
 
@@ -63,7 +63,6 @@ Global pause needs no version. See [job alerts](job-alerts.md).
 ### Documents
 
 [`create_document_upload`](#create_document_upload),
-[`upload_document_chunk`](#upload_document_chunk),
 [`finalize_document_upload`](#finalize_document_upload), [`import_document`](#import_document),
 [`list_documents`](#list_documents), [`get_document`](#get_document),
 [`get_document_download_url`](#get_document_download_url), [`save_document`](#save_document),
@@ -301,10 +300,24 @@ historical selection.
 | `expectedRevision` | integer | Yes      | Min: 0; Last known revision; use 0 when creating a record. A conflict requires reading the record again.                   |
 | `requestId`        | string  | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments. |
 
+## `upload_cv`
+
+Open an in-chat PDF/DOCX picker using MCP Apps. The user selects the original file, chooses a CV name
+and confirms saving a new CV. The browser uploads bytes directly, then verifies and saves version 1.
+Existing CVs and the default are preserved. Selecting the file again is necessary even if it was
+attached to the chat. The tool opens the panel immediately; do not poll while waiting for the user.
+Clients without panel support can use the dashboard or supported direct transfer.
+
+| Argument | Type   | Required | Details                                 |
+| -------- | ------ | -------- | --------------------------------------- |
+| `name`   | string | No       | Suggested CV name, up to 200 characters |
+
+This presentation tool checks the connected account; file creation uses the existing document REST
+operations and `save_cv`. It does not have a separate REST data endpoint.
+
 ## `create_document_upload`
 
-Begin a private PDF, DOCX or text upload (maximum 2 MiB). Prefer a signed upload if the client can
-transfer files; otherwise send base64 chunks. Do not invent attachment URLs or bytes.
+Begin a private signed upload (maximum 2 MiB). Prefer `upload_cv` when direct transfer is unavailable. Do not invent attachment URLs or bytes.
 
 | Argument    | Type    | Required | Constraints / notes                                                                                                         |
 | ----------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -313,19 +326,8 @@ transfer files; otherwise send base64 chunks. Do not invent attachment URLs or b
 | `kind`      | string  | Yes      | Values: cv, cover_letter, interview, template, report, other                                                                |
 | `byteSize`  | integer | Yes      | Min: 1; Max: 2097152                                                                                                        |
 | `sha256`    | string  | Yes      | —                                                                                                                           |
-| `mode`      | string  | Yes      | Values: signed, chunks                                                                                                      |
+| `mode`      | string  | Yes      | Values: signed                                                                                                              |
 | `requestId` | string  | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments.  |
-
-## `upload_document_chunk`
-
-Send one immutable, zero-based chunk, at most 8192 decoded bytes. Retrying the same bytes is safe.
-All chunks except the last must be 8192 bytes.
-
-| Argument     | Type    | Required | Constraints / notes |
-| ------------ | ------- | -------- | ------------------- |
-| `documentId` | string  | Yes      | Format: uuid        |
-| `index`      | integer | Yes      | Min: 0; Max: 255    |
-| `base64`     | string  | Yes      | —                   |
 
 ## `finalize_document_upload`
 
@@ -579,8 +581,8 @@ Arguments: `{}`.
 ## Files and PDF output
 
 Original files accept PDF, DOCX and UTF-8 text/Markdown, up to 2 MiB and 20 PDF pages.
-`create_document_upload` accepts `mode: "signed"` or `"chunks"`; chunks contain at most 8192 decoded
-bytes and use zero-based indexes. Finalization verifies size, SHA-256 and structure.
+`create_document_upload` accepts `mode: "signed"`; upload original file
+bytes directly. Finalization verifies size, SHA-256 and structure.
 `import_document` accepts a client-provided `file` object or `sourceUrl` from an allowlisted HTTPS
 origin. Hidden Jobs downloads the original; temporary references are not saved in document metadata.
 

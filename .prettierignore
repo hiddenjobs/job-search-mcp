@@ -3,3 +3,5 @@ dist/
 node_modules/
 deno.lock
 skills/
+
+src/ui/panel.generated.ts

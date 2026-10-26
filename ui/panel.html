@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Save your CV · Hidden Jobs</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: var(--font-sans, system-ui, sans-serif);
+        color: #102238;
+        background: #fff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 22px;
+      }
+      main {
+        max-width: 520px;
+        margin: auto;
+      }
+      .brand {
+        color: #007f78;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      h1 {
+        font-size: 23px;
+        margin: 9px 0;
+      }
+      p {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .intro {
+        color: #536278;
+        margin: 0 0 22px;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin: 16px 0 7px;
+      }
+      input {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #b7d8d4;
+        border-radius: 8px;
+        background: #fff;
+        color: inherit;
+        font: inherit;
+      }
+      input[type='file'] {
+        background: #f2fbf8;
+        border-style: dashed;
+        font-size: 13px;
+      }
+      input:focus-visible,
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid #71d9cd;
+        outline-offset: 3px;
+      }
+      button {
+        width: 100%;
+        margin-top: 20px;
+        padding: 12px;
+        border: 0;
+        border-radius: 8px;
+        background: #008d82;
+        color: white;
+        font: inherit;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.65;
+        cursor: default;
+      }
+      #status {
+        min-height: 42px;
+        margin: 14px 0 8px;
+      }
+      footer {
+        border-top: 1px solid #e2ede9;
+        padding-top: 13px;
+        font-size: 12px;
+        color: #536278;
+      }
+      a {
+        color: #007f78;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          background: #12212c;
+          color: #ecf4f3;
+        }
+        .intro,
+        footer {
+          color: #b0c0cc;
+        }
+        input {
+          background: #172c36;
+          border-color: #456668;
+        }
+        input[type='file'] {
+          background: #183633;
+        }
+        a,
+        .brand {
+          color: #66d5c7;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">HIDDEN JOBS</div>
+      <h1>Save your CV</h1>
+      <p class="intro">Keep the original file ready for matching and future applications.</p>
+      <form>
+        <label for="file">Your CV · PDF or DOCX, up to 2 MiB</label
+        ><input id="file" type="file" accept=".pdf,.docx" aria-describedby="status" />
+        <label for="name">CV name</label
+        ><input
+          id="name"
+          type="text"
+          maxlength="200"
+          placeholder="e.g. Data Scientist — English"
+          required
+        />
+        <button type="submit" disabled>Save in Hidden Jobs</button>
+      </form>
+      <p id="status" role="status" aria-live="polite">Connecting to Hidden Jobs…</p>
+      <footer>
+        This saves a new CV without changing your default. Already attached it to the chat? Select
+        the file again here.<br /><a
+          href="https://hiddenjobs.dev/dashboard/career"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Upload from your dashboard</a
+        >
+      </footer>
+    </main>
+    <script id="config" type="application/json">
+      __UPLOAD_CONFIG__
+    </script>
+    <script type="module">
+      __UPLOAD_SCRIPT__;
+    </script>
+  </body>
+</html>

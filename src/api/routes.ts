@@ -33,11 +33,6 @@ export const restRoutes: Record<string, RestRoute> = {
     scope: 'career:write',
   },
   create_document_upload: { method: 'POST', path: '/me/document-uploads', scope: 'career:write' },
-  upload_document_chunk: {
-    method: 'PUT',
-    path: '/me/document-uploads/{documentId}/chunks/{index}',
-    scope: 'career:write',
-  },
   finalize_document_upload: {
     method: 'POST',
     path: '/me/document-uploads/{documentId}/complete',

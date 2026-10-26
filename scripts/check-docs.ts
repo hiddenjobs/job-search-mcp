@@ -36,8 +36,13 @@ assert(
 );
 assert(
   JSON.stringify(Object.keys(restRoutes).sort()) ===
-    JSON.stringify(tools.map((t) => t.name).sort()),
-  'Every tool needs an HTTP route',
+    JSON.stringify(
+      tools
+        .filter((t) => t.name !== 'upload_cv')
+        .map((t) => t.name)
+        .sort(),
+    ),
+  'Every data tool needs an HTTP route; upload_cv only presents the upload panel',
 );
 for (const tool of tools) {
   assert(readme.includes('`' + tool.name + '`'), `README missing tool: ${tool.name}`);
