@@ -11,7 +11,7 @@ Deno.test(
         throw new Error('Unexpected REST call');
       },
     });
-    assert.equal(careerResources.resourceList().resources.length, 22);
+    assert.equal(careerResources.resourceList().resources.length, 23);
     assert.equal(careerResources.promptList().prompts.length, 15);
     for (const resource of careerResources.resourceList().resources) {
       const result = await readRpc(await handler(rpc('resources/read', { uri: resource.uri }, '')));
@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.7.0');
+  assert(flow?.version === '1.8.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -233,6 +233,8 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
   );
   const requirements = [
     'client-provided file object',
+    'upload_cv',
+    'Return the panel immediately',
     'mode chunks and a fresh requestId',
     'DNS resolution',
     'redacted',

@@ -1,6 +1,6 @@
 # Tool reference
 
-The MCP exposes **45 tools**: three job tools, company lookup, six alert tools and 35 workflow/career tools. Call
+The MCP exposes **46 tools**: three job tools, company lookup, six alert tools, 35 workflow/career tools and a CV upload panel. Call
 `tools/list` for the exact machine-readable schemas. The [skills guide](skills.md) explains how to
 combine them into a complete job search.
 
@@ -301,9 +301,24 @@ historical selection.
 | `expectedRevision` | integer | Yes      | Min: 0; Last known revision; use 0 when creating a record. A conflict requires reading the record again.                   |
 | `requestId`        | string  | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments. |
 
+## `upload_cv`
+
+Open an in-chat PDF/DOCX picker using MCP Apps. The user selects the original file, chooses a CV name
+and confirms saving a new CV. The browser uploads bytes directly, then verifies and saves version 1.
+Existing CVs and the default are preserved. Selecting the file again is necessary even if it was
+attached to the chat. The tool opens the panel immediately; do not poll while waiting for the user.
+Clients without panel support can use the dashboard or supported direct transfer.
+
+| Argument | Type   | Required | Details                                 |
+| -------- | ------ | -------- | --------------------------------------- |
+| `name`   | string | No       | Suggested CV name, up to 200 characters |
+
+This presentation tool checks the connected account; file creation uses the existing document REST
+operations and `save_cv`. It does not have a separate REST data endpoint.
+
 ## `create_document_upload`
 
-Begin a private PDF, DOCX or text upload (maximum 2 MiB). Prefer a signed upload if the client can
+Begin a private PDF, DOCX or text upload (maximum 2 MiB). Prefer `upload_cv` when direct transfer is unavailable. Use chunks only with reliable code-to-tool byte transfer. Prefer a signed upload if the client can
 transfer files; otherwise send base64 chunks. Do not invent attachment URLs or bytes.
 
 | Argument    | Type    | Required | Constraints / notes                                                                                                         |

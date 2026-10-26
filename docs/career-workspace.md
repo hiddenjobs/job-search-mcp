@@ -151,3 +151,19 @@ See [skills](skills.md), [tools](tool-reference.md), [resources and prompts](res
 ## External offers
 
 `search_jobs` also supports external sources; see [job sources](job-sources.md). You can compare their requirements and draft documents with your assistant, but external offers are not imported into career records. Application tracking, saved job evaluations, job activity and email alerts still require a Hidden Jobs jobId.
+
+### Upload from the chat panel
+
+Use `upload_cv` when the client cannot import the attached file or transfer its bytes reliably.
+The user selects the original PDF/DOCX (up to 2 MiB), enters a CV name and confirms the save inside
+the panel. The browser sends the original bytes using a private signed upload; Hidden Jobs verifies
+the size and SHA-256 and saves a new immutable CV version. The original/default CV is unchanged.
+Selecting the file in the panel is required even if it was already attached to the conversation.
+MCP Apps hosts enforce the panel CSP; the storage endpoint must also allow its browser origin via
+CORS. Server integrations configure `uploadOrigins` to the exact HTTPS storage origins they use.
+The static panel and all data calls are shared by the public and hosted MCP implementations.
+
+For local UI verification, run `npm run ui:preview` and open `http://127.0.0.1:4389`.
+This test host uses a simulated account/storage and a local network adapter; it does not connect
+to production. Live host rendering, approvals and storage CORS must also be verified in the target
+client before releasing the panel. Rebuild with `npm run ui:build` after editing `ui/`.

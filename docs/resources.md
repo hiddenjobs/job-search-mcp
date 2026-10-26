@@ -100,3 +100,10 @@ require a local filesystem.
 
 The `alerts` workflow manages recurring email searches. Read
 `hiddenjobs://workflows/alerts` or request prompt `alerts`; see [job alerts](job-alerts.md).
+
+## CV upload panel
+
+`ui://hiddenjobs/upload-cv-v1.html` is an MCP Apps HTML resource linked to `upload_cv`.
+It contains a file picker and save confirmation. Its CSP permits only the configured upload origins;
+file bytes go directly from the browser to private storage. The assistant receives the verified CV
+and version identifiers. Hosts without MCP Apps use the normal tools or dashboard.

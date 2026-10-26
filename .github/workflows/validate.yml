@@ -57,6 +57,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Check upload panel bundle
+        run: npm run ui:check
+
       - name: Type check
         run: deno task check
 

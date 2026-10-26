@@ -46,7 +46,9 @@ Deno.test(
         return Promise.resolve(Response.json({ data: { ok: true } }));
       },
     });
-    const tools = (await readRpc(await handler(request('tools/list')))).result.tools;
+    const tools = (await readRpc(await handler(request('tools/list')))).result.tools.filter(
+      (tool) => tool.name !== 'upload_cv',
+    );
     assert(tools.length === 45 && Object.keys(restRoutes).length === 45);
     assert.equal(requests.length, 0, 'Discovery called REST');
     for (const tool of tools) {
@@ -323,7 +325,9 @@ Deno.test(
         return Promise.resolve(Response.json({ data: { id: uuid, state: 'ready' } }));
       },
     });
-    const tools = (await readRpc(await handler(request('tools/list')))).result.tools;
+    const tools = (await readRpc(await handler(request('tools/list')))).result.tools.filter(
+      (tool) => tool.name !== 'upload_cv',
+    );
     assert.deepEqual(tools.find((t) => t.name === 'import_document')?._meta, {
       'openai/fileParams': ['file'],
     });
