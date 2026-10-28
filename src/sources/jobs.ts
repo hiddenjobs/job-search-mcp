@@ -1,3 +1,4 @@
+import { assertRemoteLocation } from '../locations.ts';
 import { anonymousJob } from './privacy.ts';
 import { SOURCE_LIMITS, providers, type ExternalJob, type Source } from './schemas.ts';
 import { record, text, strings, encode, sourceUrl, type Row } from './validation.ts';
@@ -278,7 +279,8 @@ function locationList(value: string): string[] | null {
 }
 
 export function locationMatches(value: unknown, code: string): boolean {
-  if (!code || code === 'All') return true;
+  assertRemoteLocation(code);
+  if (code === 'All') return true;
 
   const country = countries[code];
   const regional = ['US', 'CA', 'MX'].includes(code)
@@ -314,7 +316,6 @@ export function locationMatches(value: unknown, code: string): boolean {
         EMEA: ['EMEA', ...europe, 'Middle East', 'Africa'],
       } as Partial<Record<string, string[]>>
     )[code];
-  if (!aliases && code !== 'Worldwide') throw new Error('Unsupported location');
   const location = text(value).toLowerCase().replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
   const parts = location.split(/\s+(?:except|excluding|but not|not including)\s+/);
   if (parts.length > 2) return false;
