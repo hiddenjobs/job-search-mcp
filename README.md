@@ -113,6 +113,16 @@ You review and submit on the employer's website. Then ask your assistant to reco
 Open **Applications** to see your pipeline, filter statuses and review history, documents, notes and
 next steps. Use **Profile** for your experience, CV library and connected applications.
 
+## Follow a search daily
+
+> Repeat this search every day at 09:00 Europe/Madrid using the same sources and my saved CV.
+> Notify me only when new relevant jobs appear.
+
+Your assistant can offer to schedule this with its own task system when that system supports
+unattended MCP calls. It confirms the search, timezone and notification criteria before scheduling.
+The task belongs to your assistant; Hidden Jobs does not create or run it. Support depends on the
+client. If unavailable, Hidden Jobs email alerts are an alternative for Hidden Jobs offers.
+
 ## Email job alerts
 
 > Create a daily alert for Backend or DevOps jobs in Europe matching TypeScript.
