@@ -1,4 +1,4 @@
-import { saveCvFile, uploadCapability, MAX_CV_BYTES } from '../src/ui/upload.ts';
+import { parseUploadStatus, saveCvFile, uploadCapability, MAX_CV_BYTES } from '../src/ui/upload.ts';
 import { uploadPanelResource } from '../src/ui/panel.ts';
 import { createMcpHandler } from '../src/server.ts';
 import { assert, rpc, readRpc, UUID } from './helpers.ts';
@@ -99,4 +99,60 @@ Deno.test('standalone and embedded panels share HTML and never include account c
   assert(embedded.contents[0].text.includes('Save in Hidden Jobs'));
   for (const origin of ['http://evil.test', 'https://uploads.test/path'])
     assert.throws(() => uploadPanelResource([origin]));
+});
+
+Deno.test('malformed or incomplete API results never report a successful save', async () => {
+  for (const body of [
+    null,
+    [],
+    {},
+    { data: null },
+    { data: { status: 'unknown' } },
+    { data: { status: 'saved' } },
+    { data: { status: 'saved', cv: { ...cv, cvId: 'invalid' } } },
+    { data: { status: 'saved', cv: { ...cv, versionId: 'invalid' } } },
+    { data: { status: 'saved', cv: { ...cv, name: null } } },
+  ])
+    assert.throws(() => parseUploadStatus(body));
+  assert.equal(parseUploadStatus({ data: { status: 'pending' } }).status, 'pending');
+  assert.equal(
+    parseUploadStatus({ data: { status: 'expired', name: 'CV', expiresAt: '2030-01-01' } }).status,
+    'expired',
+  );
+  const file = new File(['original'], 'cv.pdf');
+  for (const status of [402, 413, 503])
+    await assert.rejects(
+      saveCvFile(file, 'My CV', session, undefined, () =>
+        Promise.resolve(Response.json({}, { status })),
+      ),
+    );
+  for (const name of ['', ' '.repeat(3), 'x'.repeat(201)])
+    await assert.rejects(saveCvFile(file, name, session));
+  await assert.rejects(
+    saveCvFile(file, 'My CV', session, undefined, () =>
+      Promise.resolve(
+        Response.json({ data: { status: 'saved', cv: { ...cv, name: 'Different CV' } } }),
+      ),
+    ),
+  );
+  assert.throws(() =>
+    uploadCapability({ ...session, sessionId: '00000000-0000-4000-8000-000000000099' }),
+  );
+  assert.throws(() =>
+    uploadCapability({
+      ...session,
+      uploadUrl: session.uploadUrl.replace('00000000-0000-4000-8000-000000000001.', 'not-a-uuid.'),
+    }),
+  );
+});
+Deno.test('a broken session response cannot produce a false upload link', async () => {
+  for (const data of [
+    {},
+    { uploadUrl: 'https://evil.test/mcp/upload' },
+    { ...session, expiresAt: null },
+  ]) {
+    const handler = createMcpHandler({ execute: () => Promise.resolve(data) });
+    const result = await readRpc(await handler(rpc('tools/call', { name: 'upload_cv' })));
+    assert.equal(result.result.isError, true);
+  }
 });
