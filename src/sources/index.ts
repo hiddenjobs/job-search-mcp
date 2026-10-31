@@ -180,6 +180,33 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
       } catch {
         throw invalidSourceArguments();
       }
+      if (source === 'himalayas') {
+        let guid: string;
+        try {
+          const canonical = new URL(sourceUrl(source, ref.nativeId));
+          canonical.search = '';
+          const referenceUrl = new URL(sourceUrl(source, ref.url));
+          referenceUrl.search = '';
+          if (canonical.href !== referenceUrl.href) throw invalidSourceArguments();
+          guid = canonical.href;
+        } catch {
+          throw invalidSourceArguments();
+        }
+        const row = await client.himalayasJob(guid);
+        let job: ExternalJob | null;
+        try {
+          job = normalize(source, row);
+          if (!job) throw new Error('Invalid offer');
+        } catch {
+          throw new CareerError(
+            'source_unavailable',
+            'The provider returned an invalid offer.',
+            503,
+          );
+        }
+        job.id = reference;
+        return job;
+      }
       let jobs: ExternalJob[];
       try {
         jobs = (await readNormalizedPage(source, text(ref.query), Number(ref.limit), state)).jobs;
