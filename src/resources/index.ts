@@ -1,10 +1,10 @@
-import { UPLOAD_URI, UPLOAD_MIME, uploadPanelResource } from '../ui/panel.ts';
+import { UPLOAD_URI, UPLOAD_MIME, isUploadResource, uploadPanelResource } from '../ui/panel.ts';
 import { CareerError } from '../errors.ts';
 import { getWorkflow, guides, templates, workflows } from './workflows.ts';
 
 export type ResourceCall = (name: string, args?: Record<string, unknown>) => Promise<unknown>;
 export const isSharedResource = (uri: string) =>
-  uri === UPLOAD_URI || /^hiddenjobs:\/\/(workflows|guides|templates)\//.test(uri);
+  isUploadResource(uri) || /^hiddenjobs:\/\/(workflows|guides|templates)\//.test(uri);
 
 export const careerResources = {
   resourceList: () => ({
@@ -32,7 +32,10 @@ export const careerResources = {
     call: ResourceCall,
     origins = ['https://api.hiddenjobs.dev'],
   ) => {
-    if (uri === UPLOAD_URI) return uploadPanelResource(origins);
+    if (isUploadResource(uri)) {
+      const resource = uploadPanelResource(origins);
+      return { contents: resource.contents.map((content) => ({ ...content, uri })) };
+    }
     const shared = /^hiddenjobs:\/\/(workflows|guides|templates)\/([a-z-]+)$/.exec(uri);
     if (shared) {
       const entries = shared[1] === 'guides' ? guides : templates;

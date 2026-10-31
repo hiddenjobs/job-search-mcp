@@ -1,64 +1,6 @@
 import { define, id, key, page, stringProperty, type ToolDefinition } from './schemas.ts';
-export const MAX_FILE_BYTES = 2 * 1024 * 1024;
 export const DOCUMENT_KINDS = ['cv', 'cover_letter', 'interview', 'template', 'report', 'other'];
-export const MIME_TYPES = [
-  'application/pdf',
-  'text/plain',
-  'text/markdown',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-];
 export const documentTools: ToolDefinition[] = [
-  define(
-    'create_document_upload',
-    'Create document upload',
-    'Begin a private PDF, DOCX or text upload (maximum 2 MiB) using actual bytes, size and SHA-256. Use signed when the client can access its URL and transfer bytes. If the URL is redacted, DNS or transfer fails, prefer upload_cv so the user selects and saves the original file in the chat panel. Never manually reproduce binary base64 or replace the original with text. If neither transfer nor panel works, use https://hiddenjobs.dev/dashboard/career and reread list_cvs.',
-    {
-      filename: stringProperty(),
-      mimeType: { type: 'string', enum: MIME_TYPES },
-      kind: { type: 'string', enum: DOCUMENT_KINDS },
-      byteSize: { type: 'integer', minimum: 1, maximum: MAX_FILE_BYTES },
-      sha256: { type: 'string', pattern: '^[a-f0-9]{64}$' },
-      mode: { type: 'string', enum: ['signed'] },
-      requestId: key,
-    },
-    ['filename', 'mimeType', 'kind', 'byteSize', 'sha256', 'mode', 'requestId'],
-    true,
-  ),
-  define(
-    'finalize_document_upload',
-    'Finalize document upload',
-    'Verify size, SHA-256 and file type, then extract text directly in this call. Scans need user-provided text; OCR is not available.',
-    { documentId: id },
-    ['documentId'],
-    true,
-  ),
-  define(
-    'import_document',
-    'Import document',
-    'Import the original attachment directly on the server. Prefer a client-provided file object when available; otherwise provide sourceUrl. Supply exactly one of file or sourceUrl, using the actual filename and MIME type. Only approved HTTPS origins are accepted. Do not invent file references or expose their temporary URLs. If unavailable, follow the setup upload fallback.',
-    {
-      file: {
-        type: 'object',
-        description:
-          'Client-provided attachment with download_url and file_id; mime_type and file_name are optional.',
-        properties: {
-          download_url: { type: 'string', maxLength: 4096 },
-          file_id: { type: 'string', maxLength: 512 },
-          mime_type: { type: 'string', maxLength: 200 },
-          file_name: { type: 'string', maxLength: 200 },
-        },
-        required: ['download_url', 'file_id'],
-        additionalProperties: false,
-      },
-      sourceUrl: { type: 'string', maxLength: 4096 },
-      filename: stringProperty(),
-      mimeType: { type: 'string', enum: MIME_TYPES },
-      kind: { type: 'string', enum: DOCUMENT_KINDS },
-      requestId: key,
-    },
-    ['filename', 'mimeType', 'kind', 'requestId'],
-    true,
-  ),
   define(
     'list_documents',
     'List documents',

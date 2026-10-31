@@ -113,6 +113,16 @@ You review and submit on the employer's website. Then ask your assistant to reco
 Open **Applications** to see your pipeline, filter statuses and review history, documents, notes and
 next steps. Use **Profile** for your experience, CV library and connected applications.
 
+## Follow a search daily
+
+> Repeat this search every day at 09:00 Europe/Madrid using the same sources and my saved CV.
+> Notify me only when new relevant jobs appear.
+
+Your assistant can offer to schedule this with its own task system when that system supports
+unattended MCP calls. It confirms the search, timezone and notification criteria before scheduling.
+The task belongs to your assistant; Hidden Jobs does not create or run it. Support depends on the
+client. If unavailable, Hidden Jobs email alerts are an alternative for Hidden Jobs offers.
+
 ## Email job alerts
 
 > Create a daily alert for Backend or DevOps jobs in Europe matching TypeScript.
@@ -158,23 +168,23 @@ from a remote chat.
 
 ## Tools
 
-45 tools expose job search, email alerts, private career data and document operations. Tools read or save
+43 tools expose job search, email alerts, private career data and document operations. Tools read or save
 information; your assistant evaluates offers, personalizes your CV, writes letters and leads
 interview practice.
 
-| Area                   | Tools                                                                                                                                                                                                           |
-| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Jobs and companies     | `search_jobs`, `get_job`, `open_application_link`, `get_company`                                                                                                                                                |
-| Job alerts             | `get_job_alerts`, `create_job_alert`, `update_job_alert`, `delete_job_alert`, `pause_job_alerts`, `resume_job_alerts`                                                                                           |
-| Workflow instructions  | `get_workflow`                                                                                                                                                                                                  |
-| Profile                | `get_candidate_profile`, `save_candidate_profile`                                                                                                                                                               |
-| CV library             | `list_cvs`, `get_cv`, `save_cv`, `update_cv`, `set_default_cv`, `select_application_cv`                                                                                                                         |
-| CV upload panel        | `upload_cv`                                                                                                                                                                                                     |
-| Documents              | `create_document_upload`, `finalize_document_upload`, `import_document`, `list_documents`, `get_document`, `get_document_download_url`, `save_document`, `delete_document`, `render_document`, `check_document` |
-| Search and evaluations | `get_search_history`, `save_search_history`, `list_job_activity`, `update_job_activity`, `get_job_evaluations`, `save_job_evaluation`                                                                           |
-| Applications           | `list_applications`, `get_application`, `save_application`, `update_application`, `get_application_report`                                                                                                      |
-| Learning               | `get_learning_plan`, `save_learning_plan`                                                                                                                                                                       |
-| Data controls          | `export_user_data`, `reset_user_data`                                                                                                                                                                           |
+| Area                   | Tools                                                                                                                                  |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Jobs and companies     | `search_jobs`, `get_job`, `open_application_link`, `get_company`                                                                       |
+| Job alerts             | `get_job_alerts`, `create_job_alert`, `update_job_alert`, `delete_job_alert`, `pause_job_alerts`, `resume_job_alerts`                  |
+| Workflow instructions  | `get_workflow`                                                                                                                         |
+| Profile                | `get_candidate_profile`, `save_candidate_profile`                                                                                      |
+| CV library             | `list_cvs`, `get_cv`, `save_cv`, `update_cv`, `set_default_cv`, `select_application_cv`                                                |
+| CV upload panel        | `upload_cv`, `get_cv_upload`                                                                                                           |
+| Documents              | `list_documents`, `get_document`, `get_document_download_url`, `save_document`, `delete_document`, `render_document`, `check_document` |
+| Search and evaluations | `get_search_history`, `save_search_history`, `list_job_activity`, `update_job_activity`, `get_job_evaluations`, `save_job_evaluation`  |
+| Applications           | `list_applications`, `get_application`, `save_application`, `update_application`, `get_application_report`                             |
+| Learning               | `get_learning_plan`, `save_learning_plan`                                                                                              |
+| Data controls          | `export_user_data`, `reset_user_data`                                                                                                  |
 
 For example, preparing an application uses `get_cv` → `save_application` → `save_document` →
 `update_application`. PDF export adds `render_document`, `check_document` and

@@ -9,9 +9,9 @@ saved application resource, and save interview preparation with `save_document`.
 The `initialize` response includes shared instructions to prefer the connected sources through
 `search_jobs`, respect the user's explicit source selection, and load the matching workflow.
 The opening instructions ask the assistant to offer a named, reusable CV version after tailoring
-and a relevant daily or weekly Hidden Jobs alert after a search. Tool descriptions repeat these
+and a recurring search through the assistant’s native scheduler after a focused search, when the host can execute this MCP unattended. Hidden Jobs email alerts remain an alternative. Tool descriptions repeat these
 next steps when clients do not load resources or prompts. Suggestions respect declined or already
-completed actions; persistence and email alerts require the user's agreement.
+completed actions; persistence, scheduled tasks and email alerts require the user's agreement.
 These guide the assistant; the host decides which instructions to expose and which tools to call.
 
 For example, “Help me apply to this Hidden Jobs role” leads to reading the offer and saved CVs.
@@ -103,7 +103,9 @@ The `alerts` workflow manages recurring email searches. Read
 
 ## CV upload panel
 
-`ui://hiddenjobs/upload-cv-v1.html` is an MCP Apps HTML resource linked to `upload_cv`.
+`ui://hiddenjobs/upload-cv-v2.html` is an MCP Apps HTML resource linked to `upload_cv`.
+Its versioned URI prevents hosts from reusing the previous upload implementation.
+The v1 URI remains readable for clients refreshing their tool definitions.
 It contains a file picker and save confirmation. Its CSP permits only the configured upload origins;
 file bytes go directly from the browser to private storage. The assistant receives the verified CV
 and version identifiers. Hosts without MCP Apps use the normal tools or dashboard.
