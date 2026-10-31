@@ -166,17 +166,17 @@ or application.
 
 Search explicitly selected sources. External provider links are free; Hidden Jobs original application URLs remain excluded. See [job sources](job-sources.md) for attribution, coverage and pagination.
 
-| Argument         | Type    | Required | Constraints / notes                                                                                      |
-| ---------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
-| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs. No default. |
-| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                                   |
-| `query`          | string  | No       | —                                                                                                        |
-| `category`       | string  | No       | —                                                                                                        |
-| `employmentType` | string  | No       | —                                                                                                        |
-| `jobType`        | string  | No       | —                                                                                                        |
-| `remoteLocation` | string  | No       | —                                                                                                        |
-| `page`           | integer | No       | Min: 1; Default: 1                                                                                       |
-| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                             |
+| Argument         | Type    | Required | Constraints / notes                                                                                                                                                                                          |
+| ---------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs. No default.                                                                                                     |
+| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                                                                                                                                       |
+| `query`          | string  | No       | —                                                                                                                                                                                                            |
+| `category`       | string  | No       | —                                                                                                                                                                                                            |
+| `employmentType` | string  | No       | —                                                                                                                                                                                                            |
+| `jobType`        | string  | No       | —                                                                                                                                                                                                            |
+| `remoteLocation` | string  | No       | Exact case-sensitive code; see [location format](job-sources.md). Example: `PT`, `US`, `EUROPE`, `Worldwide`, `All`. Names, aliases and lowercase values are rejected. Omit or use `All` for no restriction. |
+| `page`           | integer | No       | Min: 1; Default: 1                                                                                                                                                                                           |
+| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                                                                                                                                 |
 
 ## `get_job`
 

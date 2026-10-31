@@ -360,7 +360,7 @@ Deno.test(
       ['Africa', 'EMEA'],
     ])
       assert.equal(locationMatches(value, code), true);
-    assert.equal(locationMatches('Worldwide', ''), true);
+    assert.throws(() => locationMatches('Worldwide', ''), { code: 'invalid_remote_location' });
   },
 );
 

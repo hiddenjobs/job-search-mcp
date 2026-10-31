@@ -1,3 +1,4 @@
+import { assertRemoteLocation, remoteLocationError } from '../locations.ts';
 import { CareerError } from '../errors.ts';
 import { restRoutes } from './routes.ts';
 
@@ -27,6 +28,9 @@ export function createRestClient(
     async call(name: string, args: Record<string, unknown> = {}) {
       const route = Object.hasOwn(restRoutes, name) ? restRoutes[name] : undefined;
       if (!route) throw new CareerError('not_found', 'Unknown tool.', 404);
+      if (name === 'search_jobs' && Object.hasOwn(args, 'remoteLocation')) {
+        assertRemoteLocation(args.remoteLocation);
+      }
       const pathKeys = new Set<string>();
       const path = route.path.replace(/\{(\w+)\}/g, (_, key: string) => {
         const value = args[key];
@@ -120,6 +124,7 @@ export function createRestClient(
           revision_conflict: 'This record changed. Read it again before saving.',
           not_found: 'The requested record was not found.',
           invalid_arguments: 'Invalid operation arguments.',
+          invalid_remote_location: remoteLocationError,
           unsupported_file_reference:
             'This attachment origin is not approved. Use a supported file reference or upload at https://hiddenjobs.dev/dashboard/career.',
           invalid_file:
