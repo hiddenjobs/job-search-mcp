@@ -4,6 +4,14 @@ A skill is an instruction set for your assistant, not a model running inside Hid
 skills cover profile setup, searching, ranking, tailored applications, review, PDF export,
 interviews, learning, email alerts and progress tracking.
 
+## Recurring searches
+
+After a focused search, the `search` workflow first offers the assistant’s native scheduler when
+it can call the MCP unattended. It preserves the chosen sources, filters and profile/CV, and asks
+for a time and timezone before creating a task. A reminder is not a scheduled MCP search.
+For example: **“Search these sources daily at 09:00 Europe/Madrid and notify me of new matches.”**
+Hidden Jobs email alerts remain an alternative when native execution is unavailable or preferred.
+
 ## Email alerts
 
 [`alerts`](../skills/alerts/SKILL.md) manages the saved searches in your Hidden Jobs dashboard.

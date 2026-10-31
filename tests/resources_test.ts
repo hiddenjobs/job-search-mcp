@@ -108,7 +108,7 @@ Deno.test(
     });
     const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
     const firstContext = initialized.result.instructions.slice(0, 512);
-    for (const expected of ['named version', 'daily/weekly', 'Ask before saving']) {
+    for (const expected of ['named version', 'daily', 'native scheduler']) {
       assert(firstContext.includes(expected), `Missing early follow-up: ${expected}`);
     }
     const listed = await readRpc(await handler(rpc('tools/list', {}, '')));
@@ -138,7 +138,24 @@ Deno.test(
     assert(apply.includes('Do not finish with only downloads'));
     assert(apply.includes('If that save was already requested, execute it'));
     assert(apply.includes('External application tracking is not supported, but a CV'));
-    assert(getWorkflow('search')?.instructions.includes('this alert covers Hidden Jobs only'));
+    const search = getWorkflow('search')?.instructions ?? '';
+    for (const rule of [
+      'native scheduler',
+      'reminders alone are not recurring searches',
+      'timezone',
+      'explicit and nonempty',
+      'sourceResults',
+      'new relevant matches',
+      'Do not claim deduplication when state is unavailable',
+      'embed tokens or CV contents',
+      'verify its creation',
+      'this alert covers Hidden Jobs only',
+      'do not create both by default',
+    ])
+      assert(search.includes(rule), `Missing scheduling safeguard: ${rule}`);
+    const searchTool = listed.result.tools.find((tool) => tool.name === 'search_jobs');
+    assert(searchTool?.description.includes('native scheduler'));
+    assert(searchTool?.description.includes('unattended MCP calls'));
     assert.equal(calls, 0);
   },
 );
