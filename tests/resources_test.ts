@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.8.1');
+  assert(flow?.version === '1.9.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -196,7 +196,7 @@ Deno.test(
       [
         'missing CV',
         getWorkflow('setup')?.instructions ?? '',
-        ['ask the user to attach one', 'finalize_document_upload', 'call save_cv', 'dashboard'],
+        ['offer upload_cv', 'upload_cv', 'get_cv_upload', 'terminal'],
       ],
       [
         'external offer',
@@ -234,15 +234,12 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/setup' }, '')),
   );
   const requirements = [
-    'client-provided file object',
     'upload_cv',
-    'Return the panel immediately',
-    'finalize_document_upload after the direct transfer',
-    'DNS resolution',
-    'redacted',
-    'SHA-256',
-    'https://hiddenjobs.dev/dashboard/career',
-    'reread list_cvs and get_cv',
+    'get_cv_upload',
+    '15 minutes',
+    'private uploadUrl',
+    'Do not poll',
+    'original PDF or DOCX',
   ];
   for (const instructions of [
     initialized.result.instructions,

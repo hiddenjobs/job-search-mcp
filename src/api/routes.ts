@@ -5,6 +5,8 @@ export interface RestRoute {
   scope: string;
 }
 export const restRoutes: Record<string, RestRoute> = {
+  create_cv_upload: { method: 'POST', path: '/me/cv-uploads', scope: 'career:write' },
+  get_cv_upload: { method: 'GET', path: '/me/cv-uploads/{sessionId}', scope: 'career:read' },
   get_job_alerts: { method: 'GET', path: '/me/alerts', scope: 'alerts:read' },
   create_job_alert: { method: 'POST', path: '/me/alerts', scope: 'alerts:write' },
   update_job_alert: { method: 'PATCH', path: '/me/alerts/{alertId}', scope: 'alerts:write' },

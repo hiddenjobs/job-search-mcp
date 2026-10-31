@@ -19,7 +19,7 @@ export const cvsTools: ToolDefinition[] = [
   define(
     'save_cv',
     'Save CV',
-    'Use after an authorized import or tailored-CV save. Proactively offer a concrete name for the reusable version when not yet authorized; do not wait for the user to ask if it was saved. Once authorized, create a CV or append an immutable version from the ready documentId returned by import_document or save_document. Use the returned exact version for the application. Never overwrite an existing version or claim success before the tool confirms it.',
+    'Use after an authorized import or tailored-CV save. Proactively offer a concrete name for the reusable version when not yet authorized; do not wait for the user to ask if it was saved. Once authorized, create a CV or append an immutable version from the ready documentId saved through upload_cv or returned by save_document. Use the returned exact version for the application. Never overwrite an existing version or claim success before the tool confirms it.',
     {
       cvId: id,
       name: stringProperty(),

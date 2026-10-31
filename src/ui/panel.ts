@@ -1,4 +1,4 @@
-import { define } from '../tools/schemas.ts';
+import { define, id } from '../tools/schemas.ts';
 import { UPLOAD_HTML } from './panel.generated.ts';
 
 export const UPLOAD_URI = 'ui://hiddenjobs/upload-cv-v1.html';
@@ -7,16 +7,26 @@ export const uploadCvTool = {
   ...define(
     'upload_cv',
     'Upload CV',
-    'Open an interactive file picker to save an original PDF or DOCX as a new CV in Hidden Jobs. Use when the client cannot import an attachment or upload its bytes reliably. Ask the user to select the file in the panel, even if already attached to the chat. The user confirms the upload there. Return this panel immediately and wait for the user; do not poll, reproduce base64, or claim success before the panel confirms a saved version. Clients without an interactive panel can upload at https://hiddenjobs.dev/dashboard/career.',
+    'Upload an original PDF or DOCX through the visual panel. In terminal clients, open the returned short-lived uploadUrl in a browser. The user selects the file and confirms saving a new CV. Never send file bytes through the model. Wait for the user; then call get_cv_upload with sessionId to verify the saved CV. Do not claim success merely because a link was created.',
     { name: { type: 'string', maxLength: 200 } },
+    [],
+    true,
   ),
   _meta: { ui: { resourceUri: UPLOAD_URI }, 'ui/resourceUri': UPLOAD_URI },
 };
 
-export function uploadPanelResource(origins: string[]) {
+export const cvUploadStatusTool = define(
+  'get_cv_upload',
+  'Get CV upload status',
+  'After the user confirms uploading through upload_cv, check this sessionId for a saved CV and exact version. Do not poll while the user is choosing a file. Only the connected account can read its own session.',
+  { sessionId: id },
+  ['sessionId'],
+);
+
+export function uploadPanelResource(origins: string[], standalone = false) {
   const approved = [
     ...new Set(
-      origins.map((origin) => {
+      [...origins, 'https://hiddenjobs.dev'].map((origin) => {
         const url = new URL(origin);
         if (url.protocol !== 'https:' || url.origin !== origin)
           throw new Error('Invalid upload origin');
@@ -24,7 +34,7 @@ export function uploadPanelResource(origins: string[]) {
       }),
     ),
   ];
-  const config = JSON.stringify({ origins: approved }).replaceAll('<', '\\u003c');
+  const config = JSON.stringify({ origins: approved, standalone }).replaceAll('<', '\\u003c');
   return {
     contents: [
       {

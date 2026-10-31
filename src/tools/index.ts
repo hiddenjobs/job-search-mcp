@@ -1,4 +1,4 @@
-import { uploadCvTool } from '../ui/panel.ts';
+import { uploadCvTool, cvUploadStatusTool } from '../ui/panel.ts';
 import { alertTools } from './alerts.ts';
 import { jobTools, companyTool } from './jobs.ts';
 import { profileTools } from './profile.ts';
@@ -23,6 +23,6 @@ export const careerTools: ToolDefinition[] = [
 /** One catalogue for discovery, validation and REST dispatch. */
 export function getTools(careerEnabled = true): ToolDefinition[] {
   return careerEnabled
-    ? [...jobTools, ...careerTools, companyTool, ...alertTools, uploadCvTool]
+    ? [...jobTools, ...careerTools, companyTool, ...alertTools, uploadCvTool, cvUploadStatusTool]
     : [...jobTools, ...alertTools];
 }
