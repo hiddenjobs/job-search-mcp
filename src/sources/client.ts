@@ -1,5 +1,6 @@
+import { CareerError } from '../errors.ts';
 import { parseFeed } from './jobs.ts';
-import { record, text } from './validation.ts';
+import { record, text, sourceUrl } from './validation.ts';
 import type { ProviderPage, SourceContinuation, Source } from './schemas.ts';
 
 const ITJOBS_FEED = 'https://feeds.itjobs.pt/feed/emprego?remote=1&limit=100';
@@ -9,6 +10,12 @@ const DAY_MS = 24 * HOUR_MS;
 const FAILURE_COOLDOWN_MS = 60 * 1000;
 const FETCH_TIMEOUT_MS = 8000;
 const MAX_RESPONSE_BYTES = 4 * 1024 * 1024;
+
+class ProviderHttpError extends Error {
+  constructor(public status: number) {
+    super(status === 429 ? 'rate_limit' : 'source_unavailable');
+  }
+}
 
 /** Public data only. The cache is bounded, temporary and never contains user tokens. */
 export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.now) {
@@ -34,8 +41,7 @@ export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.n
           'User-Agent': 'HiddenJobs-MCP/1.0 (+https://hiddenjobs.dev/mcp/docs)',
         },
       });
-      if (!response.ok)
-        throw new Error(response.status === 429 ? 'rate_limit' : 'source_unavailable');
+      if (!response.ok) throw new ProviderHttpError(response.status);
       const reader = (response.body as ReadableStream<Uint8Array> | null)?.getReader();
       if (!reader) throw new Error('source_unavailable');
       let size = 0;
@@ -64,6 +70,31 @@ export function createProviderClient(fetcher: typeof fetch = fetch, now = Date.n
     }
   }
   return {
+    async himalayasJob(guid: string): Promise<unknown> {
+      const canonical = new URL(sourceUrl('himalayas', guid));
+      canonical.search = '';
+      const url = new URL('/jobs/api' + canonical.pathname, canonical.origin);
+      try {
+        const data = record(await loadPublicResponse(url, 10 * 60 * 1000));
+        const job = record(data.job);
+        if (job.guid !== canonical.href) throw new Error('source_unavailable');
+        return job;
+      } catch (error) {
+        if (error instanceof ProviderHttpError && (error.status === 404 || error.status === 410))
+          throw new CareerError(
+            'not_found',
+            error.status === 410
+              ? 'The provider reports that this offer has closed.'
+              : 'The provider could not find this offer. Search again for current listings.',
+            error.status,
+          );
+        throw new CareerError(
+          'source_unavailable',
+          'The external source is temporarily unavailable. Retry later.',
+          503,
+        );
+      }
+    },
     async page(
       source: Source,
       query: string,

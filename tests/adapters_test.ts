@@ -34,7 +34,7 @@ const samples = {
     salary_max: 0,
   },
   himalayas: {
-    guid: 'h1',
+    guid: 'https://himalayas.app/companies/acme/jobs/typescript',
     title: 'TypeScript Engineer',
     companyName: 'Acme',
     locationRestrictions: ['Spain'],
@@ -56,7 +56,13 @@ const fake: typeof fetch = (input, init) => {
     return Promise.resolve(Response.json([{ legal: 'notice' }, samples.remoteok]));
   if (u.hostname === 'jobicy.com')
     return Promise.resolve(Response.json({ jobs: [samples.jobicy], nextCursor: null }));
-  return Promise.resolve(Response.json({ jobs: [samples.himalayas] }));
+  return Promise.resolve(
+    Response.json(
+      u.pathname.startsWith('/jobs/api/companies/')
+        ? { job: samples.himalayas }
+        : { jobs: [samples.himalayas] },
+    ),
+  );
 };
 const params = (args = {}) => new URLSearchParams({ q: 'typescript', limit: '10', ...args });
 Deno.test(
