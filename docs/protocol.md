@@ -88,7 +88,7 @@ Response:
 }
 ```
 
-The full catalogue contains 45 tools with their JSON schemas. See the
+The full catalogue contains 43 tools with their JSON schemas. See the
 [tool reference](tool-reference.md). Deployment operators can configure a reduced job-only
 catalogue; clients must use discovery rather than assuming a fixed tool list.
 

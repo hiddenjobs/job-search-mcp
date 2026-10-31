@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.8.1');
+  assert(flow?.version === '1.9.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -108,7 +108,7 @@ Deno.test(
     });
     const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
     const firstContext = initialized.result.instructions.slice(0, 512);
-    for (const expected of ['named version', 'daily/weekly', 'Ask before saving']) {
+    for (const expected of ['named version', 'daily', 'native scheduler']) {
       assert(firstContext.includes(expected), `Missing early follow-up: ${expected}`);
     }
     const listed = await readRpc(await handler(rpc('tools/list', {}, '')));
@@ -138,7 +138,24 @@ Deno.test(
     assert(apply.includes('Do not finish with only downloads'));
     assert(apply.includes('If that save was already requested, execute it'));
     assert(apply.includes('External application tracking is not supported, but a CV'));
-    assert(getWorkflow('search')?.instructions.includes('this alert covers Hidden Jobs only'));
+    const search = getWorkflow('search')?.instructions ?? '';
+    for (const rule of [
+      'native scheduler',
+      'reminders alone are not recurring searches',
+      'timezone',
+      'explicit and nonempty',
+      'sourceResults',
+      'new relevant matches',
+      'Do not claim deduplication when state is unavailable',
+      'embed tokens or CV contents',
+      'verify its creation',
+      'this alert covers Hidden Jobs only',
+      'do not create both by default',
+    ])
+      assert(search.includes(rule), `Missing scheduling safeguard: ${rule}`);
+    const searchTool = listed.result.tools.find((tool) => tool.name === 'search_jobs');
+    assert(searchTool?.description.includes('native scheduler'));
+    assert(searchTool?.description.includes('unattended MCP calls'));
     assert.equal(calls, 0);
   },
 );
@@ -196,7 +213,7 @@ Deno.test(
       [
         'missing CV',
         getWorkflow('setup')?.instructions ?? '',
-        ['ask the user to attach one', 'finalize_document_upload', 'call save_cv', 'dashboard'],
+        ['offer upload_cv', 'upload_cv', 'get_cv_upload', 'terminal'],
       ],
       [
         'external offer',
@@ -234,15 +251,12 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/setup' }, '')),
   );
   const requirements = [
-    'client-provided file object',
     'upload_cv',
-    'Return the panel immediately',
-    'finalize_document_upload after the direct transfer',
-    'DNS resolution',
-    'redacted',
-    'SHA-256',
-    'https://hiddenjobs.dev/dashboard/career',
-    'reread list_cvs and get_cv',
+    'get_cv_upload',
+    '15 minutes',
+    'private uploadUrl',
+    'Do not poll',
+    'original PDF or DOCX',
   ];
   for (const instructions of [
     initialized.result.instructions,

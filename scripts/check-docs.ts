@@ -28,21 +28,33 @@ const readme = await read('README.md');
 const reference = await read('docs/tool-reference.md');
 const skillGuide = await read('docs/skills.md');
 const resources = await read('docs/resources.md');
-assert(tools.length === 45, 'Update documented tool count');
+assert(tools.length === 43, 'Update documented tool count');
 assert(Object.keys(workflows).length === 15, 'Update documented skill/prompt count');
 assert(
   Object.keys(guides).length + Object.keys(templates).length + Object.keys(workflows).length === 22,
   'Update documented shared-resource count',
 );
 assert(
-  JSON.stringify(Object.keys(restRoutes).sort()) ===
+  JSON.stringify(
+    Object.keys(restRoutes)
+      .filter(
+        (name) =>
+          ![
+            'create_document_upload',
+            'finalize_document_upload',
+            'import_document',
+            'create_cv_upload',
+          ].includes(name),
+      )
+      .sort(),
+  ) ===
     JSON.stringify(
       tools
         .filter((t) => t.name !== 'upload_cv')
         .map((t) => t.name)
         .sort(),
     ),
-  'Every data tool needs an HTTP route; upload_cv only presents the upload panel',
+  'Every data tool needs an HTTP route; upload_cv creates a limited upload session',
 );
 for (const tool of tools) {
   assert(readme.includes('`' + tool.name + '`'), `README missing tool: ${tool.name}`);

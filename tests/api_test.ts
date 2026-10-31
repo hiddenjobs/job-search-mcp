@@ -49,7 +49,7 @@ Deno.test(
     const tools = (await readRpc(await handler(request('tools/list')))).result.tools.filter(
       (tool) => tool.name !== 'upload_cv',
     );
-    assert(tools.length === 44 && Object.keys(restRoutes).length === 44);
+    assert(tools.length === 42 && Object.keys(restRoutes).length === 46);
     assert.equal(requests.length, 0, 'Discovery called REST');
     for (const tool of tools) {
       const args = sample(tool.inputSchema);
@@ -77,7 +77,7 @@ Deno.test(
         assert(new URL(sent.url).searchParams.get('q') === 'typescript');
       }
     }
-    assert.equal(requests.length, 44, 'Tool calls were duplicated');
+    assert.equal(requests.length, 42, 'Tool calls were duplicated');
   },
 );
 Deno.test(
@@ -301,43 +301,6 @@ Deno.test(
         message: 'Hidden Jobs could not complete this operation.',
       });
     }
-  },
-);
-
-Deno.test(
-  'file attachment references survive MCP-to-REST without being fetched or echoed by the adapter',
-  async () => {
-    const file = {
-      download_url: 'https://files.client.test/cv.pdf?temporary=credential',
-      file_id: 'file-cv',
-    };
-    const args = {
-      file,
-      filename: 'cv.pdf',
-      mimeType: 'application/pdf',
-      kind: 'cv',
-      requestId: 'native-cv-import',
-    };
-    const requests: Request[] = [];
-    const handler = createRestMcpHandler({
-      fetcher: (input, init) => {
-        requests.push(new Request(input, init));
-        return Promise.resolve(Response.json({ data: { id: uuid, state: 'ready' } }));
-      },
-    });
-    const tools = (await readRpc(await handler(request('tools/list')))).result.tools.filter(
-      (tool) => tool.name !== 'upload_cv',
-    );
-    assert.deepEqual(tools.find((t) => t.name === 'import_document')?._meta, {
-      'openai/fileParams': ['file'],
-    });
-    const result = await readRpc(
-      await handler(request('tools/call', { name: 'import_document', arguments: args })),
-    );
-    assert.equal(requests.length, 1);
-    assert.equal(new URL(requests[0].url).pathname, '/v1/me/documents/import');
-    assert.deepEqual(await requests[0].json(), args);
-    assert(!JSON.stringify(result).includes('credential'));
   },
 );
 

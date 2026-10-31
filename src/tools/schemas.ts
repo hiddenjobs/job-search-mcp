@@ -42,11 +42,10 @@ export const define = (
   description,
   inputSchema: { type: 'object', properties, required, additionalProperties: false },
   securitySchemes: [{ type: 'oauth2', scopes: ['email'] }],
-  ...(name === 'import_document' ? { _meta: { 'openai/fileParams': ['file'] } } : {}),
   annotations: {
     readOnlyHint: !write,
     destructiveHint: destructive,
     idempotentHint: !write || !!properties.requestId,
-    openWorldHint: name === 'import_document',
+    openWorldHint: false,
   },
 });

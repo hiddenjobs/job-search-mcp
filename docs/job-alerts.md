@@ -1,5 +1,9 @@
 # Email job alerts
 
+For recurring searches, the assistant first offers its native scheduler when it supports unattended
+MCP calls. These tools manage Hidden Jobs email delivery when requested or selected as an
+alternative; they do not configure the assistant’s scheduler. See the [search skill](../skills/search/SKILL.md).
+
 Use the connected Hidden Jobs account to manage the same searches shown in **Dashboard → Alerts**.
 Alerts email the account's existing, confirmed address; the MCP cannot change the recipient or send
 a test message. No extra account permission screen is required.
