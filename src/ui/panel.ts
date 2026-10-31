@@ -1,7 +1,9 @@
 import { define, id } from '../tools/schemas.ts';
 import { UPLOAD_HTML } from './panel.generated.ts';
 
-export const UPLOAD_URI = 'ui://hiddenjobs/upload-cv-v1.html';
+export const UPLOAD_URI = 'ui://hiddenjobs/upload-cv-v2.html';
+export const isUploadResource = (uri: string) =>
+  uri === UPLOAD_URI || uri === 'ui://hiddenjobs/upload-cv-v1.html';
 export const UPLOAD_MIME = 'text/html;profile=mcp-app';
 export const uploadCvTool = {
   ...define(

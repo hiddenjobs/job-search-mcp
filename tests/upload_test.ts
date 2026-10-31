@@ -9,6 +9,25 @@ const session = {
 };
 const cv = { cvId: UUID, versionId: UUID, version: 1, name: 'My CV' };
 Deno.test(
+  'new discovery bypasses cached v1 panels while old resource references still resolve',
+  async () => {
+    const handler = createMcpHandler({
+      execute: () => Promise.reject(new Error('No account call expected')),
+    });
+    const listed = await readRpc(await handler(rpc('tools/list', {}, '')));
+    const tool = listed.result.tools.find((tool) => tool.name === 'upload_cv');
+    const uri = tool?._meta?.['ui/resourceUri'];
+    assert.equal(typeof uri, 'string');
+    assert.notEqual(uri, 'ui://hiddenjobs/upload-cv-v1.html');
+    const current = await readRpc(await handler(rpc('resources/read', { uri }, '')));
+    const legacyUri = 'ui://hiddenjobs/upload-cv-v1.html';
+    const legacy = await readRpc(await handler(rpc('resources/read', { uri: legacyUri }, '')));
+    assert.equal(current.result.contents[0].uri, uri);
+    assert.equal(legacy.result.contents[0].uri, legacyUri);
+    assert.equal(legacy.result.contents[0].text, current.result.contents[0].text);
+  },
+);
+Deno.test(
   'both forms send the exact original file directly with a limited capability',
   async () => {
     const file = new File(['original bytes'], 'cv.pdf', { type: 'application/pdf' });
