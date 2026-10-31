@@ -1,3 +1,4 @@
+import { isRemoteLocation, remoteLocationError } from './locations.ts';
 import { CareerError } from './errors.ts';
 import {
   PROACTIVE_INSTRUCTIONS,
@@ -145,6 +146,14 @@ export function createMcpHandler({
     if (!resourceRead && !definition) return error(id, -32602, 'Unknown tool');
     const args = params.arguments ?? {};
     if (
+      name === 'search_jobs' &&
+      record(args) &&
+      Object.hasOwn(args, 'remoteLocation') &&
+      !isRemoteLocation(args.remoteLocation)
+    ) {
+      return error(id, -32602, remoteLocationError);
+    }
+    if (
       !record(args) ||
       (!resourceRead && definition && !validateArguments(definition.inputSchema, args))
     ) {
@@ -170,17 +179,25 @@ export function createMcpHandler({
         );
       }
       if (name === 'upload_cv') {
-        // A presentation-only tool. REST still validates this account before showing the panel.
-        await execute(token, 'get_candidate_profile', {});
+        const session = await execute(token, 'create_cv_upload', args);
+        if (
+          !record(session) ||
+          typeof session.uploadUrl !== 'string' ||
+          typeof session.sessionId !== 'string' ||
+          typeof session.expiresAt !== 'string' ||
+          !session.uploadUrl.startsWith('https://hiddenjobs.dev/mcp/upload#')
+        ) {
+          throw new CareerError('backend_error', 'The upload link could not be prepared.', 503);
+        }
         return response(id, {
           isError: false,
           content: [
             {
               type: 'text',
-              text: 'Select your PDF or DOCX in the upload panel and confirm the save. Wait for the user; the CV is not saved yet. If the panel is unavailable, use https://hiddenjobs.dev/dashboard/career.',
+              text: `Select your original PDF or DOCX in the panel and confirm. In a terminal, open this private link: ${session.uploadUrl}. It expires at ${session.expiresAt}. Wait for the user, then check get_cv_upload with sessionId ${session.sessionId}. No CV has been saved yet.`,
             },
           ],
-          structuredContent: { name: args.name ?? '' },
+          structuredContent: session,
         });
       }
       const wrapped = { data: await execute(token, name, args) };

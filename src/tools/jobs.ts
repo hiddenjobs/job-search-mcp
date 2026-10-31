@@ -1,3 +1,4 @@
+import { remoteLocationSchema } from '../locations.ts';
 import type { ToolDefinition } from './schemas.ts';
 export const JOB_SOURCES = [
   'hiddenjobs',
@@ -47,7 +48,7 @@ export const jobTools: ToolDefinition[] = [
         category: { type: 'string' },
         employmentType: { type: 'string' },
         jobType: { type: 'string' },
-        remoteLocation: { type: 'string' },
+        remoteLocation: remoteLocationSchema,
         page: { type: 'integer', minimum: 1, default: 1 },
         limit: { type: 'integer', minimum: 1, maximum: 50, default: 10 },
       },

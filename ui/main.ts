@@ -1,115 +1,128 @@
 import { App } from '@modelcontextprotocol/ext-apps';
-import { createCvUpload, type SavedCv } from '../src/ui/upload.ts';
-
-const app = new App({ name: 'Hidden Jobs CV upload', version: '1.0.0' }, {});
-function required<T>(element: T | null): T {
-  if (!element) throw new Error('Upload panel is incomplete.');
-  return element;
+import {
+  saveCvFile,
+  parseUploadStatus,
+  uploadCapability,
+  type SavedCv,
+  type UploadSession,
+} from '../src/ui/upload.ts';
+function required<T>(value: T | null): T {
+  if (!value) throw new Error('Upload panel is incomplete.');
+  return value;
 }
 const form = required(document.querySelector('form'));
-const fileInput = required(document.querySelector<HTMLInputElement>('#file'));
-const nameInput = required(document.querySelector<HTMLInputElement>('#name'));
+const file = required(document.querySelector<HTMLInputElement>('#file'));
+const name = required(document.querySelector<HTMLInputElement>('#name'));
 const submit = required(document.querySelector<HTMLButtonElement>('button[type=submit]'));
 const status = required(document.querySelector<HTMLElement>('#status'));
 const config = JSON.parse(required(document.querySelector('#config')).textContent) as {
-  origins: string[];
+  standalone?: boolean;
 };
-let connected = false,
+const app = config.standalone
+  ? undefined
+  : new App({ name: 'Hidden Jobs CV upload', version: '2.0.0' }, {});
+let session: UploadSession | undefined,
   busy = false;
-let save: ReturnType<typeof createCvUpload> | undefined;
 const text = (message: string) => {
   status.textContent = message;
 };
-app.addEventListener('toolresult', (result) => {
-  const data = result.structuredContent as { name?: string } | undefined;
-  if (data?.name && !nameInput.value) nameInput.value = data.name;
+function prepare(value: UploadSession) {
+  uploadCapability(value);
+  session = value;
+  if (!name.value && value.name) name.value = value.name;
+  submit.disabled = false;
+  text('Choose your file and confirm to save a new CV in Hidden Jobs.');
+}
+file.addEventListener('change', () => {
+  if (!name.value && file.files?.[0]) name.value = file.files[0].name.replace(/\.[^.]+$/, '');
 });
-fileInput.addEventListener('change', () => {
-  save = undefined;
-  if (!nameInput.value && fileInput.files?.[0])
-    nameInput.value = fileInput.files[0].name.replace(/\.[^.]+$/, '');
-  text('Your original file will be saved as a new CV.');
-});
-nameInput.addEventListener('input', () => {
-  save = undefined;
-});
-const call = async (name: string, args: Record<string, unknown>) => {
-  const result = await app.callServerTool({ name, arguments: args });
-  if (result.isError)
-    throw new Error('Hidden Jobs could not complete this step. Reconnect if needed, then retry.');
-  const data: unknown = (result.structuredContent as { data?: unknown } | undefined)?.data;
-  if (!data || typeof data !== 'object' || Array.isArray(data))
-    throw new Error('Hidden Jobs returned an invalid response.');
-  return data as Record<string, unknown>;
-};
-const announce = async (cv: SavedCv) => {
-  const summary = `Saved CV “${cv.name}”, version ${cv.version}, in Hidden Jobs. CV ID: ${cv.cvId}. Version ID: ${cv.versionId}. Original/default CV unchanged. Use the saved version for the next career step.`;
+async function announce(cv: SavedCv) {
+  if (!app) return;
+  const message = `Saved CV “${cv.name}”, version ${cv.version}, in Hidden Jobs. CV ID: ${cv.cvId}. Version ID: ${cv.versionId}. Original/default CV unchanged.`;
   try {
-    await app.updateModelContext({ content: [{ type: 'text', text: summary }] });
-    await app.sendMessage({ role: 'user', content: [{ type: 'text', text: summary }] });
+    await app.updateModelContext({ content: [{ type: 'text', text: message }] });
+    await app.sendMessage({ role: 'user', content: [{ type: 'text', text: message }] });
   } catch {
     text(`Saved “${cv.name}”, version ${cv.version}. Tell your assistant the CV is ready.`);
   }
-};
-required(document.querySelector('a')).addEventListener('click', (event) => {
-  if (!connected) return;
-  event.preventDefault();
-  void app.openLink({ url: 'https://hiddenjobs.dev/dashboard/career' }).catch(() => {
-    text('Open https://hiddenjobs.dev/dashboard/career in your browser.');
-  });
-});
+}
 form.addEventListener('submit', (event) => {
   event.preventDefault();
-  if (busy || !connected) return;
-  const file = fileInput.files?.[0];
-  if (!file) {
+  if (busy || !session) return;
+  const selected = file.files?.[0];
+  if (!selected) {
     text('Choose your PDF or DOCX first.');
     return;
   }
   busy = true;
   submit.disabled = true;
-  fileInput.disabled = true;
-  nameInput.disabled = true;
-  void (async () => {
-    try {
-      save ??= createCvUpload(file, nameInput.value, {
-        call,
-        origins: config.origins,
-        put: async (url, selected, headers) => {
-          const response = await fetch(url, {
-            method: 'PUT',
-            body: selected,
-            headers,
-            credentials: 'omit',
-            redirect: 'error',
-            signal: AbortSignal.timeout(60000),
-          });
-          if (!response.ok) throw new Error('Upload failed.');
-        },
-      });
-      const cv = await save(text);
-      text(
-        `Saved “${cv.name}”, version ${cv.version}. Your original and default CV are unchanged.`,
-      );
+  file.disabled = true;
+  name.disabled = true;
+  text('Uploading and verifying your original file…');
+  void saveCvFile(selected, name.value, session, config.standalone ? location.origin : undefined)
+    .then(async (cv) => {
       submit.textContent = 'Saved';
+      text(
+        `Saved “${cv.name}”, version ${cv.version}. Your default CV is unchanged. You can return to your assistant.`,
+      );
       await announce(cv);
-    } catch (error) {
-      text(error instanceof Error ? error.message : 'Could not save the CV. Please retry.');
+    })
+    .catch((error: unknown) => {
+      text(error instanceof Error ? error.message : 'Could not save your CV.');
       submit.disabled = false;
-      fileInput.disabled = false;
-      nameInput.disabled = false;
-    } finally {
+      file.disabled = false;
+      name.disabled = false;
+    })
+    .finally(() => {
       busy = false;
-    }
-  })();
+    });
 });
-void app
-  .connect()
-  .then(() => {
-    connected = true;
-    submit.disabled = false;
-    text('Choose your file and confirm to save it in Hidden Jobs.');
-  })
-  .catch(() => {
-    text('This client could not open the upload panel. Use the dashboard link below.');
+if (app) {
+  app.addEventListener('toolresult', (result) => {
+    try {
+      prepare(result.structuredContent as UploadSession);
+    } catch {
+      text('The upload link is unavailable. Ask your assistant for a new one.');
+    }
   });
+  void app.connect().catch(() => {
+    text(
+      'This client cannot open the panel. Open the private upload link returned by your assistant.',
+    );
+  });
+} else {
+  const fragment = location.hash;
+  history.replaceState(null, '', location.pathname);
+  const match = /^#([a-f0-9-]{36})\.([a-f0-9]{64})$/.exec(fragment);
+  if (!match) text('This upload link is invalid. Ask your assistant for a new one.');
+  else {
+    const value = {
+      sessionId: match[1],
+      uploadUrl: `https://hiddenjobs.dev/mcp/upload${fragment}`,
+      expiresAt: '',
+    };
+    void fetch(`/api/cv-uploads/${match[1]}`, {
+      headers: { Authorization: `Bearer ${match[2]}` },
+      credentials: 'omit',
+      redirect: 'error',
+    })
+      .then(async (response) => {
+        if (!response.ok)
+          throw new Error(
+            'This upload link is invalid or expired. Ask your assistant for a new one.',
+          );
+        const body: unknown = await response.json();
+        const data = parseUploadStatus(body);
+        if (data.status === 'saved' && data.cv) {
+          text(
+            `Saved “${data.cv.name}”, version ${data.cv.version}. Return to your assistant to continue.`,
+          );
+          return;
+        }
+        prepare({ ...value, name: data.name, expiresAt: data.expiresAt });
+      })
+      .catch((error: unknown) => {
+        text(error instanceof Error ? error.message : 'Could not open the upload link.');
+      });
+  }
+}

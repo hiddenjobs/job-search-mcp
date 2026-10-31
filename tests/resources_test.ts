@@ -213,7 +213,7 @@ Deno.test(
       [
         'missing CV',
         getWorkflow('setup')?.instructions ?? '',
-        ['ask the user to attach one', 'finalize_document_upload', 'call save_cv', 'dashboard'],
+        ['offer upload_cv', 'upload_cv', 'get_cv_upload', 'terminal'],
       ],
       [
         'external offer',
@@ -251,15 +251,12 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/setup' }, '')),
   );
   const requirements = [
-    'client-provided file object',
     'upload_cv',
-    'Return the panel immediately',
-    'finalize_document_upload after the direct transfer',
-    'DNS resolution',
-    'redacted',
-    'SHA-256',
-    'https://hiddenjobs.dev/dashboard/career',
-    'reread list_cvs and get_cv',
+    'get_cv_upload',
+    '15 minutes',
+    'private uploadUrl',
+    'Do not poll',
+    'original PDF or DOCX',
   ];
   for (const instructions of [
     initialized.result.instructions,

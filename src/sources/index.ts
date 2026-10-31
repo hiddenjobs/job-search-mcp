@@ -1,3 +1,4 @@
+import { assertRemoteLocation } from '../locations.ts';
 import { CareerError } from '../errors.ts';
 import { normalize, locationMatches } from './jobs.ts';
 import {
@@ -69,7 +70,8 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
       const query = (text(params.get('q')) || text(params.get('query')))
         .trim()
         .slice(0, SOURCE_LIMITS.queryLength);
-      const location = text(params.get('remoteLocation')) || text(params.get('location')) || 'All';
+      const location = params.get('remoteLocation') ?? params.get('location') ?? 'All';
+      assertRemoteLocation(location);
       const requestedLimit = Number(text(params.get('limit')) || SOURCE_LIMITS.defaultPageSize);
       if (!Number.isSafeInteger(requestedLimit)) throw invalidSourceArguments();
       const limit = Math.max(1, Math.min(requestedLimit, SOURCE_LIMITS.pageSize));
@@ -112,12 +114,6 @@ export function createExternalJobs(fetcher: typeof fetch = fetch, now = Date.now
               'External sources use cursors, not page. Pass their nextCursor and keep page at 1.',
           },
         };
-      // Validate location even when a provider returns an empty page.
-      try {
-        locationMatches('', location);
-      } catch {
-        throw invalidSourceArguments();
-      }
       try {
         const page = await readNormalizedPage(source, query, limit, state);
         const words = query.toLowerCase().split(/\s+/).filter(Boolean);

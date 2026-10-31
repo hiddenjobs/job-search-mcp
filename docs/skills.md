@@ -63,8 +63,8 @@ Import a CV, confirm your experience and preferences, and choose a default CV.
 - MCP prompt: `setup`
 - Resource: `hiddenjobs://workflows/setup`
 - Tool instructions: `get_workflow` with `{"name":"setup"}`
-- Typical tools: `get_candidate_profile`, `save_candidate_profile`, `create_document_upload`,
-  `import_document`, `save_cv`, `set_default_cv`.
+- Typical tools: `get_candidate_profile`, `save_candidate_profile`, `upload_cv`,
+  `get_cv_upload`, `save_cv`, `set_default_cv`.
 
 ## `expand` — Add depth to your profile
 

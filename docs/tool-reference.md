@@ -1,6 +1,6 @@
 # Tool reference
 
-The MCP exposes **45 tools**: three job tools, company lookup, six alert tools, 34 workflow/career tools and a CV upload panel. Call
+The MCP exposes **43 tools**: three job tools, company lookup, six alert tools, 31 workflow/career tools and two CV upload tools. Call
 `tools/list` for the exact machine-readable schemas. The [skills guide](skills.md) explains how to
 combine them into a complete job search.
 
@@ -62,8 +62,6 @@ Global pause needs no version. See [job alerts](job-alerts.md).
 
 ### Documents
 
-[`create_document_upload`](#create_document_upload),
-[`finalize_document_upload`](#finalize_document_upload), [`import_document`](#import_document),
 [`list_documents`](#list_documents), [`get_document`](#get_document),
 [`get_document_download_url`](#get_document_download_url), [`save_document`](#save_document),
 [`delete_document`](#delete_document), [`render_document`](#render_document),
@@ -168,17 +166,17 @@ or application.
 
 Search explicitly selected sources. External provider links are free; Hidden Jobs original application URLs remain excluded. See [job sources](job-sources.md) for attribution, coverage and pagination.
 
-| Argument         | Type    | Required | Constraints / notes                                                                                      |
-| ---------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
-| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs. No default. |
-| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                                   |
-| `query`          | string  | No       | —                                                                                                        |
-| `category`       | string  | No       | —                                                                                                        |
-| `employmentType` | string  | No       | —                                                                                                        |
-| `jobType`        | string  | No       | —                                                                                                        |
-| `remoteLocation` | string  | No       | —                                                                                                        |
-| `page`           | integer | No       | Min: 1; Default: 1                                                                                       |
-| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                             |
+| Argument         | Type    | Required | Constraints / notes                                                                                                                                                                                          |
+| ---------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `sources`        | array   | Yes      | Nonempty, unique selection: hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs. No default.                                                                                                     |
+| `cursors`        | object  | No       | External continuation cursors keyed by source; keep filters unchanged.                                                                                                                                       |
+| `query`          | string  | No       | —                                                                                                                                                                                                            |
+| `category`       | string  | No       | —                                                                                                                                                                                                            |
+| `employmentType` | string  | No       | —                                                                                                                                                                                                            |
+| `jobType`        | string  | No       | —                                                                                                                                                                                                            |
+| `remoteLocation` | string  | No       | Exact case-sensitive code; see [location format](job-sources.md). Example: `PT`, `US`, `EUROPE`, `Worldwide`, `All`. Names, aliases and lowercase values are rejected. Omit or use `All` for no restriction. |
+| `page`           | integer | No       | Min: 1; Default: 1                                                                                                                                                                                           |
+| `limit`          | integer | No       | Min: 1; Max: 50; Default: 10                                                                                                                                                                                 |
 
 ## `get_job`
 
@@ -302,56 +300,19 @@ historical selection.
 
 ## `upload_cv`
 
-Open an in-chat PDF/DOCX picker using MCP Apps. The user selects the original file, chooses a CV name
-and confirms saving a new CV. The browser uploads bytes directly, then verifies and saves version 1.
-Existing CVs and the default are preserved. Selecting the file again is necessary even if it was
-attached to the chat. The tool opens the panel immediately; do not poll while waiting for the user.
-Clients without panel support can use the dashboard or supported direct transfer.
+Open the CV panel. Terminal clients receive a private `uploadUrl` for the same form, expiring after 15 minutes. Select the original PDF/DOCX and confirm. A created link does not mean the file is saved. `structuredContent` contains `sessionId`, `uploadUrl`, `expiresAt` and the proposed name; it is not wrapped in `data` for this presentation tool.
 
-| Argument | Type   | Required | Details                                 |
-| -------- | ------ | -------- | --------------------------------------- |
-| `name`   | string | No       | Suggested CV name, up to 200 characters |
+| Argument | Type   | Required | Constraints / notes                        |
+| -------- | ------ | -------- | ------------------------------------------ |
+| `name`   | string | No       | Proposed new CV name, up to 200 characters |
 
-This presentation tool checks the connected account; file creation uses the existing document REST
-operations and `save_cv`. It does not have a separate REST data endpoint.
+## `get_cv_upload`
 
-## `create_document_upload`
+After the user confirms uploading, check the session. Returns `pending`, `expired` or `saved`; a saved result includes the exact CV/version. Only the same account and connection may read it. Do not poll while the user is selecting a file.
 
-Begin a private signed upload (maximum 2 MiB). Prefer `upload_cv` when direct transfer is unavailable. Do not invent attachment URLs or bytes.
-
-| Argument    | Type    | Required | Constraints / notes                                                                                                         |
-| ----------- | ------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `filename`  | string  | Yes      | —                                                                                                                           |
-| `mimeType`  | string  | Yes      | Values: application/pdf, text/plain, text/markdown, application/vnd.openxmlformats-officedocument.wordprocessingml.document |
-| `kind`      | string  | Yes      | Values: cv, cover_letter, interview, template, report, other                                                                |
-| `byteSize`  | integer | Yes      | Min: 1; Max: 2097152                                                                                                        |
-| `sha256`    | string  | Yes      | —                                                                                                                           |
-| `mode`      | string  | Yes      | Values: signed                                                                                                              |
-| `requestId` | string  | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments.  |
-
-## `finalize_document_upload`
-
-Verify size, SHA-256 and file type, then extract text directly in this call. Scans need
-user-provided text; OCR is not available.
-
-| Argument     | Type   | Required | Constraints / notes |
-| ------------ | ------ | -------- | ------------------- |
-| `documentId` | string | Yes      | Format: uuid        |
-
-## `import_document`
-
-Import the original attachment directly on the server. Provide exactly one of `file` (a
-client-provided file reference) or `sourceUrl`. Only approved HTTPS origins are accepted. If the
-client cannot expose a reference, follow the setup workflow's upload alternatives.
-
-| Argument    | Type   | Required | Constraints / notes                                                                                                         |
-| ----------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `file`      | object | No       | Client reference: required `download_url` and `file_id`; optional `mime_type` and `file_name`. Use instead of `sourceUrl`.  |
-| `sourceUrl` | string | No       | —                                                                                                                           |
-| `filename`  | string | Yes      | —                                                                                                                           |
-| `mimeType`  | string | Yes      | Values: application/pdf, text/plain, text/markdown, application/vnd.openxmlformats-officedocument.wordprocessingml.document |
-| `kind`      | string | Yes      | Values: cv, cover_letter, interview, template, report, other                                                                |
-| `requestId` | string | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments.  |
+| Argument    | Type   | Required | Constraints / notes        |
+| ----------- | ------ | -------- | -------------------------- |
+| `sessionId` | string | Yes      | UUID returned by upload_cv |
 
 ## `list_documents`
 
@@ -580,11 +541,7 @@ Arguments: `{}`.
 
 ## Files and PDF output
 
-Original files accept PDF, DOCX and UTF-8 text/Markdown, up to 2 MiB and 20 PDF pages.
-`create_document_upload` accepts `mode: "signed"`; upload original file
-bytes directly. Finalization verifies size, SHA-256 and structure.
-`import_document` accepts a client-provided `file` object or `sourceUrl` from an allowlisted HTTPS
-origin. Hidden Jobs downloads the original; temporary references are not saved in document metadata.
+Original CV files use `upload_cv`: select a PDF or DOCX up to 2 MiB in the embedded panel or open the returned private browser link from a terminal. Links expire after 15 minutes. The browser sends original bytes directly; the server checks file structure, size and SHA-256 and saves a new version without changing the default. After confirmation, use `get_cv_upload` to verify the saved CV.
 
 `render_document` generates a PDF from a saved text document and optional supported layout template.
 No OCR or executable template engine is provided. `check_document` checks extraction and layout
