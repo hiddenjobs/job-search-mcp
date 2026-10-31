@@ -1,3 +1,4 @@
+import { remoteLocations } from '../locations.ts';
 import { define, id, type ToolDefinition } from './schemas.ts';
 
 export const alertFilters = {
@@ -21,33 +22,7 @@ export const alertFilters = {
   ],
   employmentType: ['All', 'Full-time', 'Part-time', 'Intern', 'Other'],
   jobType: ['All', 'Permanent', 'Freelance'],
-  remoteLocation: [
-    'All',
-    'Worldwide',
-    'US',
-    'CA',
-    'GB',
-    'EUROPE',
-    'ES',
-    'DE',
-    'FR',
-    'PL',
-    'RO',
-    'NL',
-    'IE',
-    'PT',
-    'CH',
-    'LATAM',
-    'BR',
-    'MX',
-    'CO',
-    'AR',
-    'AMERICAS',
-    'APAC',
-    'AU',
-    'IN',
-    'EMEA',
-  ],
+  remoteLocation: remoteLocations,
 };
 const expectedVersion = {
   type: 'integer',

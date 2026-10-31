@@ -25,9 +25,10 @@ interface RpcReply {
     messages: { content: { text: string } }[];
     contents: { uri: string; text: string }[];
     isError: boolean;
+    content: { type: string; text: string }[];
     structuredContent: { status: number; error: string; data: Record<string, unknown> };
   };
-  error: { code: number };
+  error: { code: number; message: string };
 }
 export const readRpc = (response: Response): Promise<RpcReply> =>
   response.json() as Promise<RpcReply>;

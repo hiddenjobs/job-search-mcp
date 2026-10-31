@@ -1,3 +1,4 @@
+import { isRemoteLocation, remoteLocationError } from './locations.ts';
 import { CareerError } from './errors.ts';
 import {
   PROACTIVE_INSTRUCTIONS,
@@ -144,6 +145,14 @@ export function createMcpHandler({
     const definition = tools.find((tool) => tool.name === name);
     if (!resourceRead && !definition) return error(id, -32602, 'Unknown tool');
     const args = params.arguments ?? {};
+    if (
+      name === 'search_jobs' &&
+      record(args) &&
+      Object.hasOwn(args, 'remoteLocation') &&
+      !isRemoteLocation(args.remoteLocation)
+    ) {
+      return error(id, -32602, remoteLocationError);
+    }
     if (
       !record(args) ||
       (!resourceRead && definition && !validateArguments(definition.inputSchema, args))
