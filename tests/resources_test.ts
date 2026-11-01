@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.11.0');
+  assert(flow?.version === '1.12.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -137,7 +137,7 @@ Deno.test(
     const apply = getWorkflow('apply')?.instructions ?? '';
     assert(apply.includes('Do not finish with only downloads'));
     assert(apply.includes('If that save was already requested, execute it'));
-    assert(apply.includes('External application tracking is not supported, but a CV'));
+    assert(apply.includes('A CV tailored for any source can be saved'));
     const search = getWorkflow('search')?.instructions ?? '';
     for (const rule of [
       'native scheduler',
@@ -218,7 +218,7 @@ Deno.test(
       [
         'external offer',
         workflow.instructions,
-        ['External application tracking is not supported', 'without save_application'],
+        ['externalJob', 'every saved application synchronized', 'saved cvVersionId'],
       ],
       [
         'source selection',
