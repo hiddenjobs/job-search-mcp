@@ -10,7 +10,7 @@ Deno.test('discovery preserves the public capabilities and the career feature fl
     const handler = createRestMcpHandler({ careerEnabled, fetcher: noNetwork });
     const initialized = await readRpc(await handler(rpc('initialize')));
     assert.equal(initialized.result.protocolVersion, '2025-06-18');
-    assert(initialized.result.instructions.includes('Web free search (web)'));
+    assert(initialized.result.instructions.includes('Open web search (web)'));
     assert(initialized.result.instructions.includes('ask when unclear'));
     assert.equal(initialized.result.instructions.includes('list_cvs'), careerEnabled);
     assert.equal(initialized.result.instructions.includes('save_cv'), careerEnabled);

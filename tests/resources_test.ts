@@ -223,7 +223,7 @@ Deno.test(
       [
         'source selection',
         getWorkflow('search')?.instructions ?? '',
-        ['Web free search (web)', 'ask when unclear', 'source failures are not empty results'],
+        ['Open web search (web)', 'ask when unclear', 'source failures are not empty results'],
       ],
     ];
     for (const [scenario, instructions, requirements] of scenarios) {

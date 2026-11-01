@@ -95,7 +95,7 @@ Deno.test(
     }
     assert.equal(calls.length, 2);
     const workflow = getWorkflow('search');
-    assert.match(workflow?.instructions ?? '', /Web free search/);
+    assert.match(workflow?.instructions ?? '', /Open web search/);
     assert.match(workflow?.instructions ?? '', /cannot search the web/);
   },
 );

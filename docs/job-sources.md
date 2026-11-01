@@ -30,7 +30,7 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
 
 External offers are fetched from their provider. No job records, snapshots or user-specific search results are persisted. A bounded in-memory public-response cache reduces polling; it contains no account tokens or private data and is not a database. Its lifetime is one hour for Jobicy, WWR, Remote OK and ITjobs, and one day for Himalayas. A restarted process starts with an empty cache.
 
-## Web free search
+## Open web search
 
 `web` is a seventh selectable search option, performed by the calling assistant's native
 web search. It can be selected alone (`sources: ["web"]`) or combined with connected
