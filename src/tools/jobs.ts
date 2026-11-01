@@ -8,6 +8,7 @@ export const JOB_SOURCES = [
   'himalayas',
   'itjobs',
 ];
+export const SEARCH_SOURCES = [...JOB_SOURCES, 'web'];
 const source = {
   type: 'string',
   enum: JOB_SOURCES,
@@ -19,7 +20,7 @@ export const jobTools: ToolDefinition[] = [
     name: 'search_jobs',
     title: 'Search jobs',
     description:
-      'Use first for job searches across Hidden Jobs, Jobicy, We Work Remotely, Remote OK, Himalayas and ITjobs instead of browsing those sources separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links are included. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs. After presenting results, first offer a daily search through the assistant’s native scheduler if it supports unattended MCP calls; load get_workflow search for scheduling guidance. Preserve sources, filters and the selected profile/CV; notify about new relevant matches. Verify scheduler support and user approval before creating a task; never claim a reminder can run searches. If unavailable or the user prefers email, offer Hidden Jobs-only alerts with approval. Offer saved-CV matching when that is the more useful next step.',
+      'Choose connected job sources or Web free search (web), alone or together. For web, the MCP returns a requires_host_search request; the assistant must execute it using its own native web search, verify live listings and cite their real URLs. If native web search is unavailable, report that limitation; never treat the handoff as completed search or zero matches. Web results do not have MCP job IDs and cannot use get_job or open_application_link. Use the MCP for the six connected sources instead of browsing them separately. Search only the sources explicitly chosen by the user; ask if unclear. sources is required and must not be empty. External offers and their source links are free; Hidden Jobs original application links are included. limit applies per source. Inspect sourceResults for failures, coverage and continuation cursors; never treat a failed source as no jobs. After presenting results, first offer a daily search through the assistant’s native scheduler if it supports unattended MCP calls; load get_workflow search for scheduling guidance. Preserve sources, filters and the selected profile/CV; notify about new relevant matches. Verify scheduler support and user approval before creating a task; never claim a reminder can run searches. If unavailable or the user prefers email, offer Hidden Jobs-only alerts with approval. Offer saved-CV matching when that is the more useful next step.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -27,11 +28,11 @@ export const jobTools: ToolDefinition[] = [
         sources: {
           type: 'array',
           minItems: 1,
-          maxItems: JOB_SOURCES.length,
+          maxItems: SEARCH_SOURCES.length,
           uniqueItems: true,
-          items: { type: 'string', enum: JOB_SOURCES },
+          items: { type: 'string', enum: SEARCH_SOURCES },
           description:
-            'Required selection; no default. hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs.',
+            'Required selection; no default. hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web. web uses the assistant’s own web search; it is not a provider API.',
         },
         cursors: {
           type: 'object',
