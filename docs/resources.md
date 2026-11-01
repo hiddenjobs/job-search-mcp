@@ -103,7 +103,7 @@ The `alerts` workflow manages recurring email searches. Read
 
 ## CV upload panel
 
-`ui://hiddenjobs/upload-cv-v2.html` is an MCP Apps HTML resource linked to `upload_cv`.
+`ui://hiddenjobs/upload-cv-v3.html` is an MCP Apps HTML resource linked to `upload_cv`.
 Its versioned URI prevents hosts from reusing the previous upload implementation.
 The v1 URI remains readable for clients refreshing their tool definitions.
 It contains a file picker and save confirmation. Its CSP permits only the configured upload origins;
