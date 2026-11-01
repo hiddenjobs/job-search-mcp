@@ -20,8 +20,8 @@ combine them into a complete job search.
   arguments. List operations accept `page` (default 1) and `limit` (maximum 50); ordinary career
   lists default to 20.
 - `save_application` captures the offer snapshot on the server and the exact chosen CV version.
-  `update_application` accepts `userConfirmed: true` only after the user confirms a
-  submitted/outcome state. Prepared is not submitted. Submitted CV selection and final
+  `update_application` automatically records evidenced progress during an authorized workflow,
+  without another confirmation. Prepared is not submitted. Submitted CV selection and final
   CV/cover-letter references are immutable.
 - `reset_user_data` returns the account confirmation URL. It does not delete data. `delete_document`
   requires an active account connection and refuses documents referenced by CVs or applications.
@@ -482,9 +482,9 @@ version. Does not submit anything.
 
 ## `update_application`
 
-Update state, notes, next steps or final document references. Only mark applied after the user
-confirms submission. email-derived changes need user approval; store only approved references and
-minimal notes.
+Update state, notes, next steps or final document references. Synchronize verified progress automatically during an authorized workflow. Mark applied only
+with evidence of successful submission; record blockers without advancing status. Read the current
+revision, store minimal evidence and next steps, and verify the saved result.
 
 | Argument                | Type    | Required | Constraints / notes                                                                                                        |
 | ----------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -494,7 +494,6 @@ minimal notes.
 | `cvDocumentId`          | string  | No       | Format: uuid                                                                                                               |
 | `coverLetterDocumentId` | string  | No       | Format: uuid                                                                                                               |
 | `interviewDocumentId`   | string  | No       | Format: uuid                                                                                                               |
-| `userConfirmed`         | boolean | No       | —                                                                                                                          |
 | `expectedRevision`      | integer | Yes      | Min: 0; Last known revision; use 0 when creating a record. A conflict requires reading the record again.                   |
 | `requestId`             | string  | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments. |
 
@@ -552,8 +551,9 @@ limits, not ATS acceptance. Download links expire after 60 seconds. See the
 
 `saved`, `preparing`, `prepared`, `applied`, `interview`, `offer`, `rejected`, `withdrawn`.
 
-A user-confirmed transition to `applied`, `interview`, `offer`, `rejected` or `withdrawn` requires
-`userConfirmed: true`. Notes-only updates can omit `status`. Submitted/outcome records cannot return
+Transitions require observed outcomes or explicit user reports, without an extra confirmation flag.
+For example, after an authorized submission receipt, record `applied` immediately; if CAPTCHA
+blocks submission, retain the current status and save the blocker as the next step. Notes-only updates can omit `status`. Submitted/outcome records cannot return
 to preparation states. Each application update appends a history event. `get_application` returns a
 page of events; request later pages for more history.
 
@@ -566,7 +566,7 @@ tool result even when the HTTP response is `200`.
 
 | Status    | Example code                                                   | Action                                                                                        |
 | --------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 400       | `invalid_arguments`                                            | Read the input schema and correct arguments or missing confirmation                           |
+| 400       | `invalid_arguments`                                            | Read the input schema and correct arguments                                                   |
 | 401 / 403 | OAuth challenge                                                | Reconnect and approve the connection                                                          |
 | 402       | Account access                                                 | Follow the supplied account settings link                                                     |
 | 403       | `connection_required`                                          | Reconnect the account; consent may have been revoked                                          |

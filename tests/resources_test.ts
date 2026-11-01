@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.9.0');
+  assert(flow?.version === '1.10.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -269,3 +269,33 @@ Deno.test('upload fallback reaches initialization, prompts and shared resources'
     for (const requirement of requirements) assert(instructions.includes(requirement), requirement);
   }
 });
+
+Deno.test(
+  'automatic progress guidance reaches initialization and every career workflow',
+  async () => {
+    const handler = createRestMcpHandler({
+      fetcher: () => {
+        throw new Error('No account request expected');
+      },
+    });
+    const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+    for (const instructions of [
+      initialized.result.instructions,
+      ...Object.keys(workflows).map((name) => getWorkflow(name)?.instructions ?? ''),
+    ]) {
+      for (const rule of [
+        'without waiting for the user',
+        'successful submission receipt',
+        'CAPTCHA or login alone does not',
+        'Before ending the turn, reconcile',
+        'same requestId',
+        'preserving unrelated changes',
+      ]) {
+        assert(instructions.includes(rule), `Missing synchronization rule: ${rule}`);
+      }
+      assert(!instructions.includes('Mark applied only after the user confirms'));
+    }
+    assert(getWorkflow('apply')?.instructions.includes('requires explicit user authorization'));
+    assert(getWorkflow('email-sync')?.instructions.includes('authorizes email synchronization'));
+  },
+);
