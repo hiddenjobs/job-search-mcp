@@ -50,8 +50,8 @@ Deno.test(
         );
         const headers = new Headers(init.headers);
         assert.equal(headers.get('content-type'), 'application/pdf');
-        assert.equal(decodeURIComponent(headers.get('x-cv-name')!), 'My CV');
-        assert.equal(decodeURIComponent(headers.get('x-cv-filename')!), file.name);
+        assert.equal(decodeURIComponent(headers.get('x-cv-name') ?? ''), 'My CV');
+        assert.equal(decodeURIComponent(headers.get('x-cv-filename') ?? ''), file.name);
         assert.equal(await (init.body as File).text(), await file.text());
         return Response.json({ data: { status: 'saved', cv } });
       },
