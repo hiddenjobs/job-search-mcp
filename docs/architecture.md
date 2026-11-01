@@ -22,7 +22,7 @@ guidance, templates and permitted private records.
 For example, **“Prepare my application using Backend English, version 3”** loads the apply workflow,
 reads your confirmed profile and selected CV, captures the offer, saves a tailored CV and letter,
 and marks the application prepared. You review the documents and submit on the employer's website.
-The outcome workflow records your confirmed submission or later interview/offer.
+The outcome workflow proactively records verified submissions and later outcomes during an authorized workflow, without another confirmation.
 
 ## Connection and access
 
