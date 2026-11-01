@@ -9,7 +9,8 @@ Deno.test(
     const calls: Record<string, unknown>[] = [];
     const handler = createRestMcpHandler({
       fetcher: (_input, init) => {
-        const args = JSON.parse(String(init?.body));
+        assert.equal(typeof init?.body, 'string');
+        const args = JSON.parse(init?.body as string) as Record<string, unknown>;
         calls.push(args);
         return Promise.resolve(Response.json({ data: { id: UUID, ...args } }));
       },
