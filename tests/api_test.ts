@@ -133,10 +133,16 @@ Deno.test(
       );
       assert(!text.includes('PRIVATE') && !text.includes('a.b.c'));
       if (status === 402) {
-        assert(
-          text.includes('Account action is required') &&
-            text.includes('https://hiddenjobs.dev/dashboard/account'),
+        assert(text.includes('https://hiddenjobs.dev/dashboard/account?from=mcp'));
+      }
+      if (code === 'mcp_trial_expired') {
+        assert.match(body.result.content[0].text, /3-day free trial.*has ended/);
+        assert.match(
+          body.result.content[0].text,
+          /review the plans and activate Hidden Jobs Access/,
         );
+        assert.match(body.result.content[0].text, /no additional free trial/);
+        assert.doesNotMatch(body.result.content[0].text, /Account action is required|Reconnect/);
       }
       if (status === 401 || status === 403) {
         assert(
@@ -322,6 +328,20 @@ Deno.test(
         assert(!error.message.includes('token=secret'));
         return true;
       });
+    }
+  },
+);
+
+Deno.test(
+  'trial-expiry guidance reaches every client at initialization and workflow loading',
+  async () => {
+    for (const careerEnabled of [true, false]) {
+      const handler = createRestMcpHandler({ careerEnabled });
+      const reply = await readRpc(await handler(request('initialize')));
+      assert.match(reply.result.instructions, /3-day free Hidden Jobs MCP trial has ended/);
+      assert.match(reply.result.instructions, /user’s language/);
+      assert.match(reply.result.instructions, /review plans and activate/);
+      assert.match(reply.result.instructions, /suggest reconnecting OAuth/);
     }
   },
 );
