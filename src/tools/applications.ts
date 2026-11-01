@@ -9,6 +9,25 @@ export const STATUSES = [
   'rejected',
   'withdrawn',
 ];
+export const externalApplicationJob = {
+  type: 'object',
+  description:
+    'For provider offers use source and the exact opaque id from search_jobs. For web offers use source web, the verified public HTTPS url and title; optional fields must be observed, not inferred.',
+  properties: {
+    source: {
+      type: 'string',
+      enum: ['jobicy', 'weworkremotely', 'remoteok', 'himalayas', 'itjobs', 'web'],
+    },
+    id: { type: 'string', minLength: 1, maxLength: 2000 },
+    url: { type: 'string', minLength: 1, maxLength: 4096 },
+    title: { type: 'string', minLength: 1, maxLength: 300 },
+    company: { type: 'string', minLength: 1, maxLength: 200 },
+    location: { type: 'string', minLength: 1, maxLength: 300 },
+    description: { type: 'string', minLength: 1, maxLength: 12000 },
+  },
+  required: ['source'],
+  additionalProperties: false,
+};
 export const applicationsTools: ToolDefinition[] = [
   define(
     'list_applications',
@@ -32,9 +51,9 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'save_application',
     'Save application',
-    'After reading the offer and selecting a saved CV version, create a draft application with a server-captured Hidden Jobs offer snapshot. If no suitable CV exists, ask for one and follow get_workflow setup first. Requires a Hidden Jobs jobId; external offers cannot be tracked here. Does not submit anything.',
-    { jobId: id, cvVersionId: id, data: obj, requestId: key },
-    ['jobId', 'cvVersionId', 'requestId'],
+    'Track an application from any source using an exact saved Hidden Jobs CV version. Provide exactly one of jobId (Hidden Jobs) or externalJob. Provider offers use externalJob source and opaque id; the server rereads their snapshot. Web offers use source web, verified public HTTPS url and title, with only observed optional facts. Read the offer, get_candidate_profile and list_cvs first; if no suitable CV exists, follow setup. This creates a saved draft, not a submission. Verify the returned record and synchronize subsequent evidenced progress with update_application.',
+    { jobId: id, externalJob: externalApplicationJob, cvVersionId: id, data: obj, requestId: key },
+    ['cvVersionId', 'requestId'],
     true,
   ),
   define(
