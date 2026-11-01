@@ -46,7 +46,7 @@ Use `upload_cv` for original PDFs and DOCX files (up to 2 MiB and 20 PDF pages).
 | ChatGPT / Claude web         | Open panel → select original file → confirm save                                     |
 | Codex / Claude Code terminal | Open returned private `uploadUrl` in a browser → select original file → confirm save |
 
-The link expires in 15 minutes, authorizes one new CV and does not grant access to existing files. It contains a narrow capability in its URL fragment, never an OAuth credential. Treat it as private. The browser removes the fragment and sends the file directly to Hidden Jobs. The backend validates file structure and SHA-256, extracts text and creates version 1 without changing the default. Scanned PDFs need extractable text; OCR is not included.
+The link expires in 15 minutes, authorizes one new CV and does not grant access to existing files. It contains a narrow capability in its URL fragment, never an OAuth credential. Treat it as private. The browser removes the fragment and sends the file directly to Hidden Jobs. The result is a verified, readable CV version without changing the default. Scanned PDFs need extractable text; OCR is not included.
 
 After the user confirms saving, call `get_cv_upload` with `sessionId` to check the result. Never claim success just because the form opened. On expiry request a new link. Account uploads remain available from Profile.
 
@@ -90,8 +90,8 @@ later versions without rewriting a previous application's historical selection.
 | `rejected`  | Verified rejection                     |
 | `withdrawn` | Verified withdrawal                    |
 
-The backend appends change history. Notes-only edits can omit status; submitted/outcome records
-cannot return to preparation. The assistant proactively synchronizes observed outcomes during an authorized workflow; the backend does not independently monitor submissions or employer responses.
+Each application update appends change history. Notes-only edits can omit status; submitted/outcome records
+cannot return to preparation. The assistant proactively synchronizes observed outcomes during an authorized workflow; this does not imply independent monitoring of submissions or employer responses.
 
 For example: **“I have an interview next Tuesday. Update this application's status and save ‘prepare
 project examples’ as the next step.”** The assistant records the reported event without asking for another confirmation. After an authorized submission, a success receipt likewise triggers an automatic update to `applied`; a CAPTCHA only adds a blocker and next step.

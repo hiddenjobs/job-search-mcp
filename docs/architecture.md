@@ -5,14 +5,9 @@ flowchart LR
     User[You] --> Assistant[Your AI assistant]
     Assistant --> Instructions[Skills / prompts / workflow resources]
     Assistant --> MCP[Job Search MCP tools]
-    MCP --> REST[Hidden Jobs REST API]
-    REST --> Jobs[Hidden Jobs offers and company facts]
-    REST --> Adapters[Public source adapters: src/sources]
-    Adapters --> Sources[Jobicy / WWR / Remote OK / Himalayas / ITjobs]
-    REST --> Career[Private profile, CVs and applications]
-    REST --> Files[Document extraction and PDF export]
-    User --> Account[Profile and Applications dashboard]
-    Account --> Career
+    MCP --> Jobs[Job search and offer details]
+    MCP --> Career[Authorized profile, CV and application operations]
+    MCP --> Documents[Document upload and export]
 ```
 
 The assistant runs the language model. Skills, prompts and `get_workflow` supply a shared set of
@@ -27,12 +22,10 @@ The outcome workflow proactively records verified submissions and later outcomes
 ## Connection and access
 
 Your MCP client discovers OAuth metadata from the resource URL, signs you in to Hidden Jobs and
-attaches an account token to requests. The MCP forwards that token to its first-party REST API,
-which verifies the signature and checks live session/consent validity before each authenticated
-operation.
+attaches an account token to requests. Authenticated operations use that token and respect account ownership and connection validity.
 
 Job search and descriptions are available to connected accounts. Only `open_application_link`
-returns a Hidden Jobs original employer URL. External sources return their provider links for free, with attribution; their offers are never imported into the Hidden Jobs database. The same OAuth connection
+returns a Hidden Jobs original employer URL. External sources return their provider links for free, with attribution; their offers are not available as saved Hidden Jobs career records. The same OAuth connection
 authorizes career reads and writes for that account.
 
 ## Instructions and operations
@@ -57,7 +50,7 @@ historical selections. After submission, base CV selection and final CV/cover-le
 cannot be rewritten. Application updates append events.
 
 Writes use last-read revisions and idempotency keys. Ownership checks reject cross-account
-references. Private files use generated owner paths and expiring download/upload capabilities. The
+references. Private files remain scoped to the authorized account, with expiring download and upload links. The
 account UI lists active connections and handles confirmed data deletion.
 
 See [client setup](client-configuration.md), [skills](skills.md), [tools](tool-reference.md),

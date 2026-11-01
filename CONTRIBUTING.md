@@ -50,7 +50,6 @@ when the threshold check fails. For a quick test run without coverage, use `deno
 
 Tests exercise the actual REST-backed handler with request-scoped HTTP fixtures. They cover OAuth
 challenges, every tool mapping, denied operations and resources/prompts without customer accounts.
-Token verification, backend and database tests run in the Hidden Jobs application repository.
 
 The README and guides describe the complete career workflow: setup, search, ranking, tailored CVs
 and letters, review, export, interviews and tracking. Keep tool arguments and examples aligned with
@@ -68,8 +67,10 @@ authenticated check. For example, a change to an authentication error should inc
 showing the expected status and OAuth challenge.
 
 Keep changes focused. Update documentation when tool schemas, responses or protocol behavior change.
-Database tables, storage implementation and deployment configuration belong to the Hidden Jobs
-application repository. Include the reason for the change and the checks run in your pull request.
+Open or select a public issue before opening a pull request, and link it with `Closes #<issue>` when appropriate. Include the user-visible change and the MCP checks run in your pull request.
+
+Public issues, pull requests, commit messages and documentation must stay within the MCP integration contract. Do not disclose private repositories, internal service architecture, infrastructure providers, deployment commands or operational details.
+For example, describe how `update_application` records a verified outcome and which protocol tests passed; keep private implementation and release details out of the public record.
 Never include credentials, private application URLs or customer data.
 
 ## Code layout
@@ -104,6 +105,5 @@ scripts/                   Documentation, skills and connection checks
 ```
 
 Use one execution path through REST. For example, a private CV resource calls `get_cv` through the
-same request-bound client as the tool. Avoid backend-auth callbacks or a second server
-implementation. Prefer explicit dependency injection to global mocks; keep the built-in Deno test
+same request-bound client as the tool. Keep authentication behavior within the documented OAuth contract. Prefer explicit dependency injection to global mocks; keep the built-in Deno test
 runner and standard assertions.
