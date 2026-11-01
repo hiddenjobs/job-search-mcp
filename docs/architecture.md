@@ -25,7 +25,7 @@ Your MCP client discovers OAuth metadata from the resource URL, signs you in to 
 attaches an account token to requests. Authenticated operations use that token and respect account ownership and connection validity.
 
 Job search and descriptions are available to connected accounts. Only `open_application_link`
-returns a Hidden Jobs original employer URL. External sources return their provider links for free, with attribution; their offers are not available as saved Hidden Jobs career records. The same OAuth connection
+returns a Hidden Jobs original employer URL. External sources return their provider links for free, with attribution; selected offers can be saved in private application records with their original source and the exact saved CV version, without entering the jobs catalogue. The same OAuth connection
 authorizes career reads and writes for that account.
 
 ## Instructions and operations

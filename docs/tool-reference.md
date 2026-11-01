@@ -19,7 +19,7 @@ combine them into a complete job search.
 - For career writes, provide a unique `requestId` for each intended write, and reuse it only for a retry with identical
   arguments. List operations accept `page` (default 1) and `limit` (maximum 50); ordinary career
   lists default to 20.
-- `save_application` captures the offer snapshot on the server and the exact chosen CV version.
+- `save_application` stores the exact chosen CV version and a private offer snapshot: server-reread for integrated sources, assistant-observed for web.
   `update_application` automatically records evidenced progress during an authorized workflow,
   without another confirmation. Prepared is not submitted. Submitted CV selection and final
   CV/cover-letter references are immutable.
@@ -470,15 +470,16 @@ Read one application and a page of its history.
 
 ## `save_application`
 
-Create a draft application with a server-captured Hidden Jobs offer snapshot and an exact base CV
-version. Does not submit anything.
+Create a private draft application from any source using an exact saved Hidden Jobs CV version.
+Provide exactly one of `jobId` or `externalJob`; see [source-reference examples](job-sources.md#application-tracking-across-sources). Provider offers are reread on the server; web snapshots contain assistant-observed facts. Does not submit anything.
 
-| Argument      | Type   | Required | Constraints / notes                                                                                                        |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `jobId`       | string | Yes      | Format: uuid                                                                                                               |
-| `cvVersionId` | string | Yes      | Format: uuid                                                                                                               |
-| `data`        | object | No       | —                                                                                                                          |
-| `requestId`   | string | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments. |
+| Argument      | Type   | Required | Constraints / notes                                                                                                                           |
+| ------------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `jobId`       | string | No       | Format: uuid                                                                                                                                  |
+| `externalJob` | object | No       | Provider: source and exact opaque id. Web: source web, verified public HTTPS url and title; optional observed company, location, description. |
+| `cvVersionId` | string | Yes      | Format: uuid                                                                                                                                  |
+| `data`        | object | No       | —                                                                                                                                             |
+| `requestId`   | string | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments.                    |
 
 ## `update_application`
 

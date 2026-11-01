@@ -137,7 +137,7 @@ See [skills](skills.md), [tools](tool-reference.md), [resources and prompts](res
 
 ## External offers
 
-`search_jobs` also supports external sources; see [job sources](job-sources.md). You can compare their requirements and draft documents with your assistant, but external offers are not imported into career records. Application tracking, saved job evaluations, job activity and email alerts still require a Hidden Jobs jobId.
+`search_jobs` also supports external sources; see [job sources](job-sources.md). Use the same saved Hidden Jobs CV versions, documents and private application tracker for every source, including open web search. `save_application` accepts exactly one of a Hidden Jobs `jobId` or `externalJob`; see [the source-reference examples](job-sources.md#application-tracking-across-sources). Integrated provider snapshots are reread on the server; web snapshots preserve assistant-observed facts and their verified URL. This stores only the selected private application, not an imported catalogue listing. Saved job evaluations, job activity and email alerts still require a Hidden Jobs jobId.
 
 ### Upload from the chat panel
 
