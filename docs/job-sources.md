@@ -28,7 +28,7 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
 | `himalayas`      | Free public search API, refreshed daily. Preserve Himalayas attribution and the supplied applicationLink; do not replace it with an employer/ATS link. Country and timezone restrictions both matter. |
 | `itjobs`         | Public RSS, refreshed hourly. Remote-only, Portugal-focused summaries. Preserve ITjobs attribution and listing links; do not use its logo.                                                            |
 
-External offers are fetched from their provider. No job records, snapshots or user-specific search results are persisted. A bounded in-memory public-response cache reduces polling; it contains no account tokens or private data and is not a database. Its lifetime is one hour for Jobicy, WWR, Remote OK and ITjobs, and one day for Himalayas. A restarted process starts with an empty cache.
+External offers are fetched from their provider. Searching does not persist job records, snapshots or user-specific search results. A selected offer can be captured separately in the user’s private application tracker when preparing an authorized application. A bounded in-memory public-response cache reduces polling; it contains no account tokens or private data and is not a database. Its lifetime is one hour for Jobicy, WWR, Remote OK and ITjobs, and one day for Himalayas. A restarted process starts with an empty cache.
 
 ## Open web search
 
@@ -46,8 +46,10 @@ If that capability is unavailable, it must disclose the limitation and preserve
 successful connected-source results. A REST caller must supply its own search capability.
 
 Web results have no MCP job IDs, detail lookup, application-link endpoint or pagination
-cursor. Open their verified URLs directly; do not pass them to Hidden Jobs-only tracking,
-evaluation or email-alert tools. Deduplicate verified identical openings while retaining
+cursor. Open their verified URLs directly; do not pass them to Hidden Jobs job-activity,
+evaluation or email-alert tools. Web applications can be tracked with `save_application`
+using `externalJob: {source: "web", url: "https://careers.company.com/jobs/42", title: "Data Scientist"}`
+and an exact saved Hidden Jobs `cvVersionId`. Deduplicate verified identical openings while retaining
 required source attribution. Never send CV contents or private profile information to a
 public search engine. Native recurring searches must support both selected MCP sources
 and native web search; do not silently omit either.
@@ -70,7 +72,33 @@ WWR and Himalayas listing pages can reject automated HTML requests with a securi
 
 MCP still uses the connected account's OAuth session. REST also accepts scoped API keys; GET /jobs requires explicit sources, just like MCP. Explicit REST sources are comma-separated, and cursors is a JSON object in the query string. Job reads use the source query parameter; application-link requests use source in the JSON body. Authentication and quotas still apply; external providers never receive the user's token, profile or CV.
 
-Career records that require a Hidden Jobs jobId (saved evaluations, job activity, application tracking and email alerts) continue to operate on Hidden Jobs offers only. An assistant can compare external offers and draft CVs or letters, but must not pass external references to those tools or claim to have saved an external application.
+## Application tracking across sources
+
+All sources use the same private application tracker and saved Hidden Jobs CV versions.
+Call `list_cvs`, `get_cv` and `get_document`, then `save_application` with `cvVersionId`,
+`requestId` and exactly one offer reference:
+
+| Source                                    | Reference                                                                                           |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Hidden Jobs                               | `jobId`                                                                                             |
+| Jobicy, WWR, Remote OK, Himalayas, ITjobs | `externalJob: {source: "himalayas", id: "<exact opaque id>"}`                                       |
+| Open web                                  | `externalJob: {source: "web", url: "https://careers.company.com/jobs/42", title: "Data Scientist"}` |
+
+The server rereads integrated providers and preserves their snapshot, application link
+and attribution. For web it validates the reference and stores only the assistant-observed
+facts, labelled `capturedBy: "assistant"`; it does not independently fetch or verify that
+page. Optional web fields are company, location and description. External snapshots live
+only in the account's applications, not the shared jobs catalogue or search results.
+A failed provider lookup creates no application; do not relabel the source as web to bypass it.
+
+Use the returned application ID with `update_application`, exact CV/document versions,
+revision checks and the same history/report tools for every source. Prepared does not mean
+submitted: mark applied only after an observed successful submission or explicit user report.
+Retry the same write with the same requestId; a changed write requires a new requestId.
+
+Saved evaluations, job activity and email alerts still require a Hidden Jobs jobId.
+Never use an external ID or URL as jobId. External search remains free; private CV and
+application operations retain the existing account-access requirements.
 
 ## Provider conditions
 
