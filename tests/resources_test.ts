@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.10.0');
+  assert(flow?.version === '1.11.0');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -223,11 +223,7 @@ Deno.test(
       [
         'source selection',
         getWorkflow('search')?.instructions ?? '',
-        [
-          'before general web search',
-          'ask which connected sources',
-          'source failures are not empty results',
-        ],
+        ['Open web search (web)', 'ask when unclear', 'source failures are not empty results'],
       ],
     ];
     for (const [scenario, instructions, requirements] of scenarios) {
