@@ -1,5 +1,5 @@
 import { assertRemoteLocation, remoteLocationError } from '../locations.ts';
-import { CareerError } from '../errors.ts';
+import { CareerError, MCP_TRIAL_EXPIRED_MESSAGE } from '../errors.ts';
 import { restRoutes } from './routes.ts';
 
 export const DEFAULT_API_URL = 'https://api.hiddenjobs.dev/v1';
@@ -118,8 +118,7 @@ export function createRestClient(
           invalid_token: 'Reconnect your Hidden Jobs account.',
           subscription_required:
             'Account action is required. Visit https://hiddenjobs.dev/dashboard/account?from=mcp.',
-          mcp_trial_expired:
-            'Account action is required to continue. Visit https://hiddenjobs.dev/dashboard/account?from=mcp. Your saved documents remain available.',
+          mcp_trial_expired: MCP_TRIAL_EXPIRED_MESSAGE,
           insufficient_scope: 'This connection does not have the required permission.',
           revision_conflict: 'This record changed. Read it again before saving.',
           not_found: 'The requested record was not found.',
