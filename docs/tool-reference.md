@@ -574,7 +574,7 @@ tool result even when the HTTP response is `200`.
 | 409       | `revision_conflict`, `idempotency_conflict`, `document_in_use` | Reread revisions, preserve request keys correctly, or retain referenced documents             |
 | 413       | `quota_exceeded`, `export_too_large`                           | Reduce the file/request size or stored data                                                   |
 | 429       | Rate limit                                                     | Wait before retrying; 600 authenticated tool/private-resource requests per minute per account |
-| 503       | `backend_error`                                                | Retry when the backend becomes available                                                      |
+| 503       | `backend_error`                                                | Retry when the service becomes available                                                      |
 
 Malformed JSON-RPC or schema-invalid extension arguments can instead return a JSON-RPC error object,
 such as `-32602`. See the [protocol reference](protocol.md).
