@@ -40,7 +40,7 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'update_application',
     'Update application',
-    'Update state, notes, next steps or final document references. Only mark applied after the user confirms submission. email-derived changes need user approval; store only approved references and minimal notes.',
+    'Update state, notes, next steps or final document references. Proactively synchronize verified progress during an authorized application workflow without another confirmation. Mark applied only with evidence of successful submission; a prepared form or attempted send is insufficient. Read get_application first, pass its revision and verify the saved result. Store minimal evidence references and notes.',
     {
       applicationId: id,
       status: { type: 'string', enum: STATUSES },
@@ -48,7 +48,6 @@ export const applicationsTools: ToolDefinition[] = [
       cvDocumentId: id,
       coverLetterDocumentId: id,
       interviewDocumentId: id,
-      userConfirmed: { type: 'boolean' },
       expectedRevision: revision,
       requestId: key,
     },

@@ -84,20 +84,19 @@ later versions without rewriting a previous application's historical selection.
 | `saved`     | Draft application created for an offer |
 | `preparing` | Working on the application             |
 | `prepared`  | Documents ready for review/submission  |
-| `applied`   | User confirmed actual submission       |
-| `interview` | User confirmed the interview stage     |
-| `offer`     | User confirmed an offer                |
-| `rejected`  | User confirmed rejection               |
-| `withdrawn` | User confirmed withdrawal              |
+| `applied`   | Verified successful submission         |
+| `interview` | Verified interview stage               |
+| `offer`     | Verified offer                         |
+| `rejected`  | Verified rejection                     |
+| `withdrawn` | Verified withdrawal                    |
 
 The backend appends change history. Notes-only edits can omit status; submitted/outcome records
-cannot return to preparation. The tools do not detect submissions or employer responses
-automatically.
+cannot return to preparation. The assistant proactively synchronizes observed outcomes during an authorized workflow; the backend does not independently monitor submissions or employer responses.
 
 For example: **“I have an interview next Tuesday. Update this application's status and save ‘prepare
-project examples’ as the next step.”** The assistant confirms the event and records the update.
-email-based proposals need your separately connected email and approval; Hidden Jobs stores only
-approved references and summaries.
+project examples’ as the next step.”** The assistant records the reported event without asking for another confirmation. After an authorized submission, a success receipt likewise triggers an automatic update to `applied`; a CAPTCHA only adds a blocker and next step.
+Email synchronization needs a separately connected provider and authorization; Hidden Jobs stores only
+minimal references and factual summaries.
 
 ## Interviews, learning and company information
 

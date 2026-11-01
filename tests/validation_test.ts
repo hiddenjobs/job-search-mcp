@@ -64,3 +64,17 @@ Deno.test('tool validation accepts only declared own properties and requires own
     true,
   );
 });
+
+Deno.test('application outcomes no longer accept a redundant confirmation flag', async () => {
+  const { applicationsTools } = await import('../src/tools/applications.ts');
+  const tool = applicationsTools.find((tool) => tool.name === 'update_application');
+  assert(tool);
+  const args = {
+    applicationId: UUID,
+    status: 'applied',
+    expectedRevision: 1,
+    requestId: 'verified-submit-1',
+  };
+  assert(validate(tool.inputSchema, args));
+  assert(!validate(tool.inputSchema, { ...args, userConfirmed: true }));
+});
