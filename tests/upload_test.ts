@@ -19,6 +19,7 @@ Deno.test(
     const uri = tool?._meta?.['ui/resourceUri'];
     assert.equal(typeof uri, 'string');
     assert.notEqual(uri, 'ui://hiddenjobs/upload-cv-v1.html');
+    assert.notEqual(uri, 'ui://hiddenjobs/upload-cv-v2.html');
     const current = await readRpc(await handler(rpc('resources/read', { uri }, '')));
     const legacyUri = 'ui://hiddenjobs/upload-cv-v1.html';
     const legacy = await readRpc(await handler(rpc('resources/read', { uri: legacyUri }, '')));
@@ -47,8 +48,11 @@ Deno.test(
           (init.headers as Record<string, string>).Authorization,
           `Bearer ${'a'.repeat(64)}`,
         );
-        const form = init.body as FormData;
-        assert.equal(await (form.get('file') as File).text(), await file.text());
+        const headers = new Headers(init.headers);
+        assert.equal(headers.get('content-type'), 'application/pdf');
+        assert.equal(decodeURIComponent(headers.get('x-cv-name')!), 'My CV');
+        assert.equal(decodeURIComponent(headers.get('x-cv-filename')!), file.name);
+        assert.equal(await (init.body as File).text(), await file.text());
         return Response.json({ data: { status: 'saved', cv } });
       },
     );
