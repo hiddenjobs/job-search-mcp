@@ -102,7 +102,7 @@ The assistant saves a snapshot of the offer and the chosen CV version, drafts do
 confirmed facts, reviews them and links the final documents to the application. Creating version 4
 later does not replace the version already selected for that application.
 
-You review and submit on the employer's website. Then ask your assistant to record the submission.
+Review the documents and authorize submission on the employer's website when your client supports it. The assistant automatically records a verified submission and its next step. If you submit yourself, report the outcome so it can record it.
 
 ### 5. Track and prepare for interviews
 
@@ -151,7 +151,7 @@ instructions your assistant can follow.
 | [`interview`](skills/interview/SKILL.md)       | Prepare for interviews — Practise likely questions and evidence-based answers using the offer and your experience.    |
 | [`upskill`](skills/upskill/SKILL.md)           | Build a learning plan — Turn requirements you want to develop into exercises and milestones.                          |
 | [`outcome`](skills/outcome/SKILL.md)           | Track applications — Record confirmed submissions, interviews, offers, rejections and next steps.                     |
-| [`email-sync`](skills/email-sync/SKILL.md)     | Review email updates — Use your separately connected email to propose application updates for your approval.          |
+| [`email-sync`](skills/email-sync/SKILL.md)     | Review email updates — Use your separately connected email to synchronize verified outcomes when authorized.          |
 | [`report`](skills/report/SKILL.md)             | Review your progress — Summarize your pipeline, recent activity and next actions; save a report when requested.       |
 | [`add-template`](skills/add-template/SKILL.md) | Use your own structure — Save document structure and supported PDF layout settings.                                   |
 | [`reset`](skills/reset/SKILL.md)               | Manage saved data — Preview deletion and open your account for explicit confirmation.                                 |
@@ -227,10 +227,10 @@ the [resources and prompts reference](docs/resources.md).
 - PDF, DOCX and UTF-8 text/Markdown uploads support up to 2 MiB per file and 20 PDF pages. PDF
   export supports Latin text and validated layout settings. Review the final PDF before sending it.
 - Application states are `saved`, `preparing`, `prepared`, `applied`, `interview`, `offer`,
-  `rejected` and `withdrawn`. Prepared documents are not sent automatically; submission and outcome
-  changes are recorded with your confirmation.
-- Email updates use your separately authorized email connector and your approval. Hidden Jobs keeps
-  approved references and summaries, not mailbox credentials or email bodies.
+  `rejected` and `withdrawn`. Prepared documents are not sent automatically; verified progress and outcome
+  changes are recorded automatically during an authorized workflow.
+- Email updates require your authorization to synchronize using a separately connected email provider. Hidden Jobs keeps
+  minimal references and factual summaries, not mailbox credentials or email bodies.
 
 See the [career workspace guide](docs/career-workspace.md) for storage, document transfer,
 application tracking and templates.
