@@ -74,13 +74,17 @@ export async function saveCvFile(
     throw new Error('Choose a PDF or DOCX up to 2 MiB.');
   if (!name || name.length > 200) throw new Error('Enter a CV name of up to 200 characters.');
   const { id, secret } = uploadCapability(session);
-  const form = new FormData();
-  form.set('file', file);
-  form.set('name', name);
   const response = await fetcher(`${apiOrigin}/api/cv-uploads/${id}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${secret}` },
-    body: form,
+    headers: {
+      Authorization: `Bearer ${secret}`,
+      'Content-Type': /\.pdf$/i.test(file.name)
+        ? 'application/pdf'
+        : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'X-CV-Name': encodeURIComponent(name),
+      'X-CV-Filename': encodeURIComponent(file.name),
+    },
+    body: file,
     credentials: 'omit',
     redirect: 'error',
     signal: AbortSignal.timeout(90000),
