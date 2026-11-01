@@ -63,3 +63,5 @@ account UI lists active connections and handles confirmed data deletion.
 See [client setup](client-configuration.md), [skills](skills.md), [tools](tool-reference.md),
 [resources](resources.md), [workspace](career-workspace.md) and
 [developer configuration](development.md).
+
+Automatic application-progress synchronization is tracked in [issue #23](https://github.com/hiddenjobs/job-search-mcp/issues/23) and was implemented in [PR #22](https://github.com/hiddenjobs/job-search-mcp/pull/22).
