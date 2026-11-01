@@ -238,8 +238,7 @@ application tracking and templates.
 ## Documentation
 
 This repository contains the MCP protocol, REST implementations of every tool, external-source adapters
-in [`src/sources/`](src/sources/index.ts), skills, resources and client connection guides. The remote connector uses the same HTTP adapter published here. The hosted
-backend and account dashboards are maintained in the Hidden Jobs application repository.
+in [`src/sources/`](src/sources/index.ts), skills, resources and client connection guides. The remote connector uses the HTTP adapter published here.
 
 - [Client configuration](docs/client-configuration.md)
 - [REST adapter and tool routes](docs/rest-adapter.md)

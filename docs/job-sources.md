@@ -21,7 +21,7 @@ One tool, `search_jobs`, searches the user's chosen sources. `sources` is requir
 
 | Source           | Data and access                                                                                                                                                                                       |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `hiddenjobs`     | Hidden Jobs database. Original employer application links are retrieved with open_application_link.                                                                                                   |
+| `hiddenjobs`     | Hidden Jobs catalogue. Original employer application links are retrieved with open_application_link.                                                                                                  |
 | `jobicy`         | Free public API. Recent seven-day feed, delayed by three hours. Keep the Jobicy source and listing link.                                                                                              |
 | `weworkremotely` | Free public RSS. Current feed only, with WWR attribution and links.                                                                                                                                   |
 | `remoteok`       | Free public API. Current feed only. Mention Remote OK, preserve its listing link, do not use its logo. Render a followed link where the client permits; clients control final link attributes.        |
