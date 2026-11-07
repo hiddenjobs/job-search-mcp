@@ -51,7 +51,7 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'save_application',
     'Save application',
-    'Track an application from any source using an exact saved Hidden Jobs CV version. Provide exactly one of jobId (Hidden Jobs) or externalJob. Provider offers use externalJob source and opaque id; the server rereads their snapshot. Web offers use source web, verified public HTTPS url and title, with only observed optional facts. Read the offer, get_candidate_profile and list_cvs first; if no suitable CV exists, follow setup. This creates a saved draft, not a submission. Verify the returned record and synchronize subsequent evidenced progress with update_application.',
+    'Track an application from any source using an exact saved Hidden Jobs CV version. Provide exactly one of jobId (Hidden Jobs) or externalJob. Provider offers use externalJob source and opaque id; the server rereads their snapshot. Web offers use source web, verified public HTTPS url and title, with only observed optional facts. Read the offer, get_candidate_profile and list_cvs first; if no suitable CV exists, follow setup. This creates a saved draft, not a submission. Store the verified public HTTPS application form URL in data.applicationUrl once available so the user can continue from the dashboard. Do not invent URLs or store credentials, session tokens or temporary signed links. Verify the returned record and synchronize subsequent evidenced progress with update_application.',
     { jobId: id, externalJob: externalApplicationJob, cvVersionId: id, data: obj, requestId: key },
     ['cvVersionId', 'requestId'],
     true,
@@ -59,7 +59,7 @@ export const applicationsTools: ToolDefinition[] = [
   define(
     'update_application',
     'Update application',
-    'Update state, notes, next steps or final document references. Proactively synchronize verified progress during an authorized application workflow without another confirmation. Mark applied only with evidence of successful submission; a prepared form or attempted send is insufficient. Read get_application first, pass its revision and verify the saved result. Store minimal evidence references and notes.',
+    'Update state, notes, next steps or final document references. Proactively synchronize verified progress during an authorized application workflow without another confirmation. Mark applied only with evidence of successful submission; a prepared form or attempted send is insufficient. Read get_application first, pass its revision and verify the saved result. Store minimal evidence references and notes. Save the verified public HTTPS application form URL in data.applicationUrl when available so the user can continue from the dashboard; never store credentials, session tokens or temporary signed links.',
     {
       applicationId: id,
       status: { type: 'string', enum: STATUSES },

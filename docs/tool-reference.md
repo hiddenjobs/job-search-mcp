@@ -470,6 +470,8 @@ Read one application and a page of its history.
 
 ## `save_application`
 
+Use `data.applicationUrl` for the verified public HTTPS application form URL when available. The dashboard shows **Open application form** using this value. Never store credentials, session tokens or temporary signed URLs.
+
 Create a private draft application from any source using an exact saved Hidden Jobs CV version.
 Provide exactly one of `jobId` or `externalJob`; see [source-reference examples](job-sources.md#application-tracking-across-sources). Provider offers are reread on the server; web snapshots contain assistant-observed facts. Does not submit anything.
 
@@ -482,6 +484,8 @@ Provide exactly one of `jobId` or `externalJob`; see [source-reference examples]
 | `requestId`   | string | Yes      | Min length: 8; Max length: 100; Stable unique key for this intended write. Reuse it only when retrying the same arguments.                    |
 
 ## `update_application`
+
+You can add the verified public HTTPS form URL with `data.applicationUrl` so the user can continue from the dashboard. This does not mark the application submitted.
 
 Update state, notes, next steps or final document references. Synchronize verified progress automatically during an authorized workflow. Mark applied only
 with evidence of successful submission; record blockers without advancing status. Read the current
