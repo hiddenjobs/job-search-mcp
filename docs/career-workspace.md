@@ -154,3 +154,14 @@ For local UI verification, run `npm run ui:preview` and open `http://127.0.0.1:4
 This test host uses a simulated account/storage and a local network adapter; it does not connect
 to production. Live host rendering, approvals and storage CORS must also be verified in the target
 client before releasing the panel. Rebuild with `npm run ui:build` after editing `ui/`.
+
+## Continue an application in the dashboard
+
+When the assistant obtains the actual application form, it saves the verified public HTTPS URL in
+`data.applicationUrl` using `save_application` or `update_application`. The Applications dashboard
+shows **Open application form** so you can continue in your browser when the assistant cannot
+complete the form. Provider snapshots can also supply this link automatically.
+
+For example, `data: {"applicationUrl": "https://careers.example.org/jobs/123/apply"}` stores a form
+link without marking the application submitted. Use only an observed stable public URL, never
+credentials, session tokens or temporary signed links. If no form URL is available, no button is shown.
