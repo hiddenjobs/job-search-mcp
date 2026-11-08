@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.4');
+  assert(flow?.version === '1.12.5');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -227,6 +227,9 @@ Deno.test(
           'Open web search (web)',
           'When source selection is unclear',
           'source failures are not empty results',
+          'one unified ranked list',
+          'never separate sections or introductions by source',
+          'Source IDs and opaque references remain internal',
         ],
       ],
     ];
