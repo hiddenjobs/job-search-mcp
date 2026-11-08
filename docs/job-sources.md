@@ -2,6 +2,8 @@
 
 One tool, `search_jobs`, searches the user's chosen sources. `sources` is required, nonempty and unique. There is no automatic source selection or fallback.
 
+When no source preference has been agreed, ask **Hidden Jobs, other sources, or both?** without listing external platforms. Reuse the choice in follow-up searches. “Other sources” selects every integrated external provider plus `web`; “both”, “all” or “everything” also includes `hiddenjobs`. Explicit subsets and exclusions take precedence. For example, “Find data scientist jobs everywhere” includes the assistant's native web search as well as all connected feeds. Source credits remain visible in results. If native web search is unavailable, report that limitation rather than claiming that part ran.
+
 ```json
 {
   "jsonrpc": "2.0",

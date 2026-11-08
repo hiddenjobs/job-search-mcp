@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.2');
+  assert(flow?.version === '1.12.3');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -223,7 +223,11 @@ Deno.test(
       [
         'source selection',
         getWorkflow('search')?.instructions ?? '',
-        ['Open web search (web)', 'ask when unclear', 'source failures are not empty results'],
+        [
+          'Open web search (web)',
+          'When source selection is unclear',
+          'source failures are not empty results',
+        ],
       ],
     ];
     for (const [scenario, instructions, requirements] of scenarios) {
@@ -293,5 +297,56 @@ Deno.test(
     }
     assert(getWorkflow('apply')?.instructions.includes('requires explicit user authorization'));
     assert(getWorkflow('email-sync')?.instructions.includes('authorizes email synchronization'));
+  },
+);
+
+Deno.test(
+  'source choice stays concise across discovery and workflows, including web in broad searches',
+  async () => {
+    const handler = createRestMcpHandler({
+      fetcher: () => {
+        throw new Error('Discovery must not execute a search');
+      },
+    });
+    const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+    const prompt = await readRpc(await handler(rpc('prompts/get', { name: 'search' }, '')));
+    const resource = await readRpc(
+      await handler(rpc('resources/read', { uri: 'hiddenjobs://workflows/search' }, '')),
+    );
+    for (const instructions of [
+      initialized.result.instructions,
+      prompt.result.messages[0].content.text,
+      parseResource(resource.result.contents[0].text).instructions,
+      getWorkflow('search')?.instructions ?? '',
+    ]) {
+      assert(typeof instructions === 'string');
+      assert(instructions.includes('Would you like Hidden Jobs, other sources, or both?'));
+      assert(instructions.includes('Do not enumerate individual external platforms'));
+      assert(instructions.includes('Reuse an already agreed selection'));
+      assert(
+        instructions.includes(
+          'other sources to [jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
+        ),
+      );
+      assert(
+        instructions.includes(
+          'both, all or everything to [hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
+        ),
+      );
+      assert(instructions.includes('Honor an explicit narrower selection or exclusion'));
+      assert(instructions.includes('If the host cannot search the web, disclose that limitation'));
+      assert(!instructions.includes('Offer seven search options'));
+    }
+    const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+    const search = tools.result.tools.find((tool: { name: string }) => tool.name === 'search_jobs');
+    assert(search);
+    assert(search.description.includes('Hidden Jobs, other sources, or both?'));
+    assert(
+      search.description.includes(
+        'Other sources means every integrated external provider plus web',
+      ),
+    );
+    assert(Array.isArray(search.inputSchema.required));
+    assert(search.inputSchema.required.includes('sources'));
   },
 );
