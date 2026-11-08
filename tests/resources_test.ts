@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.3');
+  assert(flow?.version === '1.12.4');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -320,17 +320,17 @@ Deno.test(
       getWorkflow('search')?.instructions ?? '',
     ]) {
       assert(typeof instructions === 'string');
-      assert(instructions.includes('Would you like Hidden Jobs, other sources, or both?'));
-      assert(instructions.includes('Do not enumerate individual external platforms'));
-      assert(instructions.includes('Reuse an already agreed selection'));
       assert(
         instructions.includes(
-          'other sources to [jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
+          'Would you like me to search Hidden Jobs only, or all available sources?',
         ),
       );
+      assert(instructions.includes('Do not enumerate individual external platforms'));
+      assert(instructions.includes('Reuse an already agreed selection'));
+      assert(instructions.includes('Offer exactly these two choices'));
       assert(
         instructions.includes(
-          'both, all or everything to [hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
+          'all available sources, all or everything to [hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
         ),
       );
       assert(instructions.includes('Honor an explicit narrower selection or exclusion'));
@@ -340,10 +340,10 @@ Deno.test(
     const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
     const search = tools.result.tools.find((tool: { name: string }) => tool.name === 'search_jobs');
     assert(search);
-    assert(search.description.includes('Hidden Jobs, other sources, or both?'));
+    assert(search.description.includes('Hidden Jobs only, or all available sources?'));
     assert(
       search.description.includes(
-        'Other sources means every integrated external provider plus web',
+        'All available sources means hiddenjobs, every integrated external provider and web',
       ),
     );
     assert(Array.isArray(search.inputSchema.required));
