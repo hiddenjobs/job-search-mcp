@@ -3,7 +3,7 @@
 _Your job search, with your AI assistant._
 
 Find overlooked remote jobs, evaluate your fit, tailor your CV and cover letter, prepare for
-interviews and track every application. Connect your assistant to Hidden Jobs and keep your profile,
+interviews, research missing salaries and track every application. Connect your assistant to Hidden Jobs and keep your profile,
 CV versions, email alerts and application history together in your account.
 
 <img src="docs/job-search-overview.png" width="760" alt="Your AI assistant connects through MCP to Hidden Jobs: find your best fit, tailor your CV, apply and track applications, and practise interviews. Crowded job boards are excluded." />
@@ -86,6 +86,10 @@ link also requires the returned `source`. Use `open_application_link` to retriev
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
 See [job sources](docs/job-sources.md).
+
+When an offer does not publish pay, your assistant researches public salary references and shows a cited market estimate, clearly separated from the employer’s confirmed salary. This uses the assistant’s native web search; if reliable references are unavailable, it leaves the salary field out.
+
+> Find remote Data Scientist roles open to applicants in Spain. For offers without published pay, research a local salary range and show the references, marking it as an estimate.
 
 ### 4. Prepare your application
 
