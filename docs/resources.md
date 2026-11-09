@@ -8,6 +8,8 @@ saved application resource, and save interview preparation with `save_document`.
 
 The `initialize` response includes shared instructions to prefer the connected sources through
 `search_jobs`, respect the user's explicit source selection, and load the matching workflow.
+The same discovery instructions ask the assistant to research missing salaries using its native web search, cite local salary references and label market estimates separately from published pay. The `interview` guide and search/interview workflows include this policy; no new salary API or tool is required.
+
 The opening instructions ask the assistant to offer a named, reusable CV version after tailoring
 and a recurring search through the assistant’s native scheduler after a focused search, when the host can execute this MCP unattended. Hidden Jobs email alerts remain an alternative. Tool descriptions repeat these
 next steps when clients do not load resources or prompts. Suggestions respect declined or already

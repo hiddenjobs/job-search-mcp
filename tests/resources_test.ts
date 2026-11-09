@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.5');
+  assert(flow?.version === '1.12.6');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -351,5 +351,59 @@ Deno.test(
     );
     assert(Array.isArray(search.inputSchema.required));
     assert(search.inputSchema.required.includes('sources'));
+  },
+);
+
+Deno.test(
+  'salary research is discoverable without a salary API or private-data access',
+  async () => {
+    for (const careerEnabled of [false, true]) {
+      const handler = createRestMcpHandler({
+        careerEnabled,
+        fetcher: () => {
+          throw new Error('Salary guidance must not call a search engine or private API');
+        },
+      });
+      const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+      const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+      const search = tools.result.tools.find(
+        (tool: { name: string }) => tool.name === 'search_jobs',
+      );
+      assert(search);
+      const instructions: unknown[] = [initialized.result.instructions, search.description];
+      if (careerEnabled) {
+        const guide = await readRpc(
+          await handler(rpc('resources/read', { uri: 'hiddenjobs://guides/interview' }, '')),
+        );
+        instructions.push(guide.result.contents[0].text);
+        for (const name of ['search', 'interview']) {
+          const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+          const resource = await readRpc(
+            await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+          );
+          instructions.push(
+            prompt.result.messages[0].content.text,
+            parseResource(resource.result.contents[0].text).instructions,
+          );
+        }
+      }
+      for (const text of [
+        ...instructions,
+        ...Object.keys(workflows).map((name) => getWorkflow(name)?.instructions ?? ''),
+      ]) {
+        assert(typeof text === 'string');
+        assert.match(text, /When an offer has no published salary/);
+        assert.match(text, /host assistant’s native web search/);
+        assert.match(text, /Estimated gross annual base salary/);
+        assert.match(text, /cite the actual URLs/);
+        assert.match(text, /Never infer or reveal a hidden employer/);
+        assert.match(text, /never send a CV, profile, email, tokens or private career records/);
+        assert.match(text, /Do not bypass logins or paywalls/);
+        assert.match(text, /does not expand the agreed job sources/);
+        assert.match(text, /omit the salary field instead of printing Not listed or guessing/);
+        assert.doesNotMatch(text, /salary only when published|Salary discussion may use only/);
+      }
+      assert(!tools.result.tools.some((tool: { name: string }) => tool.name === 'research_salary'));
+    }
   },
 );
