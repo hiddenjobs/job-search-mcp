@@ -111,3 +111,69 @@ Deno.test('all six sources can be selected together without losing ITjobs routin
   assert.equal(result.result.isError, false);
   assert.equal(sent[0].searchParams.get('sources'), sources.join(','));
 });
+
+Deno.test(
+  'per-source page size preserves combined offers and exact continuation routing',
+  async () => {
+    const sent: URL[] = [];
+    const jobs = Array.from({ length: 18 }, (_, i) => ({
+      id: `offer-${i}`,
+      source: i < 9 ? 'hiddenjobs' : 'remoteok',
+      title: `Relevant role ${i}`,
+    }));
+    const sourceResults = [
+      { source: 'hiddenjobs', count: 9 },
+      { source: 'remoteok', count: 9, nextCursor: 'exact-next-cursor' },
+    ];
+    const handler = createRestMcpHandler({
+      fetcher: (input) => {
+        sent.push(new URL(input instanceof Request ? input.url : input));
+        return Promise.resolve(
+          Response.json({
+            data: sent.length === 1 ? { jobs, sourceResults } : { jobs: [], sourceResults: [] },
+          }),
+        );
+      },
+    });
+    const first = await readRpc(
+      await handler(
+        rpc('tools/call', {
+          name: 'search_jobs',
+          arguments: { sources: ['hiddenjobs', 'remoteok'], query: 'data scientist', limit: 10 },
+        }),
+      ),
+    );
+    assert.equal(first.result.isError, false);
+    assert.deepEqual(first.result.structuredContent.data.jobs, jobs);
+    assert.deepEqual(first.result.structuredContent.data.sourceResults, sourceResults);
+    await handler(
+      rpc('tools/call', {
+        name: 'search_jobs',
+        arguments: {
+          sources: ['remoteok'],
+          query: 'data scientist',
+          limit: 10,
+          cursors: { remoteok: 'exact-next-cursor' },
+        },
+      }),
+    );
+    assert.equal(sent[1].searchParams.get('limit'), '10');
+    assert.equal(sent[1].searchParams.get('cursors'), '{"remoteok":"exact-next-cursor"}');
+    await handler(
+      rpc('tools/call', {
+        name: 'search_jobs',
+        arguments: { sources: ['hiddenjobs'], query: 'data scientist', limit: 10, page: 2 },
+      }),
+    );
+    assert.equal(sent[2].searchParams.get('page'), '2');
+    for (const limit of [0, 51]) {
+      const invalid = await readRpc(
+        await handler(
+          rpc('tools/call', { name: 'search_jobs', arguments: { sources: ['hiddenjobs'], limit } }),
+        ),
+      );
+      assert.equal(invalid.error.code, -32602);
+    }
+    assert.equal(sent.length, 3);
+  },
+);
