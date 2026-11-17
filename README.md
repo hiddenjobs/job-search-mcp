@@ -265,6 +265,10 @@ MIT. See [LICENSE](LICENSE).
 Employer names and identifying job slugs are withheld from search and detail results. `get_company`
 provides anonymous company context using a job ID. If an operation requires account action, the assistant receives a link to the account settings.
 
+## Offer counts and pagination
+
+The assistant does not use a preset offer count. It presents all relevant verified offers it has retrieved, after deduplication, unless you explicitly ask for a number. For example, 18 relevant results can all be shown even when `limit` is 10; “show three” asks for three. `limit` is a per-source page size, with its existing default of 10 and maximum of 50. Requests for more or all results use available pages/cursors within the host’s time, token and tool budgets. A search with remaining pages is not described as complete; public feeds are not exhaustive job-market coverage.
+
 ## Conversation language
 
 Your assistant follows the language of your current request, not the country you want to work from or the language of job listings. Short follow-ups keep the preceding substantive request’s language; an explicit switch takes precedence. For example, “Find jobs in Barcelona” stays in English, and “more” keeps English even after German listings. Original titles, names and links are preserved. A requested CV/document language is handled separately. No fixed language setting or separate detection service is added.
