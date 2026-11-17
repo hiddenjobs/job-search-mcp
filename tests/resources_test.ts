@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.6');
+  assert(flow?.version === '1.12.7');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -225,7 +225,7 @@ Deno.test(
         getWorkflow('search')?.instructions ?? '',
         [
           'Open web search (web)',
-          'When source selection is unclear',
+          'Search all available sources by default',
           'source failures are not empty results',
           'one unified ranked list',
           'never separate sections or introductions by source',
@@ -304,7 +304,7 @@ Deno.test(
 );
 
 Deno.test(
-  'source choice stays concise across discovery and workflows, including web in broad searches',
+  'all sources are the default across discovery and workflows while explicit restrictions persist',
   async () => {
     const handler = createRestMcpHandler({
       fetcher: () => {
@@ -325,12 +325,13 @@ Deno.test(
       assert(typeof instructions === 'string');
       assert(
         instructions.includes(
-          'Would you like me to search Hidden Jobs only, or all available sources?',
+          'Search all available sources by default, without asking the user to choose sources',
         ),
       );
       assert(instructions.includes('Do not enumerate individual external platforms'));
-      assert(instructions.includes('Reuse an already agreed selection'));
-      assert(instructions.includes('Offer exactly these two choices'));
+      assert(instructions.includes('reuse it for follow-up searches until the user changes it'));
+      assert(!instructions.includes('Would you like me to search Hidden Jobs only'));
+      assert(!instructions.includes('Offer exactly these two choices'));
       assert(
         instructions.includes(
           'all available sources, all or everything to [hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
@@ -343,7 +344,15 @@ Deno.test(
     const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
     const search = tools.result.tools.find((tool: { name: string }) => tool.name === 'search_jobs');
     assert(search);
-    assert(search.description.includes('Hidden Jobs only, or all available sources?'));
+    assert(search.description.includes('Search all available sources by default'));
+    assert(!search.description.includes('If unclear, ask:'));
+    assert(search.description.includes('without asking the user to choose sources'));
+    assert(
+      search.description.includes(
+        '[hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs, web]',
+      ),
+    );
+    assert(search.description.includes('until the user changes it'));
     assert(
       search.description.includes(
         'All available sources means hiddenjobs, every integrated external provider and web',

@@ -80,8 +80,11 @@ for the offer. Transfer files through your client's supported file capability, s
 > Search Hidden Jobs and Remote OK for TypeScript roles open to applicants in Spain. Compare
 > three offers against Backend English, version 3, and explain the best match.
 
-Choose sources in `search_jobs`: Hidden Jobs, Jobicy, We Work Remotely, Remote OK or Himalayas.
-`sources` is required, with at least one selection and no default. Reading an offer or opening its
+Your assistant searches all available sources by default: Hidden Jobs, Jobicy, We Work Remotely,
+Remote OK, Himalayas, IT Jobs and its native web search. It starts without asking which sources
+to use. Explicit restrictions, such as “Hidden Jobs only” or “exclude web”, are respected and reused
+for follow-up searches until you change them.
+`sources` remains required, with at least one selection; the assistant supplies the selection explicitly. Reading an offer or opening its
 link also requires the returned `source`. Use `open_application_link` to retrieve original application links. External offers are queried through
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
