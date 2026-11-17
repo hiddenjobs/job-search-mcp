@@ -11,7 +11,10 @@ Deno.test('discovery preserves the public capabilities and the career feature fl
     const initialized = await readRpc(await handler(rpc('initialize')));
     assert.equal(initialized.result.protocolVersion, '2025-06-18');
     assert(initialized.result.instructions.includes('Open web search (web)'));
-    assert(initialized.result.instructions.includes('Hidden Jobs only, or all available sources?'));
+    assert(initialized.result.instructions.includes('Search all available sources by default'));
+    assert(
+      !initialized.result.instructions.includes('Would you like me to search Hidden Jobs only'),
+    );
     assert.equal(initialized.result.instructions.includes('list_cvs'), careerEnabled);
     assert.equal(initialized.result.instructions.includes('save_cv'), careerEnabled);
     assert.equal(

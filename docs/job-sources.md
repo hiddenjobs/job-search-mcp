@@ -1,8 +1,8 @@
 # Job sources
 
-One tool, `search_jobs`, searches the user's chosen sources. `sources` is required, nonempty and unique. There is no automatic source selection or fallback.
+One tool, `search_jobs`, searches all available sources by default unless the user explicitly narrows the selection. The assistant supplies `sources` explicitly; the API still requires a nonempty, unique array and does not infer a missing selection or silently fall back to other sources.
 
-When no source preference has been agreed, ask **Hidden Jobs only, or all available sources?** without listing external platforms. Offer exactly these two choices and reuse the answer in follow-up searches. “All available sources”, “all” or “everything” selects Hidden Jobs, every integrated external provider and `web`. Explicit subsets and exclusions take precedence. For example, “Find data scientist jobs everywhere” includes the assistant's native web search as well as all connected feeds. Source credits remain visible in results. If native web search is unavailable, report that limitation rather than claiming that part ran.
+When the user gives no source preference, search all seven options immediately without a source-selection question. For example, “Find Data Scientist jobs from Barcelona” searches all connected feeds plus native web search. “Hidden Jobs only” selects `[hiddenjobs]`; “exclude web” selects all six connected sources. Reuse an explicit restriction in follow-up searches until the user changes it. “All available sources”, “all” or “everything” selects Hidden Jobs, every integrated external provider and `web`. Explicit subsets and exclusions take precedence. For example, “Find data scientist jobs everywhere” includes the assistant's native web search as well as all connected feeds. Source credits remain visible in results. If native web search is unavailable, report that limitation rather than claiming that part ran.
 
 ```json
 {
@@ -12,7 +12,15 @@ When no source preference has been agreed, ask **Hidden Jobs only, or all availa
   "params": {
     "name": "search_jobs",
     "arguments": {
-      "sources": ["hiddenjobs", "jobicy", "weworkremotely", "remoteok", "himalayas", "itjobs"],
+      "sources": [
+        "hiddenjobs",
+        "jobicy",
+        "weworkremotely",
+        "remoteok",
+        "himalayas",
+        "itjobs",
+        "web"
+      ],
       "query": "typescript",
       "remoteLocation": "EUROPE",
       "limit": 10
