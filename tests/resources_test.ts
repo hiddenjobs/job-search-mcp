@@ -90,7 +90,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.7');
+  assert(flow?.version === '1.12.8');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -401,6 +401,20 @@ Deno.test(
         ...Object.keys(workflows).map((name) => getWorkflow(name)?.instructions ?? ''),
       ]) {
         assert(typeof text === 'string');
+        assert.match(text, /first publish the actual relevant offer list/);
+        assert.match(
+          text,
+          /missing pay is never a reason to exclude, rank down or postpone an offer/,
+        );
+        assert.match(text, /without waiting for another user message/);
+        assert.match(text, /do not repeat, shrink or replace the job list/);
+        assert.match(text, /keep every already-shared offer/);
+        assert.match(text, /Preserve employer-published pay unchanged/);
+        assert.match(
+          text,
+          /If every displayed offer already publishes pay, skip estimate research/,
+        );
+        assert.match(text, /For an explicit salary follow-up/);
         assert.match(text, /When an offer has no published salary/);
         assert.match(text, /host assistant’s native web search/);
         assert.match(text, /Estimated gross annual base salary/);
