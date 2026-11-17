@@ -1,4 +1,9 @@
-import { getWorkflow, workflows, PROACTIVE_INSTRUCTIONS } from '../src/resources/workflows.ts';
+import {
+  getWorkflow,
+  workflows,
+  PROACTIVE_INSTRUCTIONS,
+  LANGUAGE_INSTRUCTIONS,
+} from '../src/resources/workflows.ts';
 import { careerResources } from '../src/resources/index.ts';
 import { createRestMcpHandler } from '../src/index.ts';
 import { assert, rpc, UUID, readRpc, parseResource } from './helpers.ts';
@@ -90,7 +95,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.8');
+  assert(flow?.version === '1.12.9');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -428,5 +433,56 @@ Deno.test(
       }
       assert(!tools.result.tools.some((tool: { name: string }) => tool.name === 'research_salary'));
     }
+  },
+);
+
+Deno.test(
+  'user-language guidance reaches discovery, tool-only clients, workflows and prompts',
+  async () => {
+    for (const careerEnabled of [false, true]) {
+      const handler = createRestMcpHandler({
+        careerEnabled,
+        fetcher: () => {
+          throw new Error('Language guidance must not call a detector or backend');
+        },
+      });
+      const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+      const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+      const search = tools.result.tools.find(
+        (tool: { name: string }) => tool.name === 'search_jobs',
+      );
+      assert(initialized.result.instructions.includes(LANGUAGE_INSTRUCTIONS));
+      assert(search?.description.startsWith(LANGUAGE_INSTRUCTIONS));
+      if (!careerEnabled) continue;
+      for (const name of Object.keys(workflows)) {
+        const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+        const resource = await readRpc(
+          await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+        );
+        for (const instructions of [
+          getWorkflow(name)?.instructions,
+          prompt.result.messages[0].content.text,
+          parseResource(resource.result.contents[0].text).instructions,
+        ]) {
+          assert(typeof instructions === 'string');
+          assert(instructions.includes(LANGUAGE_INSTRUCTIONS));
+        }
+      }
+    }
+    for (const requirement of [
+      'only from actual user messages',
+      'tool arguments or results',
+      'previous assistant messages',
+      'preceding substantive user request',
+      'follow a new language or explicit language instruction',
+      'Do not continue an earlier assistant language mistake',
+      'preserving original job titles',
+      'CV/document language separately from the conversation language',
+      'do not make a separate language-detection request',
+      'English request mentioning Barcelona stays English',
+      'Spanish request mentioning Berlin stays Spanish',
+      'more after an English request stays English even if the offers are in German',
+    ])
+      assert(LANGUAGE_INSTRUCTIONS.includes(requirement));
   },
 );

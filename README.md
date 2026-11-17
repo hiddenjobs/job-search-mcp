@@ -264,3 +264,7 @@ MIT. See [LICENSE](LICENSE).
 
 Employer names and identifying job slugs are withheld from search and detail results. `get_company`
 provides anonymous company context using a job ID. If an operation requires account action, the assistant receives a link to the account settings.
+
+## Conversation language
+
+Your assistant follows the language of your current request, not the country you want to work from or the language of job listings. Short follow-ups keep the preceding substantive request’s language; an explicit switch takes precedence. For example, “Find jobs in Barcelona” stays in English, and “more” keeps English even after German listings. Original titles, names and links are preserved. A requested CV/document language is handled separately. No fixed language setting or separate detection service is added.

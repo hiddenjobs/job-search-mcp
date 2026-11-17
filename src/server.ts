@@ -1,6 +1,7 @@
 import { isRemoteLocation, remoteLocationError } from './locations.ts';
 import { CareerError } from './errors.ts';
 import {
+  LANGUAGE_INSTRUCTIONS,
   ACCESS_INSTRUCTIONS,
   PROACTIVE_INSTRUCTIONS,
   SEARCH_INSTRUCTIONS,
@@ -106,8 +107,8 @@ export function createMcpHandler({
         },
         serverInfo: { name: 'hidden-jobs-mcp-oauth', version: '2.0.0' },
         instructions: careerEnabled
-          ? `${PROACTIVE_INSTRUCTIONS}\n\n${ACCESS_INSTRUCTIONS}\n\n${SEARCH_INSTRUCTIONS}\n\n${SALARY_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}\n\n${DOCUMENT_UPLOAD_INSTRUCTIONS}`
-          : `${ACCESS_INSTRUCTIONS}\n\n${SEARCH_INSTRUCTIONS}\n\n${SALARY_INSTRUCTIONS}`,
+          ? `${PROACTIVE_INSTRUCTIONS}\n\n${LANGUAGE_INSTRUCTIONS}\n\n${ACCESS_INSTRUCTIONS}\n\n${SEARCH_INSTRUCTIONS}\n\n${SALARY_INSTRUCTIONS}\n\n${CAREER_INSTRUCTIONS}\n\n${DOCUMENT_UPLOAD_INSTRUCTIONS}`
+          : `${LANGUAGE_INSTRUCTIONS}\n\n${ACCESS_INSTRUCTIONS}\n\n${SEARCH_INSTRUCTIONS}\n\n${SALARY_INSTRUCTIONS}`,
       });
     }
     if (message.method === 'tools/list') return response(id, { tools });
