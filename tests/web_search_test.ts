@@ -30,6 +30,8 @@ Deno.test(
     assert.equal(result.execution, 'host');
     assert.deepEqual(result.jobs, []);
     assert.match(result.instructions, /native web-search/);
+    assert.match(result.instructions, /not a requested number of web results/);
+    assert.match(result.instructions, /specific count only when the user explicitly asks/);
     assert.match(result.instructions, /unavailable/);
     assert.match(result.instructions, /private profile/);
     assert.deepEqual(webSearchRequest(new URLSearchParams()).request, {

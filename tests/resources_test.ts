@@ -95,7 +95,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.9');
+  assert(flow?.version === '1.12.10');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -129,7 +129,7 @@ Deno.test(
       );
       for (const instructions of [
         prompt.result.messages[0].content.text,
-        parseResource(resource.result.contents[0].text).instructions,
+        String(parseResource(resource.result.contents[0].text).instructions),
       ]) {
         assert(typeof instructions === 'string');
         assert(!instructions.includes('upload_document_chunk'));
@@ -203,7 +203,7 @@ Deno.test(
     );
     assert.equal(prompt.result.messages[0].content.text, workflow.instructions);
     assert.equal(
-      parseResource(resource.result.contents[0].text).instructions,
+      String(parseResource(resource.result.contents[0].text).instructions),
       workflow.instructions,
     );
     assert.deepEqual(tool.result.structuredContent.data, workflow);
@@ -324,7 +324,7 @@ Deno.test(
     for (const instructions of [
       initialized.result.instructions,
       prompt.result.messages[0].content.text,
-      parseResource(resource.result.contents[0].text).instructions,
+      String(parseResource(resource.result.contents[0].text).instructions),
       getWorkflow('search')?.instructions ?? '',
     ]) {
       assert(typeof instructions === 'string');
@@ -397,7 +397,7 @@ Deno.test(
           );
           instructions.push(
             prompt.result.messages[0].content.text,
-            parseResource(resource.result.contents[0].text).instructions,
+            String(parseResource(resource.result.contents[0].text).instructions),
           );
         }
       }
@@ -462,7 +462,7 @@ Deno.test(
         for (const instructions of [
           getWorkflow(name)?.instructions,
           prompt.result.messages[0].content.text,
-          parseResource(resource.result.contents[0].text).instructions,
+          String(parseResource(resource.result.contents[0].text).instructions),
         ]) {
           assert(typeof instructions === 'string');
           assert(instructions.includes(LANGUAGE_INSTRUCTIONS));
@@ -484,5 +484,64 @@ Deno.test(
       'more after an English request stays English even if the offers are in German',
     ])
       assert(LANGUAGE_INSTRUCTIONS.includes(requirement));
+  },
+);
+
+Deno.test(
+  'offer-count guidance separates pagination from presentation across discovery and workflows',
+  async () => {
+    for (const careerEnabled of [false, true]) {
+      const handler = createRestMcpHandler({
+        careerEnabled,
+        fetcher: () => {
+          throw new Error('Count guidance must not execute searches');
+        },
+      });
+      const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+      const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+      const search = tools.result.tools.find(
+        (tool: { name: string }) => tool.name === 'search_jobs',
+      );
+      if (!search) throw new Error('Missing search_jobs');
+      const limit = (
+        search.inputSchema.properties as Record<
+          string,
+          { description: string; minimum: number; maximum: number; default: number }
+        >
+      ).limit;
+      assert(search.description.includes('not the number of offers to display'));
+      assert(limit.description.includes('not a total display limit'));
+      assert.equal(limit.minimum, 1);
+      assert.equal(limit.maximum, 50);
+      assert.equal(limit.default, 10);
+      const texts = [initialized.result.instructions];
+      if (careerEnabled)
+        for (const name of Object.keys(workflows)) {
+          const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+          const resource = await readRpc(
+            await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+          );
+          texts.push(
+            prompt.result.messages[0].content.text,
+            String(parseResource(resource.result.contents[0].text).instructions),
+            getWorkflow(name)?.instructions ?? '',
+          );
+        }
+      for (const instructions of texts) {
+        assert(
+          instructions.includes('Do not impose a preset number of offers to retrieve or display'),
+        );
+        assert(
+          instructions.includes('Respect a specific count only when the user explicitly asks'),
+        );
+        assert(instructions.includes('Do not shorten a combined list to the default page size'));
+        assert(instructions.includes('within the host’s existing time, token and tool budgets'));
+        assert(instructions.includes('Do not claim all results or a source are exhausted'));
+        assert(
+          instructions.includes('A short or empty filtered page may still have a continuation'),
+        );
+        assert(instructions.includes('Do not make unlimited calls, repeat identical pages'));
+      }
+    }
   },
 );
