@@ -90,9 +90,9 @@ public APIs/feeds and are not stored in Hidden Jobs. You can compare them and pr
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
 See [job sources](docs/job-sources.md).
 
-When an offer does not publish pay, your assistant researches public salary references and shows a cited market estimate, clearly separated from the employer’s confirmed salary. This uses the assistant’s native web search; if reliable references are unavailable, it leaves the salary field out.
+Your assistant first shows the matching offers with links and any employer-published pay, including offers without a salary. It then researches missing pay with its native web search and adds cited market estimates to those same offers, clearly separated from confirmed employer pay. Salary research never delays, repeats or reduces the initial job list. If reliable references are unavailable, the offer stays visible without an estimated salary.
 
-> Find remote Data Scientist roles open to applicants in Spain. For offers without published pay, research a local salary range and show the references, marking it as an estimate.
+> Find remote Data Scientist roles open to applicants in Spain. Show the offers first, then add cited local salary estimates for offers without published pay.
 
 ### 4. Prepare your application
 
