@@ -3,6 +3,7 @@ import {
   workflows,
   PROACTIVE_INSTRUCTIONS,
   LANGUAGE_INSTRUCTIONS,
+  PRESENTATION_INSTRUCTIONS,
 } from '../src/resources/workflows.ts';
 import { careerResources } from '../src/resources/index.ts';
 import { createRestMcpHandler } from '../src/index.ts';
@@ -95,7 +96,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.10');
+  assert(flow?.version === '1.12.11');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -543,5 +544,52 @@ Deno.test(
         assert(instructions.includes('Do not make unlimited calls, repeat identical pages'));
       }
     }
+  },
+);
+
+Deno.test(
+  'one presentation policy reaches discovery, tools, prompts and every workflow',
+  async () => {
+    for (const careerEnabled of [false, true]) {
+      const handler = createRestMcpHandler({
+        careerEnabled,
+        fetcher: () => {
+          throw new Error('Presentation discovery must not call the backend');
+        },
+      });
+      const initialized = await readRpc(await handler(rpc('initialize', {}, '')));
+      const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+      const search = tools.result.tools.find(
+        (tool: { name: string }) => tool.name === 'search_jobs',
+      );
+      const texts = [initialized.result.instructions, search?.description ?? ''];
+      if (careerEnabled)
+        for (const name of Object.keys(workflows)) {
+          const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+          const resource = await readRpc(
+            await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+          );
+          texts.push(
+            prompt.result.messages[0].content.text,
+            String(parseResource(resource.result.contents[0].text).instructions),
+            getWorkflow(name)?.instructions ?? '',
+          );
+        }
+      for (const text of texts) {
+        assert(text.includes(PRESENTATION_INSTRUCTIONS));
+        assert.doesNotMatch(text, /Keep web results distinct from connected-source results/);
+      }
+    }
+    for (const requirement of [
+      'one unified ranked list',
+      'same offer format for every result',
+      'never separate sections or introductions by source',
+      'Keep web and connected-source references distinct internally',
+      'Deduplicate only verified identical openings',
+      'Retain required provider credits with the relevant listing link',
+      'never invent a link',
+      'label it View job',
+    ])
+      assert(PRESENTATION_INSTRUCTIONS.includes(requirement), requirement);
   },
 );
