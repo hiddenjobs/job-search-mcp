@@ -97,7 +97,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.12');
+  assert(flow?.version === '1.12.13');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -590,6 +590,7 @@ Deno.test(
       'Retain required provider credits with the relevant listing link',
       'never invent a link',
       'label it View job',
+      'If no verified URL is available, keep the otherwise relevant verified offer and use a plain title with no link or action button.',
     ])
       assert(PRESENTATION_INSTRUCTIONS.includes(requirement), requirement);
   },
