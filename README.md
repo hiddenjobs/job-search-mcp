@@ -80,19 +80,15 @@ for the offer. Transfer files through your client's supported file capability, s
 > Search Hidden Jobs and Remote OK for TypeScript roles open to applicants in Spain. Compare
 > three offers against Backend English, version 3, and explain the best match.
 
-Your assistant searches all available sources by default: Hidden Jobs, Jobicy, We Work Remotely,
-Remote OK, Himalayas, IT Jobs and its native web search. It starts without asking which sources
-to use. Explicit restrictions, such as “Hidden Jobs only” or “exclude web”, are respected and reused
-for follow-up searches until you change them.
-`sources` remains required, with at least one selection; the assistant supplies the selection explicitly. Reading an offer or opening its
+The assistant searches all [job sources](docs/job-sources.md) by default. `search_jobs` requires an
+explicit `sources` array. Reading an offer or opening its
 link also requires the returned `source`. Use `open_application_link` to retrieve original application links. External offers are queried through
 public APIs/feeds and are not stored in Hidden Jobs. You can compare them and prepare documents;
 saved job evaluations, activity, application tracking and email alerts use Hidden Jobs offers.
-See [job sources](docs/job-sources.md).
 
-Your assistant first shows the matching offers with links and any employer-published pay, including offers without a salary. It then researches missing pay with its native web search and adds cited market estimates to those same offers, clearly separated from confirmed employer pay. Salary research never delays, repeats or reduces the initial job list. If reliable references are unavailable, the offer stays visible without an estimated salary.
+When an offer does not publish pay, your assistant researches public salary references and shows a cited market estimate, clearly separated from the employer’s confirmed salary. This uses the assistant’s native web search; if reliable references are unavailable, it leaves the salary field out.
 
-> Find remote Data Scientist roles open to applicants in Spain. Show the offers first, then add cited local salary estimates for offers without published pay.
+> Find remote Data Scientist roles open to applicants in Spain. For offers without published pay, research a local salary range and show the references, marking it as an estimate.
 
 ### 4. Prepare your application
 
@@ -264,11 +260,3 @@ MIT. See [LICENSE](LICENSE).
 
 Employer names and identifying job slugs are withheld from search and detail results. `get_company`
 provides anonymous company context using a job ID. If an operation requires account action, the assistant receives a link to the account settings.
-
-## Offer counts and pagination
-
-The assistant does not use a preset offer count. It presents all relevant verified offers it has retrieved, after deduplication, unless you explicitly ask for a number. For example, 18 relevant results can all be shown even when `limit` is 10; “show three” asks for three. `limit` is a per-source page size, with its existing default of 10 and maximum of 50. Requests for more or all results use available pages/cursors within the host’s time, token and tool budgets. A search with remaining pages is not described as complete; public feeds are not exhaustive job-market coverage.
-
-## Conversation language
-
-Your assistant follows the language of your current request, not the country you want to work from or the language of job listings. Short follow-ups keep the preceding substantive request’s language; an explicit switch takes precedence. For example, “Find jobs in Barcelona” stays in English, and “more” keeps English even after German listings. Original titles, names and links are preserved. A requested CV/document language is handled separately. No fixed language setting or separate detection service is added.

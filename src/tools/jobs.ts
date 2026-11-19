@@ -45,7 +45,7 @@ export const jobTools: ToolDefinition[] = [
           uniqueItems: true,
           items: { type: 'string', enum: SEARCH_SOURCES },
           description:
-            'Required explicit array; the assistant selects all available sources by default without asking. The API still rejects a missing or empty array. hiddenjobs only selects Hidden Jobs. All available sources selects hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs and web. Respect explicit subsets or exclusions. web uses the assistant’s own web search; it is not a provider API.',
+            'Required explicit selection. hiddenjobs only selects Hidden Jobs. All available sources selects hiddenjobs, jobicy, weworkremotely, remoteok, himalayas, itjobs and web. Respect explicit subsets or exclusions. web uses the assistant’s own web search; it is not a provider API.',
         },
         cursors: {
           type: 'object',
@@ -64,14 +64,7 @@ export const jobTools: ToolDefinition[] = [
         jobType: { type: 'string' },
         remoteLocation: remoteLocationSchema,
         page: { type: 'integer', minimum: 1, default: 1 },
-        limit: {
-          type: 'integer',
-          minimum: 1,
-          maximum: 50,
-          default: 10,
-          description:
-            'Page size per selected source, not a total display limit or a requested number of web results. Respect an explicit user result count separately; continue returned pages/cursors within the host budget when more results are requested.',
-        },
+        limit: { type: 'integer', minimum: 1, maximum: 50, default: 10 },
       },
       required: ['sources'],
       additionalProperties: false,

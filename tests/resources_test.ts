@@ -508,11 +508,10 @@ Deno.test(
       const limit = (
         search.inputSchema.properties as Record<
           string,
-          { description: string; minimum: number; maximum: number; default: number }
+          { minimum: number; maximum: number; default: number }
         >
       ).limit;
       assert(search.description.includes('not the number of offers to display'));
-      assert(limit.description.includes('not a total display limit'));
       assert.equal(limit.minimum, 1);
       assert.equal(limit.maximum, 50);
       assert.equal(limit.default, 10);
