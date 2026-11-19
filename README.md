@@ -2,6 +2,8 @@
 
 _Your job search, with your AI assistant._
 
+[![Live demo: Try the chat — no signup or MCP setup required.](docs/live-chat.svg)](https://hiddenjobs.dev/)
+
 Find overlooked remote jobs, evaluate your fit, tailor your CV and cover letter, prepare for
 interviews, research missing salaries and track every application. Connect your assistant to Hidden Jobs and keep your profile,
 CV versions, email alerts and application history together in your account.
