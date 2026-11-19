@@ -4,6 +4,7 @@ import {
   PROACTIVE_INSTRUCTIONS,
   LANGUAGE_INSTRUCTIONS,
   PRESENTATION_INSTRUCTIONS,
+  SEARCH_FAILURE_INSTRUCTIONS,
 } from '../src/resources/workflows.ts';
 import { careerResources } from '../src/resources/index.ts';
 import { createRestMcpHandler } from '../src/index.ts';
@@ -96,7 +97,7 @@ Deno.test(
 Deno.test('portable workflow instructions preserve facts, chosen CV version and user model', () => {
   assert(Object.keys(workflows).length === 15);
   const flow = getWorkflow('apply');
-  assert(flow?.version === '1.12.11');
+  assert(flow?.version === '1.12.12');
   assert(flow.instructions.includes('exact base CV version'));
   assert(flow.instructions.includes("user's own assistant"));
   assert(getWorkflow('unknown') === null);
@@ -591,5 +592,52 @@ Deno.test(
       'label it View job',
     ])
       assert(PRESENTATION_INSTRUCTIONS.includes(requirement), requirement);
+  },
+);
+
+Deno.test(
+  'search failure policy reaches discovery, tools and all workflows without suppressing writes',
+  async () => {
+    for (const careerEnabled of [false, true]) {
+      const handler = createRestMcpHandler({
+        careerEnabled,
+        fetcher: () => {
+          throw Error('No backend call expected');
+        },
+      });
+      const init = await readRpc(await handler(rpc('initialize', {}, '')));
+      const tools = await readRpc(await handler(rpc('tools/list', {}, '')));
+      const search = tools.result.tools.find(
+        (tool: { name: string }) => tool.name === 'search_jobs',
+      );
+      const texts = [init.result.instructions, search?.description ?? ''];
+      if (careerEnabled)
+        for (const name of Object.keys(workflows)) {
+          const prompt = await readRpc(await handler(rpc('prompts/get', { name }, '')));
+          const resource = await readRpc(
+            await handler(rpc('resources/read', { uri: `hiddenjobs://workflows/${name}` }, '')),
+          );
+          texts.push(
+            prompt.result.messages[0].content.text,
+            String(parseResource(resource.result.contents[0].text).instructions),
+            getWorkflow(name)?.instructions ?? '',
+          );
+        }
+      for (const text of texts) assert(text.includes(SEARCH_FAILURE_INSTRUCTIONS));
+    }
+    for (const requirement of [
+      'Preserve and present relevant verified offers already returned',
+      'failed or pending search is not an empty successful search',
+      'briefly explain a material search limitation',
+      'answer truthfully if the user asks',
+      'If no verified results remain',
+      'Do not repeatedly call the same failed search',
+      'immediately retry a rate-limited source',
+      'never silently remove required filters',
+      'not account actions or writes',
+      'unsuccessful CV, document, application or alert saves',
+      'idempotent-write retry rules',
+    ])
+      assert(SEARCH_FAILURE_INSTRUCTIONS.includes(requirement), requirement);
   },
 );

@@ -1,4 +1,4 @@
-import { PRESENTATION_INSTRUCTIONS } from '../resources/workflows.ts';
+import { PRESENTATION_INSTRUCTIONS, SEARCH_FAILURE_INSTRUCTIONS } from '../resources/workflows.ts';
 
 /** A handoff to the caller's native web search, never a claim of provider results. */
 export function webSearchRequest(params: URLSearchParams) {
@@ -21,6 +21,8 @@ export function webSearchRequest(params: URLSearchParams) {
     instructions:
       'Use your native web-search capability to find current job openings matching this request and the user’s stated preferences. The request limit is provider pagination metadata, not a requested number of web results. Do not impose a preset web-result count; use a specific count only when the user explicitly asks for one. Verify each listing, remote eligibility and published salary; cite its real URL. ' +
       PRESENTATION_INSTRUCTIONS +
+      ' ' +
+      SEARCH_FAILURE_INSTRUCTIONS +
       ' Use the selected saved Hidden Jobs CV through list_cvs, get_cv and get_document when matching or preparing an application. Track an authorized application with save_application using externalJob {source: web, url: the verified public HTTPS listing URL, title: the observed job title} and the exact saved cvVersionId; keep subsequent verified progress synchronized with update_application. Do not fabricate MCP IDs or use web URLs with MCP detail, application-link, job-activity or saved-evaluation tools. Do not send CV contents or private profile information to a search engine. If web search is unavailable, report that limitation explicitly; this handoff is not a completed search and does not mean there are no matching jobs.',
   };
 }

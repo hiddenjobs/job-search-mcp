@@ -177,3 +177,42 @@ Deno.test(
     assert.equal(sent.length, 3);
   },
 );
+
+Deno.test(
+  'partial searches retain verified jobs, failure metadata and pending web handoffs without retries',
+  async () => {
+    const jobs = [{ id: 'verified-offer', source: 'hiddenjobs', title: 'Data Scientist' }];
+    const data = {
+      jobs,
+      partial: true,
+      requiresHostSearch: true,
+      sourceResults: [
+        { source: 'hiddenjobs', count: 1 },
+        {
+          source: 'jobicy',
+          jobs: [],
+          error: { code: 'source_rate_limit', message: 'Retry later; not an empty search.' },
+        },
+        { source: 'web', jobs: [], status: 'requires_host_search', execution: 'host' },
+      ],
+    };
+    let calls = 0;
+    const handler = createRestMcpHandler({
+      fetcher: () => {
+        calls++;
+        return Promise.resolve(Response.json({ data }));
+      },
+    });
+    const result = await readRpc(
+      await handler(
+        rpc('tools/call', {
+          name: 'search_jobs',
+          arguments: { sources: ['hiddenjobs', 'jobicy', 'web'], query: 'Data Scientist' },
+        }),
+      ),
+    );
+    assert.equal(result.result.isError, false);
+    assert.deepEqual(result.result.structuredContent.data, data);
+    assert.equal(calls, 1);
+  },
+);
