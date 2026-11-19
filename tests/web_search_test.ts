@@ -1,7 +1,11 @@
 import { assert, rpc, readRpc } from './helpers.ts';
 import { createRestMcpHandler } from '../src/index.ts';
 import { webSearchRequest } from '../src/sources/web.ts';
-import { getWorkflow, PRESENTATION_INSTRUCTIONS } from '../src/resources/workflows.ts';
+import {
+  getWorkflow,
+  PRESENTATION_INSTRUCTIONS,
+  SEARCH_FAILURE_INSTRUCTIONS,
+} from '../src/resources/workflows.ts';
 
 Deno.test(
   'web search handoff preserves explicit preferences and never claims searched results',
@@ -31,6 +35,7 @@ Deno.test(
     assert.deepEqual(result.jobs, []);
     assert.match(result.instructions, /native web-search/);
     assert(result.instructions.includes(PRESENTATION_INSTRUCTIONS));
+    assert(result.instructions.includes(SEARCH_FAILURE_INSTRUCTIONS));
     assert.doesNotMatch(
       result.instructions,
       /Keep web results distinct from connected-source results/,

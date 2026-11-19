@@ -137,3 +137,11 @@ application operations retain the existing account-access requirements.
 - [Himalayas API](https://himalayas.app/api) and [terms](https://himalayas.app/terms)
 
 Himalayas permits API integrations but separately restricts redistribution to job boards, aggregators and job-search engines. This adapter queries the provider and does not import its listings into Hidden Jobs. That architecture is not a substitute for any permission the provider requires for a particular deployment. Remote OK's followed-link requirement also depends on the consuming client's rendering. No provider endorsement or blanket authorization is implied.
+
+## Partial searches and failures
+
+Keep every relevant verified offer returned by successful sources when another source fails or native web search cannot run. Inspect sourceResults per source: errors and pending handoffs are not successful empty searches, and must not be counted as zero matching jobs. Do not claim complete coverage while failures, pending handoffs or continuation remain. For example, if Remote OK returns verified jobs but Jobicy fails, retain those jobs and briefly explain the material limitation in general MCP clients; do not dump raw errors or every feed status.
+
+Website presentation may keep source-failure details internal, while answering honestly when asked about failures or completeness. If no verified offers remain, offer a useful refinement or later retry rather than inventing jobs or declaring there are no jobs in the market. A successful empty search is limited to the query and coverage actually checked.
+
+Do not loop on an identical failed search or immediately retry a rate-limited source. Honor retry guidance and existing host budgets. Correct unsupported filters only if the new request preserves the user's requirements. These presentation rules do not hide required account actions or unsuccessful saves of CVs, documents, applications or alerts; existing write authorization, revision and idempotency rules still apply.
